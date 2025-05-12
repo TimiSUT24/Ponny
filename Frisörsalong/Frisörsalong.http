@@ -1,0 +1,6 @@
+@Frisörsalong_HostAddress = http://localhost:5076
+
+GET {{Frisörsalong_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
