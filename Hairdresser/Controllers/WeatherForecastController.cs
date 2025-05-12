@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Frisörsalong.Controllers;
+namespace Hairdresser.Controllers;
 
 [ApiController]
 [Route("[controller]")]

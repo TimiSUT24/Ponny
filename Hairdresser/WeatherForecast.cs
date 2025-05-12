@@ -1,4 +1,4 @@
-namespace Frisörsalong;
+namespace Hairdresser;
 
 public class WeatherForecast
 {
