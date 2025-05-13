@@ -132,8 +132,11 @@ $RECYCLE.BIN/
 
 _NCrunch*
 
-appsettings.*
+appsettings.json
+appsettings.Development.json
 
 .idea/
 /.vs
 .devcontainer
+
+Properties/launchSettings.json
