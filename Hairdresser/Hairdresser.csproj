@@ -22,8 +22,4 @@
     <ProjectReference Include="../HairdresserClassLibrary/HairdresserClassLibrary.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>
