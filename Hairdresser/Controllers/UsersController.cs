@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using HairdresserClassLibrary.Models;
 using Hairdresser.Data;
+using Microsoft.VisualBasic;
+using Microsoft.AspNetCore.Identity;
 
 namespace Hairdresser.Controllers
 {
@@ -11,13 +13,14 @@ namespace Hairdresser.Controllers
     {
         private readonly ApplicationDBContext _context;
 
+
         public UsersController(ApplicationDBContext context)
         {
             _context = context;
         }
 
         [HttpPost("registerUser")]
-        public async Task<IActionResult> Register([FromBody] User newUser)
+        public async Task<IActionResult> Register([FromBody] IdentityUser newUser)
         {
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
@@ -36,16 +39,15 @@ namespace Hairdresser.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] User updatedUser)
+        public async Task<IActionResult> Update(int id, [FromBody] IdentityUser updatedUser)
         {
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null)
                 return NotFound();
 
-            existingUser.FirstName = updatedUser.FirstName;
-            existingUser.LastName = updatedUser.LastName;
+            existingUser.UserName = updatedUser.UserName;
             existingUser.Email = updatedUser.Email;
-            existingUser.Phone = updatedUser.Phone;
+            existingUser.PhoneNumber = updatedUser.PhoneNumber;
 
             await _context.SaveChangesAsync();
 
