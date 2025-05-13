@@ -135,5 +135,5 @@ _NCrunch*
 appsettings.*
 
 .idea/
-
+/.vs
 .devcontainer
