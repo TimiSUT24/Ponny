@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using HairDresserClassLibrary.Models;
+using HairdresserClassLibrary.Models;
 using Hairdresser.Data;
 
 namespace Hairdresser.Controllers
@@ -9,14 +9,13 @@ namespace Hairdresser.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDBContext _context;
 
-        public UsersController(ApplicationDbContext context)
+        public UsersController(ApplicationDBContext context)
         {
             _context = context;
         }
 
-        // Register User
         [HttpPost("registerUser")]
         public async Task<IActionResult> Register([FromBody] User newUser)
         {
@@ -36,7 +35,6 @@ namespace Hairdresser.Controllers
             return Ok(user);
         }
 
-        // Update UserInfo
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] User updatedUser)
         {
