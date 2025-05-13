@@ -1,4 +1,4 @@
-using Hairdresser.Models;
+using Hairdresser.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -12,11 +12,11 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<HairdresserContext>(options =>
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<HairdresserContext>()
+                .AddEntityFrameworkStores<ApplicationDBContext>()
                 .AddDefaultTokenProviders();
 
 
