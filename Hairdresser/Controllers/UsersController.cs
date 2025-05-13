@@ -35,5 +35,23 @@ namespace Hairdresser.Controllers
 
             return Ok(user);
         }
+
+        // Update UserInfo
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] User updatedUser)
+        {
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null)
+                return NotFound();
+
+            existingUser.FirstName = updatedUser.FirstName;
+            existingUser.LastName = updatedUser.LastName;
+            existingUser.Email = updatedUser.Email;
+            existingUser.Phone = updatedUser.Phone;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
