@@ -16,13 +16,11 @@ namespace Hairdresser.Repositories
 		public async Task AddAsync(ApplicationUser entity)
 		{
 			await _context.ApplicationUsers.AddAsync(entity);
-			await _context.SaveChangesAsync();
 		}
 
 		public async Task DeleteAsync(ApplicationUser entity)
 		{
 			_context.ApplicationUsers.Remove(entity);
-			await _context.SaveChangesAsync();
 		}
 
 		public async Task<IEnumerable<ApplicationUser>> FindAsync(Expression<Func<ApplicationUser, bool>> predicate)
@@ -43,6 +41,9 @@ namespace Hairdresser.Repositories
 		public async Task UpdateAsync(ApplicationUser entity)
 		{
 			_context.ApplicationUsers.Update(entity);
+		}
+		public async Task SaveChangesAsync()
+		{
 			await _context.SaveChangesAsync();
 		}
 	}
