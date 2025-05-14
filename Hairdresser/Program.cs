@@ -1,4 +1,5 @@
 using Hairdresser.Data;
+using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -17,7 +18,8 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDBContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddApiEndpoints();
 
 
 var app = builder.Build();
@@ -28,6 +30,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+app.MapIdentityApi<ApplicationUser>();
 
 app.UseHttpsRedirection();
 
