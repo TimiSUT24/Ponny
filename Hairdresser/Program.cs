@@ -1,6 +1,4 @@
 using Hairdresser.Data;
-using Hairdresser.Repositories;
-using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,8 +17,9 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-				.AddEntityFrameworkStores<ApplicationDBContext>()
-				.AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<ApplicationDBContext>()
+                .AddDefaultTokenProviders()
+                .AddApiEndpoints();
 
 
 //Repositories
@@ -36,6 +35,8 @@ if (app.Environment.IsDevelopment())
 	app.MapOpenApi();
 	app.MapScalarApiReference();
 }
+
+app.MapIdentityApi<ApplicationUser>();
 
 app.UseHttpsRedirection();
 

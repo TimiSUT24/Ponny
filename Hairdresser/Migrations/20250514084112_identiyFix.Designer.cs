@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hairdresser.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20250513125744_AddBookingsTreatment")]
-    partial class AddBookingsTreatment
+    [Migration("20250514084112_identiyFix")]
+    partial class identiyFix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -98,6 +98,9 @@ namespace Hairdresser.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CustomerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -116,6 +119,8 @@ namespace Hairdresser.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("CustomerId");
 
@@ -145,8 +150,8 @@ namespace Hairdresser.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -288,20 +293,24 @@ namespace Hairdresser.Migrations
 
             modelBuilder.Entity("HairdresserClassLibrary.Models.Booking", b =>
                 {
+                    b.HasOne("HairdresserClassLibrary.Models.ApplicationUser", null)
+                        .WithMany("Bookings")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("HairdresserClassLibrary.Models.ApplicationUser", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HairdresserClassLibrary.Models.ApplicationUser", "Hairdresser")
                         .WithMany()
                         .HasForeignKey("HairdresserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HairdresserClassLibrary.Models.Treatment", "Treatment")
-                        .WithMany()
+                        .WithMany("Bookings")
                         .HasForeignKey("TreatmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -362,6 +371,16 @@ namespace Hairdresser.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HairdresserClassLibrary.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Bookings");
+                });
+
+            modelBuilder.Entity("HairdresserClassLibrary.Models.Treatment", b =>
+                {
+                    b.Navigation("Bookings");
                 });
 #pragma warning restore 612, 618
         }
