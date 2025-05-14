@@ -22,5 +22,21 @@ namespace Hairdresser.Controllers
             var hairdressers = await _repository.GetAllAsync();
             return Ok(hairdressers);
         }
+
+        [Authorize]
+        [HttpPost(Name = "AddNewHairdresser")]
+        public async Task<IActionResult> Create(string firstName, string lastName, string email, string phone)
+        {
+            var hairdresser = new ApplicationUser
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email,
+                PhoneNumber = phone,
+            };
+            await _repository.AddAsync(hairdresser);
+            await _repository.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetAll), hairdresser);
+        }
     }
 }
