@@ -13,8 +13,8 @@ namespace HairdresserUnitTests
 	[TestClass]
 	public class BookingRepositoryTests
 	{
-		private ApplicationDBContext _context;
-		private BookingRepository _bookingRepository;
+		private ApplicationDBContext? _context;
+		private BookingRepository? _bookingRepository;
 
 		[TestInitialize]
 		public void Setup()
@@ -56,7 +56,7 @@ namespace HairdresserUnitTests
 		[TestCleanup]
 		public void Cleanup()
 		{
-			_context.Database.EnsureDeleted();
+			_context!.Database.EnsureDeleted();
 			_context.Dispose();
 		}
 
@@ -65,7 +65,7 @@ namespace HairdresserUnitTests
 		public async Task Add_ShouldAddBookingSuccessfully()
 		{
 			// Arrange
-			var treatment = _context.Treatments.ToList()[0];
+			var treatment = _context!.Treatments.ToList()[0];
 
 			var customer = _context.ApplicationUsers.ToList()[0];
 			var hairdresser = _context.ApplicationUsers.ToList()[1];
@@ -81,7 +81,8 @@ namespace HairdresserUnitTests
 			};
 
 			// Act
-			await _bookingRepository.AddAsync(newBooking);
+			await _bookingRepository!.AddAsync(newBooking);
+			await _bookingRepository.SaveChangesAsync();
 			var result = await _bookingRepository.GetByIdAsync(2);
 
 			// Assert
