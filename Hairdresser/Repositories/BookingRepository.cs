@@ -17,13 +17,11 @@ namespace Hairdresser.Repositories
 		public async Task AddAsync(Booking entity)
 		{
 			await _context.Bookings.AddAsync(entity);
-			await _context.SaveChangesAsync();
 		}
 
 		public async Task DeleteAsync(Booking entity)
 		{
 			_context.Bookings.Remove(entity);
-			await _context.SaveChangesAsync();
 		}
 
 		public async Task<IEnumerable<Booking>> FindAsync(Expression<Func<Booking, bool>> predicate)
@@ -44,6 +42,9 @@ namespace Hairdresser.Repositories
 		public async Task UpdateAsync(Booking entity)
 		{
 			_context.Bookings.Update(entity);
+		}
+		public async Task SaveChangesAsync()
+		{
 			await _context.SaveChangesAsync();
 		}
 	}
