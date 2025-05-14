@@ -1,4 +1,6 @@
 using Hairdresser.Data;
+using Hairdresser.Repositories;
+using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +26,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 
 //Repositories
 builder.Services.AddScoped<IGenericRepository<Treatment>, TreatmentRepository>();
+builder.Services.AddScoped<IGenericRepository<Booking>, BookingRepository>();
 
 //Services
 
