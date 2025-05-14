@@ -32,18 +32,19 @@ namespace Hairdresser.Repositories
 		public async Task AddAsync(Treatment entity)
 		{
 			await _context.Treatments.AddAsync(entity);
-			await _context.SaveChangesAsync();
 		}
 
 		public async Task UpdateAsync(Treatment entity)
 		{
 			_context.Treatments.Update(entity);
-			await _context.SaveChangesAsync();
 		}
 
 		public async Task DeleteAsync(Treatment entity)
 		{
 			_context.Treatments.Remove(entity);
+		}
+		public async Task SaveChangesAsync()
+		{
 			await _context.SaveChangesAsync();
 		}
 
