@@ -27,6 +27,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 //Repositories
 builder.Services.AddScoped<IGenericRepository<Treatment>, TreatmentRepository>();
 builder.Services.AddScoped<IGenericRepository<Booking>, BookingRepository>();
+builder.Services.AddScoped<IGenericRepository<ApplicationUser>, UserRepository>();
 
 //Services
 
