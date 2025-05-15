@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using HairdresserClassLibrary.Models;
 using Hairdresser.Data;
+using Hairdresser.DTOs;
 
 namespace Hairdresser.Controllers
 {
@@ -17,13 +18,22 @@ namespace Hairdresser.Controllers
         }
 
         [HttpPost("registerUser")]
-        public async Task<IActionResult> Register([FromBody] ApplicationUser newUser)
+        public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
+            var newUser = new ApplicationUser
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+            };
+
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
