@@ -16,9 +16,21 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .UseSeeding((context, _) =>
+        {
+            UserSeed.SeedUsers(context);
+            BookingSeed.SeedBookings(context);
+            TreatmentSeed.SeedTreatments(context);
+        })
+        .UseAsyncSeeding(async (context, _, _) =>
+        {
+            await UserSeed.SeedUsersAsync(context);
+            await BookingSeed.SeedBookingsAsync(context);
+            await TreatmentSeed.SeedTreatmentsAsync(context);
+        }));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDBContext>()
                 .AddDefaultTokenProviders()
                 .AddApiEndpoints();
