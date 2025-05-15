@@ -9,13 +9,10 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Add services to the container
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
@@ -48,29 +45,27 @@ builder.Services.AddAuthentication(options =>
     });
 builder.Services.AddAuthorization();
 
-//Repositories
+// Repositories
 builder.Services.AddScoped<IGenericRepository<Treatment>, TreatmentRepository>();
 builder.Services.AddScoped<IGenericRepository<Booking>, BookingRepository>();
 builder.Services.AddScoped<IGenericRepository<ApplicationUser>, UserRepository>();
-
 
 //Services
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
-	app.MapOpenApi();
-	app.MapScalarApiReference();
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.MapIdentityApi<ApplicationUser>();
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
 
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
