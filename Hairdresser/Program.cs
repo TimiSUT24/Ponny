@@ -19,14 +19,12 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
         .UseSeeding((context, _) =>
         {
-            UserSeed.SeedUsers(context);
-            BookingSeed.SeedBookings(context);
+            // BookingSeed.SeedBookings(context);
             TreatmentSeed.SeedTreatments(context);
         })
         .UseAsyncSeeding(async (context, _, _) =>
         {
-            await UserSeed.SeedUsersAsync(context);
-            await BookingSeed.SeedBookingsAsync(context);
+            // await BookingSeed.SeedBookingsAsync(context);
             await TreatmentSeed.SeedTreatmentsAsync(context);
         }));
 
@@ -44,11 +42,23 @@ builder.Services.AddScoped<IGenericRepository<Booking>, BookingRepository>();
 
 var app = builder.Build();
 
+// Seed users and roles
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDBContext>();
+
+    await context.Database.MigrateAsync();
+    await UserRolesSeed.SeedUsersRoles(services);
+    await BookingSeed.SeedBookingsAsync(services);
+}
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	app.MapOpenApi();
-	app.MapScalarApiReference();
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.MapIdentityApi<ApplicationUser>();

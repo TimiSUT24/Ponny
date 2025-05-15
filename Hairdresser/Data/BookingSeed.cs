@@ -1,44 +1,20 @@
 using System;
 using HairdresserClassLibrary.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hairdresser.Data;
 
 public static class BookingSeed
 {
-    public static void SeedBookings(DbContext context)
+    public static void SeedBookings(IServiceProvider serviceProvider)
     {
-        // modelBuilder.Entity<Booking>().HasData(
-        //     new Booking()
-        //     {
-        //         Id = 1,
-        //         CustomerId = "1",
-        //         HairdresserId = "2",
-        //         TreatmentId = 1,
-        //         Start = DateTime.Parse("2025-05-14T10:00:00"),
-        //         End = DateTime.Parse("2025-05-14T11:00:00"),
-        //     },
-        //     new Booking()
-        //     {
-        //         Id = 2,
-        //         CustomerId = "3",
-        //         HairdresserId = "4",
-        //         TreatmentId = 2,
-        //         Start = DateTime.Parse("2025-05-16T10:00:00"),
-        //         End = DateTime.Parse("2025-05-16T11:30:00"),
-        //     },
-        //     new Booking()
-        //     {
-        //         Id = 3,
-        //         CustomerId = "5",
-        //         HairdresserId = "1",
-        //         TreatmentId = 3,
-        //         Start = DateTime.Parse("2025-05-17T10:00:00"),
-        //         End = DateTime.Parse("2025-05-17T12:00:00"),
-        //     }
-        // );
+        var scope = serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+        var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
         var booking = context.Set<Booking>();
-        var users = context.Set<ApplicationUser>().ToListAsync().Result;
+        var users = userManager.Users.ToListAsync().Result;
         var treatments = context.Set<Treatment>().ToListAsync().Result;
 
         List<Booking> bookingSeeds = [
@@ -75,17 +51,23 @@ public static class BookingSeed
             context.SaveChanges();
         }
     }
-    public static async Task SeedBookingsAsync(DbContext context)
+    public static async Task SeedBookingsAsync(IServiceProvider serviceProvider)
     {
+        var scope = serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+        var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+
         var booking = context.Set<Booking>();
-        var users = context.Set<ApplicationUser>().ToListAsync().Result;
+        var users = await userManager.Users.ToListAsync();
+        var treatments = context.Set<Treatment>().ToListAsync().Result;
 
         List<Booking> bookingSeeds = [
                new Booking()
                     {
                         CustomerId = users[0].Id,
                         HairdresserId = users[1].Id,
-                        TreatmentId = 1,
+                        TreatmentId = treatments[0].Id,
                         Start = DateTime.Parse("2025-05-14T10:00:00"),
                         End = DateTime.Parse("2025-05-14T11:00:00"),
                     },
@@ -93,7 +75,7 @@ public static class BookingSeed
                     {
                         CustomerId = users[2].Id,
                         HairdresserId = users[3].Id,
-                        TreatmentId = 2,
+                        TreatmentId = treatments[1].Id,
                         Start = DateTime.Parse("2025-05-16T10:00:00"),
                         End = DateTime.Parse("2025-05-16T11:30:00"),
                     },
@@ -101,7 +83,7 @@ public static class BookingSeed
                     {
                         CustomerId = users[4].Id,
                         HairdresserId = users[0].Id,
-                        TreatmentId = 3,
+                        TreatmentId = treatments[2].Id,
                         Start = DateTime.Parse("2025-05-17T10:00:00"),
                         End = DateTime.Parse("2025-05-17T12:00:00"),
                     }

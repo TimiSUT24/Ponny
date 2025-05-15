@@ -39,7 +39,6 @@ public static class TreatmentSeed
         List<Treatment> treatmentSeeds = [
              new Treatment()
             {
-                Id = 1,
                 Name = "Klippning",
                 Description = "En professionell klippning för att ge ditt hår en ny stil.",
                 Price = 500.00,
@@ -47,7 +46,6 @@ public static class TreatmentSeed
             },
             new Treatment()
             {
-                Id = 2,
                 Name = "Färgning",
                 Description = "En färgning av ditt hår för att ge det en ny look.",
                 Price = 800.00,
@@ -55,7 +53,6 @@ public static class TreatmentSeed
             },
             new Treatment()
             {
-                Id = 3,
                 Name = "Permanent",
                 Description = "En permanent behandling för att ge ditt hår mer volym och lockar.",
                 Price = 1200.00,
