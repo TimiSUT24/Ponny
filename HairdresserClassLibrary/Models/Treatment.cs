@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace HairdresserClassLibrary.Models;
@@ -10,8 +11,5 @@ public class Treatment
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; } = string.Empty;
     public int Duration { get; set; }
-    public double Price { get; set; }
-
-    // Navigation properties
-    public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+    public decimal Price { get; set; }
 }

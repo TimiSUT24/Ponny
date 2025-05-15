@@ -34,7 +34,7 @@ namespace Hairdresser.Controllers
             {
                 Name = name,
                 Description = description,
-                Price = price,
+                Price = (decimal)price,
                 Duration = duration,
 
             };

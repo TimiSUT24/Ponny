@@ -15,32 +15,32 @@ namespace Hairdresser.Repositories
 		}
 		public async Task AddAsync(ApplicationUser entity)
 		{
-			await _context.ApplicationUsers.AddAsync(entity);
+			await _context.Users.AddAsync(entity);
 		}
 
 		public async Task DeleteAsync(ApplicationUser entity)
 		{
-			_context.ApplicationUsers.Remove(entity);
+			_context.Users.Remove(entity);
 		}
 
 		public async Task<IEnumerable<ApplicationUser>> FindAsync(Expression<Func<ApplicationUser, bool>> predicate)
 		{
-			return await _context.ApplicationUsers.Where(predicate).ToListAsync();
+			return await _context.Users.Where(predicate).ToListAsync();
 		}
 
 		public async Task<IEnumerable<ApplicationUser>> GetAllAsync()
 		{
-			return await _context.ApplicationUsers.ToListAsync();
+			return await _context.Users.ToListAsync();
 		}
 
 		public async Task<ApplicationUser?> GetByIdAsync(int id)
 		{
-			return await _context.ApplicationUsers.FindAsync(id);
+			return await _context.Users.FindAsync(id);
 		}
 
 		public async Task UpdateAsync(ApplicationUser entity)
 		{
-			_context.ApplicationUsers.Update(entity);
+			_context.Users.Update(entity);
 		}
 		public async Task SaveChangesAsync()
 		{
