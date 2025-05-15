@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using HairdresserClassLibrary.Models;
 using Hairdresser.Data;
-using Microsoft.VisualBasic;
-using Microsoft.AspNetCore.Identity;
 
 namespace Hairdresser.Controllers
 {
@@ -13,14 +11,13 @@ namespace Hairdresser.Controllers
     {
         private readonly ApplicationDBContext _context;
 
-
         public UsersController(ApplicationDBContext context)
         {
             _context = context;
         }
 
         [HttpPost("registerUser")]
-        public async Task<IActionResult> Register([FromBody] IdentityUser newUser)
+        public async Task<IActionResult> Register([FromBody] ApplicationUser newUser)
         {
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
@@ -29,7 +26,7 @@ namespace Hairdresser.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(string id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
@@ -39,13 +36,14 @@ namespace Hairdresser.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] IdentityUser updatedUser)
+        public async Task<IActionResult> Update(string id, [FromBody] ApplicationUser updatedUser)
         {
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null)
                 return NotFound();
 
-            existingUser.UserName = updatedUser.UserName;
+            existingUser.FirstName = updatedUser.FirstName;
+            existingUser.LastName = updatedUser.LastName;
             existingUser.Email = updatedUser.Email;
             existingUser.PhoneNumber = updatedUser.PhoneNumber;
 
