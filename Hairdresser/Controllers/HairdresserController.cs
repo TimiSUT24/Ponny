@@ -1,7 +1,9 @@
-﻿using Hairdresser.Repositories.Interfaces;
+﻿using Hairdresser.Data;
+using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hairdresser.Controllers
 {
@@ -10,6 +12,8 @@ namespace Hairdresser.Controllers
     public class HairdresserController : ControllerBase
     {
         private readonly IGenericRepository<ApplicationUser> _repository;
+        private readonly ApplicationDBContext _context;
+
 
         public HairdresserController(IGenericRepository<ApplicationUser> repository)
         {
@@ -37,6 +41,21 @@ namespace Hairdresser.Controllers
             await _repository.AddAsync(hairdresser);
             await _repository.SaveChangesAsync();
             return CreatedAtAction(nameof(GetAll), hairdresser);
+        }
+
+        // Get week schedule for hairdresser
+        [HttpGet("schedule")]
+        public async Task<IActionResult> GetSchedule([FromQuery] string hairdresserId, [FromQuery] DateTime weekStart)
+        {
+            var weekEnd = weekStart.AddDays(7);
+
+            var bookings = await _context.Bookings
+                .Where(b => b.HairdresserId == hairdresserId && b.Start >= weekStart && b.Start < weekEnd)
+                .Include(b => b.Customer)
+                .Include(b => b.Treatment)
+                .ToListAsync();
+
+            return Ok(bookings);
         }
     }
 }
