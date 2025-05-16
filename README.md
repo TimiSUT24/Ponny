@@ -1,5 +1,34 @@
 # Shetlandsponnyerna
 
+## API Endpoints
+
+### BookingController
+| Method | Endpoint | Authentication |
+|--------|----------|----------------|
+| GET    | `/User/Booking` | ✅ Authenticated |
+| POST   | `/User/Booking` | ✅ Authenticated |
+| PUT    | `/User/Booking` | ✅ Authenticated |
+| DELETE | `/User/Booking` | ✅ Authenticated |
+| GET    | `/Booking` | ❌ Not Authenticated |
+
+### TreatmentController
+| Method | Endpoint | Authentication |
+|--------|----------|----------------|
+| GET    | `/Treatments` | ❌ Not Authenticated |
+| POST   | `/Treatments` | ✅ Authenticated |
+| PUT    | `/Treatments/Id` | ✅ Authenticated |
+| DELETE | `/Treatments/Id` | ✅ Authenticated |
+
+### HairdresserController
+| Method | Endpoint | Authentication |
+|--------|----------|----------------|
+| GET    | `/Hairdresser/Id` | ❌ Not Authenticated |
+| GET    | `/Hairdresser` | ❌ Not Authenticated |
+| POST   | `/Hairdresser` | ✅ Authenticated |
+| PUT    | `/Hairdresser/Id` | ✅ Authenticated |
+| DELETE | `/Hairdresser/Id` | ✅ Authenticated |
+
+
 ## Project Description and Architecture Overview
 
 Provide a brief introduction to your project, including its main purpose, target audience, and core functionality. Include a high-level architecture diagram if possible, highlighting the key components and their interactions.
@@ -20,6 +49,7 @@ Explain the system architecture, including:
 * Deployment environment
 
 ---
+
 
 ## API Endpoints Documentation
 
