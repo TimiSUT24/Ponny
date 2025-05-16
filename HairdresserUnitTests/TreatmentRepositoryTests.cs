@@ -88,6 +88,32 @@ namespace HairdresserUnitTests
 			Assert.IsNull(DeletedTreatment);
 		}
 
+		[TestMethod]
+		public async Task GetAllAsync_ShouldReturnAllTreatments()
+		{
+			// Arrange
+			var initialTreatments = await _treatmentRepository!.GetAllAsync();
+			Assert.AreEqual(0, initialTreatments.Count());
+
+			// Add multiple treatments
+			var treatment1 = new Treatment { Id = 1, Name = "Haircut", Price = 200 };
+			var treatment2 = new Treatment { Id = 2, Name = "Hair Coloring", Price = 300 };
+			var treatment3 = new Treatment { Id = 3, Name = "Hair Wash", Price = 100 };
+
+			await _treatmentRepository.AddAsync(treatment1);
+			await _treatmentRepository.AddAsync(treatment2);
+			await _treatmentRepository.AddAsync(treatment3);
+			await _treatmentRepository.SaveChangesAsync();
+
+			// Act
+			var result = await _treatmentRepository.GetAllAsync();
+
+			// Assert
+			Assert.AreEqual(3, result.Count());
+			Assert.IsTrue(result.Any(t => t.Name == "Haircut"));
+			Assert.IsTrue(result.Any(t => t.Name == "Hair Coloring"));
+			Assert.IsTrue(result.Any(t => t.Name == "Hair Wash"));
+		}
 
 
 
