@@ -39,14 +39,13 @@ namespace Hairdresser.Repositories
 			return await _context.Bookings.FindAsync(id);
 		}
 
-		public async Task SaveChangesAsync()
-		{
-			await _context.SaveChangesAsync();
-		}
-
 		public async Task UpdateAsync(Booking entity)
 		{
 			_context.Bookings.Update(entity);
+		}
+		public async Task SaveChangesAsync()
+		{
+			await _context.SaveChangesAsync();
 		}
 	}
 }

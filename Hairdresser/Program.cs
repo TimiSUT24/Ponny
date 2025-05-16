@@ -2,17 +2,17 @@ using Hairdresser.Data;
 using Hairdresser.Repositories;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
-
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Add services to the container
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
@@ -33,15 +33,38 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddDefaultTokenProviders()
                 .AddApiEndpoints();
 
+//JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(options =>
+    {
+        var jwtSettings = builder.Configuration.GetSection("Jwt");
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+        };
+    });
+builder.Services.AddAuthorization();
 
-//Repositories
+// Repositories
 builder.Services.AddScoped<IGenericRepository<Treatment>, TreatmentRepository>();
 builder.Services.AddScoped<IGenericRepository<Booking>, BookingRepository>();
+builder.Services.AddScoped<IGenericRepository<ApplicationUser>, UserRepository>();
 
 //Services
 
 var app = builder.Build();
 
+<<<<<<< HEAD
 // Seed users and roles
 using (var scope = app.Services.CreateScope())
 {
@@ -55,6 +78,9 @@ using (var scope = app.Services.CreateScope())
 
 
 // Configure the HTTP request pipeline.
+=======
+// Configure the HTTP request pipeline
+>>>>>>> origin/main
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -64,9 +90,8 @@ if (app.Environment.IsDevelopment())
 app.MapIdentityApi<ApplicationUser>();
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

@@ -8,47 +8,45 @@ namespace Hairdresser.Repositories
 	public class TreatmentRepository : IGenericRepository<Treatment>
 	{
 		private readonly ApplicationDBContext _context;
-		private readonly DbSet<Treatment> _dbSet;
 
 		public TreatmentRepository(ApplicationDBContext context)
 		{
 			_context = context;
-			_dbSet = context.Set<Treatment>();
 		}
 
 		public async Task<IEnumerable<Treatment>> GetAllAsync()
 		{
-			return await _dbSet.ToListAsync();
+			return await _context.Treatments.ToListAsync();
 		}
 
 		public async Task<Treatment?> GetByIdAsync(int id)
 		{
-			return await _dbSet.FindAsync(id);
+			return await _context.Treatments.FindAsync(id);
 		}
 
 		public async Task<IEnumerable<Treatment>> FindAsync(Expression<Func<Treatment, bool>> predicate)
 		{
-			return await _dbSet.Where(predicate).ToListAsync();
+			return await _context.Treatments.Where(predicate).ToListAsync();
 		}
 
 		public async Task AddAsync(Treatment entity)
 		{
-			await _dbSet.AddAsync(entity);
+			await _context.Treatments.AddAsync(entity);
 		}
 
 		public async Task UpdateAsync(Treatment entity)
 		{
-			_dbSet.Update(entity);
+			_context.Treatments.Update(entity);
 		}
 
 		public async Task DeleteAsync(Treatment entity)
 		{
-			_dbSet.Remove(entity);
+			_context.Treatments.Remove(entity);
 		}
-
 		public async Task SaveChangesAsync()
 		{
 			await _context.SaveChangesAsync();
 		}
+
 	}
 }

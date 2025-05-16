@@ -1,45 +1,44 @@
 using HairdresserClassLibrary.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hairdresser.Data
 {
-	public class ApplicationDBContext : IdentityDbContext<ApplicationUser>
-	{
-		public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options)
-			: base(options)
-		{
-		}
+    public class ApplicationDBContext : IdentityDbContext<ApplicationUser>
+    {
+        public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options)
+            : base(options)
+        {
+        }
 
-		public DbSet<Treatment> Treatments { get; set; } = null!;
-		public DbSet<Booking> Bookings { get; set; } = null!;
-		public DbSet<ApplicationUser> ApplicationUsers { get; set; } = null!;
+        public DbSet<ApplicationUser> Users { get; set; } = null!;
+        public DbSet<Treatment> Treatments { get; set; } = null!;
+        public DbSet<Booking> Bookings { get; set; } = null!;
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			base.OnModelCreating(modelBuilder);
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
-			// Configure Customer relationship
-			modelBuilder.Entity<Booking>()
-				.HasOne(b => b.Customer)
-				.WithMany()
-				.HasForeignKey(b => b.CustomerId)
-				.OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
+            // Booking ? Customer
+            modelBuilder.Entity<Booking>()
+                .HasOne(b => b.Customer)
+                .WithMany()
+                .HasForeignKey(b => b.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-			// Configure Hairdresser relationship
-			modelBuilder.Entity<Booking>()
-				.HasOne(b => b.Hairdresser)
-				.WithMany()
-				.HasForeignKey(b => b.HairdresserId)
-				.OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
+            // Booking ? Hairdresser
+            modelBuilder.Entity<Booking>()
+                .HasOne(b => b.Hairdresser)
+                .WithMany()
+                .HasForeignKey(b => b.HairdresserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-			// Configure Treatment relationship
-			modelBuilder.Entity<Booking>()
-				.HasOne(b => b.Treatment)
-				.WithMany(t => t.Bookings)
-				.HasForeignKey(b => b.TreatmentId)
-				.OnDelete(DeleteBehavior.Cascade); // Allow cascading delete for treatments
-		}
-	}
+            // Booking ? Treatment
+            modelBuilder.Entity<Booking>()
+                .HasOne(b => b.Treatment)
+                .WithMany(t => t.Bookings)
+                .HasForeignKey(b => b.TreatmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
 }

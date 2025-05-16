@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using HairdresserClassLibrary.Models;
 using Hairdresser.Data;
+using Hairdresser.DTOs;
 
 namespace Hairdresser.Controllers
 {
@@ -16,40 +17,49 @@ namespace Hairdresser.Controllers
             _context = context;
         }
 
-        // [HttpPost("registerUser")]
-        // public async Task<IActionResult> Register([FromBody] User newUser)
-        // {
-        //     _context.Users.Add(newUser);
-        //     await _context.SaveChangesAsync();
+        [HttpPost("registerUser")]
+        public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
+        {
+            var newUser = new ApplicationUser
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+            };
 
-        //     return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
-        // }
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
 
-        // [HttpGet("{id}")]
-        // public async Task<IActionResult> GetById(int id)
-        // {
-        //     var user = await _context.Users.FindAsync(id);
-        //     if (user == null)
-        //         return NotFound();
+            return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
+        }
 
-        //     return Ok(user);
-        // }
 
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> Update(int id, [FromBody] User updatedUser)
-        // {
-        //     var existingUser = await _context.Users.FindAsync(id);
-        //     if (existingUser == null)
-        //         return NotFound();
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(string id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+                return NotFound();
 
-        //     existingUser.FirstName = updatedUser.FirstName;
-        //     existingUser.LastName = updatedUser.LastName;
-        //     existingUser.Email = updatedUser.Email;
-        //     existingUser.Phone = updatedUser.Phone;
+            return Ok(user);
+        }
 
-        //     await _context.SaveChangesAsync();
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, [FromBody] ApplicationUser updatedUser)
+        {
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null)
+                return NotFound();
 
-        //     return NoContent();
-        // }
+            existingUser.FirstName = updatedUser.FirstName;
+            existingUser.LastName = updatedUser.LastName;
+            existingUser.Email = updatedUser.Email;
+            existingUser.PhoneNumber = updatedUser.PhoneNumber;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
