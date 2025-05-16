@@ -1,4 +1,5 @@
 ﻿using Hairdresser.Data;
+using Hairdresser.DTOs;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -61,26 +62,48 @@ namespace Hairdresser.Controllers
 
         [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("booking/{id}")]
-        public async Task<IActionResult> GetBookingDetails(int id)
+        public async Task<ActionResult<BookingRespondDto>> GetBookingDetails(int id)
         {
-            var booking = await _context.Bookings
-                .Include(b => b.Customer)
-                .Include(b => b.Treatment)
-                .FirstOrDefaultAsync(b => b.Id == id);
-
-            if (booking == null)
-                return NotFound();
-
-            return Ok(new
+            try
             {
-                booking.Id,
-                booking.Start,
-                booking.End,
-                Treatment = booking.Treatment.Name,
-                Customer = $"{booking.Customer.FirstName} {booking.Customer.LastName}",
-                booking.Customer.Email,
-                booking.Customer.PhoneNumber
-            });
+                var booking = await _context.Bookings
+                    .Include(b => b.Customer)
+                    .Include(b => b.Treatment)
+                    .FirstOrDefaultAsync(booking => booking.Id == id);
+
+                if (booking == null)
+                    return NotFound();
+
+                var bookingRespond = new Booking
+                {
+                    Id = booking.Id,
+                    Start = booking.Start,
+                    End = booking.End,
+                    Treatment = booking.Treatment,
+                    Customer = booking.Customer,
+                    Hairdresser = booking.Hairdresser,
+                };
+
+                return Ok(bookingRespond);
+                // return Ok(new
+                // {
+                //     booking.Id,
+                //     booking.Start,
+                //     booking.End,
+                //     Treatment = booking.Treatment.Name,
+                //     Customer = $"{booking.Customer.FirstName} {booking.Customer.LastName}",
+                //     booking.Customer.Email,
+                //     booking.Customer.PhoneNumber
+                // });
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest("Invalid booking ID");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }
