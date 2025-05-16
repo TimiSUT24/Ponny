@@ -57,8 +57,7 @@ namespace Hairdresser.Controllers
             if (existingUser == null)
                 return NotFound();
 
-            existingUser.FirstName = updatedUser.FirstName;
-            existingUser.LastName = updatedUser.LastName;
+            existingUser.UserName = updatedUser.UserName;
             existingUser.Email = updatedUser.Email;
             existingUser.PhoneNumber = updatedUser.PhoneNumber;
 
