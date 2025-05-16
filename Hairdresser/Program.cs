@@ -64,7 +64,6 @@ builder.Services.AddScoped<IGenericRepository<ApplicationUser>, UserRepository>(
 
 var app = builder.Build();
 
-<<<<<<< HEAD
 // Seed users and roles
 using (var scope = app.Services.CreateScope())
 {
@@ -78,9 +77,6 @@ using (var scope = app.Services.CreateScope())
 
 
 // Configure the HTTP request pipeline.
-=======
-// Configure the HTTP request pipeline
->>>>>>> origin/main
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
