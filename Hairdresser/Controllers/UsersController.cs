@@ -65,24 +65,5 @@ namespace Hairdresser.Controllers
 
             return NoContent();
         }
-
-        // Get all hairdressers
-        [HttpGet("hairdressers")]
-        public async Task<IActionResult> GetHairdressers()
-        {
-            var hairdressers = await _userManager.GetUsersInRoleAsync("Hairdresser");
-
-            var result = hairdressers.Select(h => new
-            {
-                h.Id,
-                h.UserName,
-                h.Email,
-                h.PhoneNumber
-            });
-
-            return Ok(result);
-        }
-
-
     }
 }

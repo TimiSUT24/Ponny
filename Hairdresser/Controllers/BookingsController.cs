@@ -17,17 +17,6 @@ namespace Hairdresser.Controllers
             _context = context;
         }
 
-        // Get all treatments available
-        [HttpGet("treatments")]
-        public async Task<ActionResult<IEnumerable<Treatment>>> GetAllTreatments()
-        {
-            var treatments = await _context.Treatments
-                .AsNoTracking()
-                .ToListAsync();
-
-            return Ok(treatments);
-        }
-
         // Get all available times for a hairdresser
         [HttpGet("available-times")]
         public async Task<IActionResult> GetAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
