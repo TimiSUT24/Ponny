@@ -97,5 +97,29 @@ namespace Hairdresser.Controllers
                 booking.End
             });
         }
+
+        // Cancel a booking
+        [HttpDelete("cancel/{bookingId}")]
+        public async Task<IActionResult> CancelBooking(int bookingId, [FromQuery] string customerId)
+        {
+            var booking = await _context.Bookings.FindAsync(bookingId);
+
+            if (booking == null)
+                return NotFound("Bokning hittades inte.");
+
+            if (booking.CustomerId != customerId)
+                return Forbid("Du kan bara avboka dina egna tider.");
+
+            _context.Bookings.Remove(booking);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                Message = "Bokningen har avbokats.",
+                booking.Id,
+                booking.Start,
+                booking.TreatmentId
+            });
+        }
     }
 }
