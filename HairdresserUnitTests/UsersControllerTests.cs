@@ -24,7 +24,7 @@ namespace HairdresserUnitTests
 
             var userStore = new Mock<IUserStore<ApplicationUser>>();
             var userManager = new UserManager<ApplicationUser>(
-                userStore.Object, null, null, null, null, null, null, null, null
+                userStore.Object, null!, null!, null!, null!, null!, null!, null!, null!
             );
 
             return new UsersController(context, userManager);
