@@ -26,9 +26,6 @@ namespace HairdresserUnitTests
 
 			_context = new ApplicationDBContext(options);
 			_treatmentRepository = new TreatmentRepository(_context);
-
-			// Save all changes
-			_context.SaveChanges();
 		}
 
 
