@@ -62,6 +62,35 @@ namespace HairdresserUnitTests
 			Assert.IsNotNull(result);
 		}
 
+		[TestMethod]
+		public async Task Delete_ShoudDeleteTreatmentSuccessfully()
+		{
+			//Arrage
+			var newTreatment = new Treatment
+			{
+				Id = 1,
+				Name = "Haircut",
+				Price = 200
+			};
+			await _treatmentRepository!.AddAsync(newTreatment);
+			await _treatmentRepository.SaveChangesAsync();
+
+
+
+			//Act
+
+			var addedTreatment = await _treatmentRepository.GetByIdAsync(1);
+			await _treatmentRepository.DeleteAsync(addedTreatment!);
+			await _treatmentRepository.SaveChangesAsync();
+			var DeletedTreatment = await _treatmentRepository.GetByIdAsync(1);
+
+
+
+			//Assert
+			Assert.IsNotNull(addedTreatment);
+			Assert.IsNull(DeletedTreatment);
+		}
+
 
 
 
