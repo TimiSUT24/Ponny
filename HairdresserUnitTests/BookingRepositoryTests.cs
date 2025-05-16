@@ -91,5 +91,48 @@ namespace HairdresserUnitTests
 			Assert.AreEqual(result.Hairdresser, result.Hairdresser);
 			Assert.AreEqual(result.Treatment, result.Treatment);
 		}
+
+
+		[TestMethod]
+		public async Task Delete_ShouldDeleteBookingSuccessfully()
+		{
+			// Arrange
+			var treatment = _context!.Treatments.ToList()[0];
+			var customer = _context.Users.ToList()[0];
+			var hairdresser = _context.Users.ToList()[1];
+
+			var newBooking = new Booking
+			{
+				Id = 2,
+				Customer = customer,
+				Hairdresser = hairdresser,
+				Treatment = treatment,
+				Start = DateTime.Now,
+				End = DateTime.Now.AddHours(1),
+			};
+
+			// Act
+			await _bookingRepository!.AddAsync(newBooking);
+			await _bookingRepository.SaveChangesAsync();
+			var addedBooking = await _bookingRepository.GetByIdAsync(2);
+
+			//Delete booking and save
+			await _bookingRepository.DeleteAsync(newBooking);
+			await _bookingRepository.SaveChangesAsync();
+
+			var deletedBooking = await _bookingRepository.GetByIdAsync(2);
+
+			// Assert
+			// Make sure the booking is added successfully
+			Assert.IsNotNull(addedBooking);
+			Assert.AreEqual(addedBooking.Customer, addedBooking.Customer);
+			Assert.AreEqual(addedBooking.Hairdresser, addedBooking.Hairdresser);
+			Assert.AreEqual(addedBooking.Treatment, addedBooking.Treatment);
+
+			//Make sure the booking is deleted successfully
+			Assert.IsNull(deletedBooking);
+		}
+
 	}
 }
+;
