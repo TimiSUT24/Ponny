@@ -32,8 +32,13 @@ namespace Hairdresser.Controllers
                 PhoneNumber = dto.PhoneNumber,
             };
 
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync();
+            // _context.Users.Add(newUser);
+            // await _context.SaveChangesAsync();
+            var result = await _userManager.CreateAsync(newUser, dto.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
 
             return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
         }
