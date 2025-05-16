@@ -25,9 +25,8 @@ namespace Hairdresser.Controllers
             return Ok(treatments);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost(Name = "AddNewTreatment")]
-
         public async Task<IActionResult> Create(string name, string description, int duration, double price  )
         {
             var treatment = new Treatment
@@ -42,8 +41,8 @@ namespace Hairdresser.Controllers
             await _repository.SaveChangesAsync();
             return CreatedAtAction(nameof(Treatment), treatment);
         }
-        [Authorize]
-        [HttpPut(Name = "")]
+        [Authorize(Roles = "Admin")]
+        [HttpPut(Name = "UpdateTreatment")]
         public async Task<IActionResult> Update(int id, [FromBody] Treatment treatment)
         {
             if(treatment.Id == id)
@@ -55,7 +54,7 @@ namespace Hairdresser.Controllers
             return Ok("Treatment was updated");
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete(Name = "DeleteTreatment")]
 
         public async Task<IActionResult> Delete(int id)
