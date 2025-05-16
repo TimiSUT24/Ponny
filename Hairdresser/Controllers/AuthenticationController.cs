@@ -1,4 +1,5 @@
-﻿using Hairdresser.Services;
+﻿using Hairdresser.DTOs;
+using Hairdresser.Services;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -13,8 +14,16 @@ namespace Hairdresser.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly JWT_Service _jwtService;
+
+        public AuthenticationController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, JWT_Service jwtService)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _jwtService = jwtService;
+        }
+
         [HttpPost("AuthLogin")]
-        public async Task<IActionResult> Login(LoginDTO model)
+        public async Task<IActionResult> Login(LoginDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
