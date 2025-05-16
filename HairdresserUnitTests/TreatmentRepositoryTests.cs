@@ -88,7 +88,102 @@ namespace HairdresserUnitTests
 			Assert.IsNull(DeletedTreatment);
 		}
 
+		[TestMethod]
+		public async Task GetAllAsync_ShouldReturnAllTreatments()
+		{
+			// Arrange
+			var initialTreatments = await _treatmentRepository!.GetAllAsync();
+			Assert.AreEqual(0, initialTreatments.Count());
 
+			// Add multiple treatments
+			var treatment1 = new Treatment { Id = 1, Name = "Haircut", Price = 200 };
+			var treatment2 = new Treatment { Id = 2, Name = "Hair Coloring", Price = 300 };
+			var treatment3 = new Treatment { Id = 3, Name = "Hair Wash", Price = 100 };
+
+			await _treatmentRepository.AddAsync(treatment1);
+			await _treatmentRepository.AddAsync(treatment2);
+			await _treatmentRepository.AddAsync(treatment3);
+			await _treatmentRepository.SaveChangesAsync();
+
+			// Act
+			var result = await _treatmentRepository.GetAllAsync();
+
+			// Assert
+			Assert.AreEqual(3, result.Count());
+			Assert.IsTrue(result.Any(t => t.Name == "Haircut"));
+			Assert.IsTrue(result.Any(t => t.Name == "Hair Coloring"));
+			Assert.IsTrue(result.Any(t => t.Name == "Hair Wash"));
+		}
+
+		[TestMethod]
+		public async Task GetByIdAsync_ShouldReturnCorrectTreatment()
+		{
+			// Arrange
+			var treatment1 = new Treatment { Id = 1, Name = "Haircut", Price = 200 };
+			var treatment2 = new Treatment { Id = 2, Name = "Hair Coloring", Price = 300 };
+
+			await _treatmentRepository!.AddAsync(treatment1);
+			await _treatmentRepository.AddAsync(treatment2);
+			await _treatmentRepository.SaveChangesAsync();
+
+			// Act
+			var result = await _treatmentRepository.GetByIdAsync(2);
+			var nonExistentResult = await _treatmentRepository.GetByIdAsync(999);
+
+			// Assert
+			Assert.IsNotNull(result);
+			Assert.AreEqual(2, result!.Id);
+			Assert.AreEqual("Hair Coloring", result.Name);
+			Assert.AreEqual(300, result.Price);
+
+			// Non existent ID should return null
+			Assert.IsNull(nonExistentResult);
+		}
+
+		[TestMethod]
+		public async Task UpdateAsync_ShouldUpdateTreatmentSuccessfully()
+		{
+			// Arrange
+			var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 200 };
+			await _treatmentRepository!.AddAsync(treatment);
+			await _treatmentRepository.SaveChangesAsync();
+
+			// Act
+
+			var treatmentToUpdate = await _treatmentRepository.GetByIdAsync(1);
+			Assert.IsNotNull(treatmentToUpdate);
+
+			//update the treatment
+			treatmentToUpdate!.Name = "Premium Haircut";
+			treatmentToUpdate.Price = 500;
+
+			await _treatmentRepository.UpdateAsync(treatmentToUpdate);
+			await _treatmentRepository.SaveChangesAsync();
+
+			var updatedTreatment = await _treatmentRepository.GetByIdAsync(1);
+
+			// Assert
+			Assert.IsNotNull(updatedTreatment);
+			Assert.AreEqual(1, updatedTreatment!.Id);
+			Assert.AreEqual("Premium Haircut", updatedTreatment.Name);
+			Assert.AreEqual(500, updatedTreatment.Price);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public async Task AddAsync_ShouldThrowException_WhenEntityIsNull()
+		{
+			// Act
+			await _treatmentRepository!.AddAsync(null);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public async Task DeleteAsync_ShouldThrowException_WhenEntityIsNull()
+		{
+			// Act
+			await _treatmentRepository!.DeleteAsync(null);
+		}
 
 
 	}
