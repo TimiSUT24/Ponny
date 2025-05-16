@@ -140,6 +140,34 @@ namespace HairdresserUnitTests
 			Assert.IsNull(nonExistentResult);
 		}
 
+		[TestMethod]
+		public async Task UpdateAsync_ShouldUpdateTreatmentSuccessfully()
+		{
+			// Arrange
+			var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 200 };
+			await _treatmentRepository!.AddAsync(treatment);
+			await _treatmentRepository.SaveChangesAsync();
+
+			// Act
+
+			var treatmentToUpdate = await _treatmentRepository.GetByIdAsync(1);
+			Assert.IsNotNull(treatmentToUpdate);
+
+			//update the treatment
+			treatmentToUpdate!.Name = "Premium Haircut";
+			treatmentToUpdate.Price = 500;
+
+			await _treatmentRepository.UpdateAsync(treatmentToUpdate);
+			await _treatmentRepository.SaveChangesAsync();
+
+			var updatedTreatment = await _treatmentRepository.GetByIdAsync(1);
+
+			// Assert
+			Assert.IsNotNull(updatedTreatment);
+			Assert.AreEqual(1, updatedTreatment!.Id);
+			Assert.AreEqual("Premium Haircut", updatedTreatment.Name);
+			Assert.AreEqual(500, updatedTreatment.Price);
+		}
 
 	}
 
