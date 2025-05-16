@@ -1,6 +1,7 @@
 using Hairdresser.Data;
 using Hairdresser.Repositories;
 using Hairdresser.Repositories.Interfaces;
+using Hairdresser.Services;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +33,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDBContext>()
                 .AddDefaultTokenProviders()
                 .AddApiEndpoints();
+
+builder.Services.AddScoped<JWT_Service>();
 
 //JWT Authentication
 builder.Services.AddAuthentication(options =>
