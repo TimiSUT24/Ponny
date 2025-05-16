@@ -21,14 +21,13 @@ namespace Hairdresser.Controllers
             _userManager = userManager;
         }
 
-
+        // Register User
         [HttpPost("registerUser")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
             var newUser = new ApplicationUser
             {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
+                UserName = dto.UserName,
                 Email = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
             };
@@ -39,7 +38,7 @@ namespace Hairdresser.Controllers
             return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
         }
 
-
+        // Get user
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
@@ -50,6 +49,7 @@ namespace Hairdresser.Controllers
             return Ok(user);
         }
 
+        // Change User Info
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] ApplicationUser updatedUser)
         {
@@ -66,6 +66,7 @@ namespace Hairdresser.Controllers
             return NoContent();
         }
 
+        // Get all hairdressers
         [HttpGet("hairdressers")]
         public async Task<IActionResult> GetHairdressers()
         {
