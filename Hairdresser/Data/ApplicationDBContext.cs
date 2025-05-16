@@ -11,7 +11,7 @@ namespace Hairdresser.Data
         {
         }
 
-        public DbSet<ApplicationUser> Users { get; set; } = null!;
+        public DbSet<ApplicationUser> ApplicationUser { get; set; } = null!;
         public DbSet<Treatment> Treatments { get; set; } = null!;
         public DbSet<Booking> Bookings { get; set; } = null!;
 
