@@ -30,8 +30,8 @@ namespace HairdresserUnitTests
 			// Seed Application Users (Customer and Hairdresser)
 			var customer = new ApplicationUser { Id = "1", UserName = "Kund" };
 			var hairdresser = new ApplicationUser { Id = "2", UserName = "Frisör" };
-			_context.ApplicationUsers.Add(customer);
-			_context.ApplicationUsers.Add(hairdresser);
+			_context.Users.Add(customer);
+			_context.Users.Add(hairdresser);
 
 			// Seed Treatment
 			var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 200 };
@@ -67,8 +67,8 @@ namespace HairdresserUnitTests
 			// Arrange
 			var treatment = _context!.Treatments.ToList()[0];
 
-			var customer = _context.ApplicationUsers.ToList()[0];
-			var hairdresser = _context.ApplicationUsers.ToList()[1];
+			var customer = _context.Users.ToList()[0];
+			var hairdresser = _context.Users.ToList()[1];
 
 			var newBooking = new Booking
 			{

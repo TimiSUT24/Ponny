@@ -16,9 +16,19 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .UseSeeding((context, _) =>
+        {
+            // BookingSeed.SeedBookings(context);
+            TreatmentSeed.SeedTreatments(context);
+        })
+        .UseAsyncSeeding(async (context, _, _) =>
+        {
+            // await BookingSeed.SeedBookingsAsync(context);
+            await TreatmentSeed.SeedTreatmentsAsync(context);
+        }));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDBContext>()
                 .AddDefaultTokenProviders()
                 .AddApiEndpoints();
@@ -54,7 +64,19 @@ builder.Services.AddScoped<IGenericRepository<ApplicationUser>, UserRepository>(
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
+// Seed users and roles
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDBContext>();
+
+    await context.Database.MigrateAsync();
+    await UserRolesSeed.SeedUsersRoles(services);
+    await BookingSeed.SeedBookingsAsync(services);
+}
+
+
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
