@@ -176,6 +176,16 @@ namespace HairdresserUnitTests
 			// Act
 			await _treatmentRepository!.AddAsync(null);
 		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public async Task DeleteAsync_ShouldThrowException_WhenEntityIsNull()
+		{
+			// Act
+			await _treatmentRepository!.DeleteAsync(null);
+		}
+
+
 	}
 
 
