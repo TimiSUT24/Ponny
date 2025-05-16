@@ -57,5 +57,28 @@ namespace Hairdresser.Controllers
 
             return Ok(bookings);
         }
+
+        [HttpGet("booking/{id}")]
+        public async Task<IActionResult> GetBookingDetails(int id)
+        {
+            var booking = await _context.Bookings
+                .Include(b => b.Customer)
+                .Include(b => b.Treatment)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (booking == null)
+                return NotFound();
+
+            return Ok(new
+            {
+                booking.Id,
+                booking.Start,
+                booking.End,
+                Treatment = booking.Treatment.Name,
+                Customer = $"{booking.Customer.FirstName} {booking.Customer.LastName}",
+                booking.Customer.Email,
+                booking.Customer.PhoneNumber
+            });
+        }
     }
 }
