@@ -169,6 +169,13 @@ namespace HairdresserUnitTests
 			Assert.AreEqual(500, updatedTreatment.Price);
 		}
 
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public async Task AddAsync_ShouldThrowException_WhenEntityIsNull()
+		{
+			// Act
+			await _treatmentRepository!.AddAsync(null);
+		}
 	}
 
 
