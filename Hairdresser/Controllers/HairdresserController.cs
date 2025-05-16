@@ -27,7 +27,7 @@ namespace Hairdresser.Controllers
             return Ok(hairdressers);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost(Name = "AddNewHairdresser")]
         public async Task<IActionResult> Create(string firstName, string lastName, string email, string phone)
         {
@@ -44,6 +44,7 @@ namespace Hairdresser.Controllers
         }
 
         // Get week schedule for hairdresser
+        [Authorize(Roles = "Hairdresser")]
         [HttpGet("schedule")]
         public async Task<IActionResult> GetSchedule([FromQuery] string hairdresserId, [FromQuery] DateTime weekStart)
         {
@@ -58,6 +59,7 @@ namespace Hairdresser.Controllers
             return Ok(bookings);
         }
 
+        [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("booking/{id}")]
         public async Task<IActionResult> GetBookingDetails(int id)
         {
