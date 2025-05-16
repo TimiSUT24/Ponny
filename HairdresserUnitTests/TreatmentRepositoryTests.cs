@@ -115,6 +115,30 @@ namespace HairdresserUnitTests
 			Assert.IsTrue(result.Any(t => t.Name == "Hair Wash"));
 		}
 
+		[TestMethod]
+		public async Task GetByIdAsync_ShouldReturnCorrectTreatment()
+		{
+			// Arrange
+			var treatment1 = new Treatment { Id = 1, Name = "Haircut", Price = 200 };
+			var treatment2 = new Treatment { Id = 2, Name = "Hair Coloring", Price = 300 };
+
+			await _treatmentRepository!.AddAsync(treatment1);
+			await _treatmentRepository.AddAsync(treatment2);
+			await _treatmentRepository.SaveChangesAsync();
+
+			// Act
+			var result = await _treatmentRepository.GetByIdAsync(2);
+			var nonExistentResult = await _treatmentRepository.GetByIdAsync(999);
+
+			// Assert
+			Assert.IsNotNull(result);
+			Assert.AreEqual(2, result!.Id);
+			Assert.AreEqual("Hair Coloring", result.Name);
+			Assert.AreEqual(300, result.Price);
+
+			// Non existent ID should return null
+			Assert.IsNull(nonExistentResult);
+		}
 
 
 	}
