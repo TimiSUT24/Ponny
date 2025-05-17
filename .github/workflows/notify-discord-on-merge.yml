@@ -1,0 +1,26 @@
+name: Notify Discord on PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  notify-discord:
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send webhook to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -X POST "$DISCORD_WEBHOOK_URL" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "embeds": [{
+              "title": "✅ Pull Request Merged",
+              "description": "**${{ github.event.pull_request.title }}**\nMerged by `${{ github.event.pull_request.merged_by.login }}` into `main`.",
+              "url": "${{ github.event.pull_request.html_url }}",
+              "color": 5814783
+            }]
+          }'
