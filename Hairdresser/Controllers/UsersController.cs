@@ -25,19 +25,13 @@ namespace Hairdresser.Controllers
         [HttpPost("registerUser")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
-            // Kontrollera om användarnamn redan finns
-            var existingUserByUsername = await _userManager.FindByNameAsync(dto.UserName);
-            if (existingUserByUsername != null)
-            {
+            // Kontrollera att användarnamnet inte redan finns
+            if (await _userManager.FindByNameAsync(dto.UserName) != null)
                 return BadRequest($"Användarnamnet '{dto.UserName}' är redan upptaget.");
-            }
 
-            // Kontrollera om e-post redan finns
-            var existingUserByEmail = await _userManager.FindByEmailAsync(dto.Email);
-            if (existingUserByEmail != null)
-            {
+            // Kontrollera att e-posten inte redan finns
+            if (await _userManager.FindByEmailAsync(dto.Email) != null)
                 return BadRequest($"E-postadressen '{dto.Email}' är redan registrerad.");
-            }
 
             var newUser = new ApplicationUser
             {
@@ -46,20 +40,16 @@ namespace Hairdresser.Controllers
                 PhoneNumber = dto.PhoneNumber,
             };
 
-            // Skapar användare utan lösenord än så länge
-            var result = await _userManager.CreateAsync(newUser);
+            // Skapa användare med lösenord
+            var result = await _userManager.CreateAsync(newUser, dto.Password);
             if (!result.Succeeded)
-            {
                 return BadRequest(result.Errors);
-            }
 
             // Tilldela rollen "User"
             await _userManager.AddToRoleAsync(newUser, "User");
 
             return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
         }
-
-
 
         // Get user by ID
         [HttpGet("{id}")]
@@ -97,7 +87,6 @@ namespace Hairdresser.Controllers
 
             return Ok(userDtos);
         }
-
 
         // Change User Info
         [HttpPut("{id}")]
