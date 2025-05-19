@@ -32,13 +32,21 @@ namespace Hairdresser.Controllers
                 PhoneNumber = dto.PhoneNumber,
             };
 
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync();
+            // Skapa användare utan lösenord (lägg till dto.Password om du vill hantera det)
+            var result = await _userManager.CreateAsync(newUser);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            // Tilldela rollen "User"
+            await _userManager.AddToRoleAsync(newUser, "User");
 
             return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
         }
 
-        // Get user
+
+        // Get user by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
