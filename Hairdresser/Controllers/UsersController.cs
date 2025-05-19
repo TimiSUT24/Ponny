@@ -57,6 +57,33 @@ namespace Hairdresser.Controllers
             return Ok(user);
         }
 
+        // Get all users
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var users = await _userManager.Users.ToListAsync();
+
+            var userDtos = new List<UserDto>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault(); // Tar första rollen, eller null om ingen finns
+
+                userDtos.Add(new UserDto
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    Role = role
+                });
+            }
+
+            return Ok(userDtos);
+        }
+
+
         // Change User Info
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] ApplicationUser updatedUser)
