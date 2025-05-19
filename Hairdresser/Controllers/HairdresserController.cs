@@ -10,16 +10,12 @@ namespace Hairdresser.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HairdresserController : ControllerBase
+    public class HairdresserController(ApplicationDBContext context, IGenericRepository<ApplicationUser> repository) : ControllerBase
     {
-        private readonly IGenericRepository<ApplicationUser> _repository;
-        private readonly ApplicationDBContext _context;
+        private readonly IGenericRepository<ApplicationUser> _repository = repository;
+        private readonly ApplicationDBContext _context = context;
 
 
-        public HairdresserController(IGenericRepository<ApplicationUser> repository)
-        {
-            _repository = repository;
-        }
         [AllowAnonymous]
         [HttpGet(Name = "GetAllHairdressers")]
         public async Task<IActionResult> GetAll()
@@ -62,6 +58,9 @@ namespace Hairdresser.Controllers
 
         [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("booking/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<BookingRespondDto>> GetBookingDetails(int id)
         {
             try
@@ -69,32 +68,30 @@ namespace Hairdresser.Controllers
                 var booking = await _context.Bookings
                     .Include(b => b.Customer)
                     .Include(b => b.Treatment)
+                    .Select(b => new BookingRespondDto()
+                    {
+                        Id = b.Id,
+                        Start = b.Start,
+                        End = b.End,
+                        Treatment = new Treatment
+                        {
+                            Name = b.Treatment.Name,
+                            Price = b.Treatment.Price
+                        },
+                        Customer = new ApplicationUser
+                        {
+                            FirstName = b.Customer.FirstName,
+                            LastName = b.Customer.LastName,
+                            Email = b.Customer.Email,
+                            PhoneNumber = b.Customer.PhoneNumber
+                        },
+                    })
                     .FirstOrDefaultAsync(booking => booking.Id == id);
 
                 if (booking == null)
                     return NotFound();
 
-                var bookingRespond = new Booking
-                {
-                    Id = booking.Id,
-                    Start = booking.Start,
-                    End = booking.End,
-                    Treatment = booking.Treatment,
-                    Customer = booking.Customer,
-                    Hairdresser = booking.Hairdresser,
-                };
-
-                return Ok(bookingRespond);
-                // return Ok(new
-                // {
-                //     booking.Id,
-                //     booking.Start,
-                //     booking.End,
-                //     Treatment = booking.Treatment.Name,
-                //     Customer = $"{booking.Customer.FirstName} {booking.Customer.LastName}",
-                //     booking.Customer.Email,
-                //     booking.Customer.PhoneNumber
-                // });
+                return Ok(booking);
             }
             catch (ArgumentNullException)
             {
@@ -102,7 +99,7 @@ namespace Hairdresser.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
             }
         }
     }
