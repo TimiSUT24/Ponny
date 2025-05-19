@@ -25,6 +25,20 @@ namespace Hairdresser.Controllers
         [HttpPost("registerUser")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
+            // Kontrollera om användarnamn redan finns
+            var existingUserByUsername = await _userManager.FindByNameAsync(dto.UserName);
+            if (existingUserByUsername != null)
+            {
+                return BadRequest($"Användarnamnet '{dto.UserName}' är redan upptaget.");
+            }
+
+            // Kontrollera om e-post redan finns
+            var existingUserByEmail = await _userManager.FindByEmailAsync(dto.Email);
+            if (existingUserByEmail != null)
+            {
+                return BadRequest($"E-postadressen '{dto.Email}' är redan registrerad.");
+            }
+
             var newUser = new ApplicationUser
             {
                 UserName = dto.UserName,
@@ -32,7 +46,7 @@ namespace Hairdresser.Controllers
                 PhoneNumber = dto.PhoneNumber,
             };
 
-            // Skapa användare utan lösenord (lägg till dto.Password om du vill hantera det)
+            // Skapar användare utan lösenord än så länge
             var result = await _userManager.CreateAsync(newUser);
             if (!result.Succeeded)
             {
@@ -44,6 +58,7 @@ namespace Hairdresser.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
         }
+
 
 
         // Get user by ID
