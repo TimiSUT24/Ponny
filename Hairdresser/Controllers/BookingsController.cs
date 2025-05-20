@@ -39,40 +39,15 @@ namespace Hairdresser.Controllers
         [HttpPost("book")]
         public async Task<IActionResult> BookAppointment([FromBody] BookingRequestDto request)
         {
-            var treatment = await _context.Treatments.FindAsync(request.TreatmentId);
-            if (treatment == null)
-                return NotFound("Behandling hittades inte.");
-
-            var end = request.Start.AddMinutes(treatment.Duration);
-
-            // Kontrollera om frisören är upptagen
-            bool isAvailable = !await _context.Bookings.AnyAsync(b =>
-                b.HairdresserId == request.HairdresserId &&
-                b.Start < end && b.End > request.Start
-            );
-
-            if (!isAvailable)
-                return Conflict("Frisören är upptagen vid denna tid.");
-
-            var booking = new Booking
+            try
             {
-                CustomerId = request.CustomerId,
-                HairdresserId = request.HairdresserId,
-                TreatmentId = request.TreatmentId,
-                Start = request.Start,
-                End = end
-            };
-
-            _context.Bookings.Add(booking);
-            await _context.SaveChangesAsync();
-
-            return Ok(new
+                var booking = await _bookingService.BookAppointment(request);
+                return Ok(booking);
+            }
+            catch (Exception ex)
             {
-                Message = "Bokning skapad!",
-                booking.Id,
-                booking.Start,
-                booking.End
-            });
+                return BadRequest(ex.Message);
+            }
         }
 
         // Cancel a booking
