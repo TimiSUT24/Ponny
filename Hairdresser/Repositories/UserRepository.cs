@@ -47,9 +47,9 @@ namespace Hairdresser.Repositories
 			await _context.SaveChangesAsync();
 		}
 
-        public async Task<bool> AnyAsync(Expression<Func<Booking, bool>> predicate)
+        public async Task<bool> AnyAsync(Expression<Func<ApplicationUser, bool>> predicate)
         {
-            return await _context.Bookings.AnyAsync(predicate);
+            return await _context.Users.AnyAsync(predicate);
         }
     }
 }
