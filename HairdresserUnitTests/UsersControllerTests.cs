@@ -38,13 +38,14 @@ namespace HairdresserUnitTests
             {
                 UserName = "testuser",
                 Email = "test@example.com",
-                PhoneNumber = "1234567890"
+                PhoneNumber = "1234567890",
+                Password = "Password123!",
             };
 
             var result = await controller.Register(dto);
 
             var createdResult = result as CreatedAtActionResult;
-            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(createdResult); 
             var createdUser = createdResult.Value as ApplicationUser;
             Assert.IsNotNull(createdUser);
             Assert.AreEqual(dto.Email, createdUser.Email);
