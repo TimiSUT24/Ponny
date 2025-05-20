@@ -13,7 +13,7 @@ namespace Hairdresser.Services
 			_repository = booking;
 		}
 
-		public async Task<List<DateTime>>GetAllAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
+		public async Task<List<DateTime>> GetAllAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
 		{
             var treatment = await _context.Treatments.FindAsync(treatmentId);
             if (treatment == null) return NotFound("Behandling hittades inte");
