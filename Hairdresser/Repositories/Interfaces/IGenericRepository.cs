@@ -11,5 +11,7 @@ namespace Hairdresser.Repositories.Interfaces
 		Task UpdateAsync(T entity);
 		Task DeleteAsync(T entity);
 		Task SaveChangesAsync();
-	}
+
+		Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
+    }
 }
