@@ -6,5 +6,7 @@
         public string HairdresserId { get; set; } = null!;
         public int TreatmentId { get; set; }
         public DateTime Start { get; set; }
+
+        public DateTime End { get; set; }
     }
 }

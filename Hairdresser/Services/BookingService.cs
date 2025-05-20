@@ -1,4 +1,6 @@
-﻿using Hairdresser.Repositories.Interfaces;
+﻿using Azure.Core;
+using Hairdresser.DTOs;
+using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -47,6 +49,50 @@ namespace Hairdresser.Services
             }
 
             return availableSlots;
+        }
+
+        public async Task<BookingRequestDto> BookAppointment(BookingRequestDto request)
+        {
+            var treatment = await _treatmentRepository.GetByIdAsync(request.TreatmentId);
+            if (treatment == null)
+            {
+                throw new Exception("Behandling hittades inte.");
+            }               
+
+            var end = request.Start.AddMinutes(treatment.Duration);
+
+            // Kontrollera om frisören är upptagen
+            bool isAvailable = !await _repository.AnyAsync(b =>
+                b.HairdresserId == request.HairdresserId &&
+                b.Start < end && b.End > request.Start
+            );
+
+            if (!isAvailable)
+            {
+                throw new Exception("Frisören är upptagen vid denna tid.");
+            }
+                
+
+            var booking = new Booking
+            {
+                CustomerId = request.CustomerId,
+                HairdresserId = request.HairdresserId,
+                TreatmentId = request.TreatmentId,
+                Start = request.Start,
+                End = end
+            };
+
+            await _repository.AddAsync(booking);           
+
+            return new BookingRequestDto
+            {
+                CustomerId = booking.CustomerId,
+                HairdresserId = booking.HairdresserId,
+                TreatmentId = booking.TreatmentId,
+                Start = booking.Start,
+                End = booking.End             
+              
+            };
         }
 	}
 }
