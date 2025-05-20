@@ -3,6 +3,7 @@ using Hairdresser.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Hairdresser.DTOs;
+using Hairdresser.Repositories.Interfaces;
 
 namespace Hairdresser.Controllers
 {
@@ -11,40 +12,27 @@ namespace Hairdresser.Controllers
     public class BookingsController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
+        private readonly IBookingService _bookingService;
 
-        public BookingsController(ApplicationDBContext context)
+        public BookingsController(ApplicationDBContext context, IBookingService bookingService)
         {
             _context = context;
+            _bookingService = bookingService; 
         }
 
         // Get all available times for a hairdresser
         [HttpGet("available-times")]
         public async Task<IActionResult> GetAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
         {
-            var treatment = await _context.Treatments.FindAsync(treatmentId);
-            if (treatment == null) return NotFound("Behandling hittades inte");
-
-            var startOfDay = day.Date.AddHours(9); // frisör jobbar från 09:00
-            var endOfDay = day.Date.AddHours(17);  // till 17:00
-            var duration = TimeSpan.FromMinutes(treatment.Duration);
-
-            // Hämta bokade tider
-            var bookings = await _context.Bookings
-                .Where(b => b.HairdresserId == hairdresserId && b.Start.Date == day.Date)
-                .ToListAsync();
-
-            var availableSlots = new List<DateTime>();
-
-            for (var time = startOfDay; time + duration <= endOfDay; time += TimeSpan.FromMinutes(15))
+            try
             {
-                bool overlaps = bookings.Any(b =>
-                    time < b.End && (time + duration) > b.Start);
-
-                if (!overlaps)
-                    availableSlots.Add(time);
+                var availableTimes = await _bookingService.GetAllAvailableTimes(hairdresserId, treatmentId, day);
+                return Ok(availableTimes);
             }
-
-            return Ok(availableSlots);
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message); 
+            }
         }
 
         // Book an appointment
