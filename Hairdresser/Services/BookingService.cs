@@ -89,8 +89,7 @@ namespace Hairdresser.Services
                 CustomerId = booking.CustomerId,
                 HairdresserId = booking.HairdresserId,
                 TreatmentId = booking.TreatmentId,
-                Start = booking.Start,
-                End = booking.End             
+                Start = booking.Start,     
               
             };
         }
