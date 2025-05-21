@@ -3,7 +3,7 @@ using HairdresserClassLibrary.Models;
 
 namespace Hairdresser.DTOs;
 
-public class BookingRespondDto
+public class BookingResponseDto 
 {
     public int Id { get; set; }
     public DateTime Start { get; set; }
