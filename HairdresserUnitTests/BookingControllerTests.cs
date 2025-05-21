@@ -28,20 +28,6 @@ namespace HairdresserUnitTests
 
 			_context = new ApplicationDBContext(options);
 
-			// Seed test data
-			_context.Bookings.AddRange(
-				new Booking
-				{
-					Id = 1,
-					CustomerId = "1",
-					Start = DateTime.Now,
-					End = DateTime.Now.AddMinutes(60),
-					HairdresserId = "1",
-					TreatmentId = 1,
-				}
-			);
-			_context.SaveChanges();
-
 			_controller = new BookingsController(_context);
 		}
 
@@ -85,6 +71,47 @@ namespace HairdresserUnitTests
 
 		[TestMethod]
 		public async Task Book_NonExisting_Treatment_Returns404()
+		{
+			// Arrange
+
+			_context.Bookings.Add(new Booking
+			{
+				Id = 1,
+				Start = DateTime.Now,
+				End = DateTime.Now.AddMinutes(40),
+				TreatmentId = 1,
+				HairdresserId = "1",
+				CustomerId = "1"
+			});
+
+			var bookingDTO = new BookingRequestDto
+			{
+				Start = DateTime.Now,
+				TreatmentId = 5, // Non-existing treatment
+				HairdresserId = "1",
+				CustomerId = "1"
+			};
+
+			await _context.SaveChangesAsync();
+
+			// Act
+			var result = await _controller.BookAppointment(bookingDTO);
+
+			// Assert
+			if (result is ConflictObjectResult conflictResult)
+			{
+				Assert.AreEqual(409, conflictResult.StatusCode);
+			}
+			else
+			{
+				Assert.Fail("Unexpected result type: " + result.GetType().Name);
+			}
+
+		}
+
+
+		[TestMethod]
+		public async Task Book_Occupied_Time_ReturnsConflict()
 		{
 			// Arrange
 			var bookingDTO = new BookingRequestDto
