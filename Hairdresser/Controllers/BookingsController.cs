@@ -78,13 +78,14 @@ namespace Hairdresser.Controllers
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            return Ok(new
+            return Ok(new BookingResponseDto
             {
-                Message = "Bokning skapad!",
-                booking.Id,
-                booking.Start,
-                booking.End
-            });
+				Id = booking.Id,
+				Start = booking.Start,
+				End = booking.End,
+				Treatment = booking.Treatment,
+				Customer = booking.Customer
+			});
         }
 
         // Cancel a booking
