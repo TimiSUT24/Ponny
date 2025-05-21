@@ -36,7 +36,7 @@ public class HairdresserControllerTest
     }
 
     [TestMethod]
-    public async Task GetAllHairdressers_ShouldReturnAllHairdressers_Users()
+    public async Task GetAll_ShouldReturnAllHairdressers_Users()
     {
         // Arrange
         var hairdresser1 = new ApplicationUser { Id = "1", FirstName = "John", LastName = "Doe" };
@@ -51,6 +51,26 @@ public class HairdresserControllerTest
         await _context.SaveChangesAsync();
 
         // Act
+        var hairdressers = await GetAllHairdressersAsync();
+
+        // Assert
+        Assert.IsNotNull(hairdressers);
+        Assert.AreEqual(2, hairdressers.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAll_ShouldReturnEmptyList_WhenNoHairdressers()
+    {
+        // Act
+        var hairdressers = await GetAllHairdressersAsync();
+        // Assert
+        Assert.IsNotNull(hairdressers);
+        Assert.AreEqual(0, hairdressers.Count());
+    }
+
+    private async Task<IEnumerable<ApplicationUser>?> GetAllHairdressersAsync()
+    {
+
         var result = await _hairdresserController!.GetAll();
 
         if (result.Result is not OkObjectResult)
@@ -58,10 +78,11 @@ public class HairdresserControllerTest
             Assert.Fail("Expected OkObjectResult");
         }
         var okResult = result.Result as OkObjectResult;
-        var hairdressers = okResult!.Value as IEnumerable<ApplicationUser>;
-
-        // Assert
-        Assert.IsNotNull(hairdressers);
-        Assert.AreEqual(2, hairdressers.Count());
+        if (okResult == null)
+        {
+            Assert.Fail("Expected OkObjectResult");
+        }
+        return okResult.Value as IEnumerable<ApplicationUser>;
     }
+
 }
