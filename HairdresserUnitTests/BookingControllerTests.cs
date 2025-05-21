@@ -28,6 +28,8 @@ namespace HairdresserUnitTests
 
 			_context = new ApplicationDBContext(options);
 
+			_context.Treatments.Add(new Treatment { Id = 1, Name = "Test Treatment", Duration = 30, Price = 100 });
+
 			_controller = new BookingsController(_context);
 		}
 
@@ -131,6 +133,35 @@ namespace HairdresserUnitTests
 			if (result is NotFoundObjectResult notFoundResult)
 			{
 				Assert.AreEqual(404, notFoundResult.StatusCode);
+			}
+			else
+			{
+				Assert.Fail("Unexpected result type: " + result.GetType().Name);
+			}
+
+		}
+
+		[TestMethod]
+		public async Task Book_InvalidTime_ReturnsConflict()
+		{
+			// Arrange
+			var bookingDTO = new BookingRequestDto
+			{
+				Start = DateTime.Parse("2024-01-21"),
+				TreatmentId = 1,
+				HairdresserId = "1",
+				CustomerId = "1"
+			};
+
+			await _context.SaveChangesAsync();
+
+			// Act
+			var result = await _controller.BookAppointment(bookingDTO);
+
+			// Assert
+			if (result is BadRequestObjectResult notFoundResult)
+			{
+				Assert.AreEqual(400, notFoundResult.StatusCode);
 			}
 			else
 			{
