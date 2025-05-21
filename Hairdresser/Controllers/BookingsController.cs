@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Hairdresser.DTOs;
 using Hairdresser.Repositories.Interfaces;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hairdresser.Controllers
 {
@@ -36,12 +38,18 @@ namespace Hairdresser.Controllers
         }
 
         // Book an appointment
+        [Authorize]
         [HttpPost("book")]
         public async Task<IActionResult> BookAppointment([FromBody] BookingRequestDto request)
         {
             try
             {
-                var booking = await _bookingService.BookAppointment(request);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    return Unauthorized("Användaren är inte inloggad.");
+                }                  
+                var booking = await _bookingService.BookAppointment(userId, request);
                 return Ok(booking);
             }
             catch (Exception ex)
@@ -51,6 +59,7 @@ namespace Hairdresser.Controllers
         }
 
         // Cancel a booking
+        [Authorize]
         [HttpDelete("cancel/{bookingId}")]
         public async Task<IActionResult> CancelBooking(int bookingId, [FromQuery] string customerId)
         {

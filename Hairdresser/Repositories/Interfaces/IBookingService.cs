@@ -6,6 +6,6 @@ namespace Hairdresser.Repositories.Interfaces
     {
         Task<List<DateTime>> GetAllAvailableTimes(string hairdresserId, int treatmentId, DateTime day);
 
-        Task<BookingRequestDto> BookAppointment(BookingRequestDto request);
+        Task<BookingRequestDto> BookAppointment(string customerId, BookingRequestDto request);
     }
 }

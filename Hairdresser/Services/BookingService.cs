@@ -51,7 +51,7 @@ namespace Hairdresser.Services
             return availableSlots;
         }
 
-        public async Task<BookingRequestDto> BookAppointment(BookingRequestDto request)
+        public async Task<BookingRequestDto> BookAppointment(string customerId, BookingRequestDto request)
         {
             var treatment = await _treatmentRepository.GetByIdAsync(request.TreatmentId);
             if (treatment == null)
@@ -75,22 +75,50 @@ namespace Hairdresser.Services
 
             var booking = new Booking
             {
-                CustomerId = request.CustomerId,
+                CustomerId = customerId,
                 HairdresserId = request.HairdresserId,
                 TreatmentId = request.TreatmentId,
                 Start = request.Start,
                 End = end
             };
 
-            await _repository.AddAsync(booking);           
+            await _repository.AddAsync(booking);
+            await _repository.SaveChangesAsync();
 
             return new BookingRequestDto
             {
-                CustomerId = booking.CustomerId,
+               
                 HairdresserId = booking.HairdresserId,
                 TreatmentId = booking.TreatmentId,
                 Start = booking.Start,     
               
+            };
+        }
+
+        public async Task<BookingRequestDto> CancelBooking(string customerId, int bookingId)
+        {
+            var booking = await _repository.GetByIdAsync(bookingId);
+
+            if (booking == null)
+            {
+                throw new Exception("Bokningen hittades inte.");
+            }
+                
+
+            if (booking.CustomerId != customerId)
+            {
+                throw new Exception("Du kan bara avboka dina egna tider.");
+            }
+               
+
+            await _repository.DeleteAsync(booking);
+            await _repository.SaveChangesAsync();          
+
+            return new BookingRequestDto
+            {                
+              // Id = booking.Id,
+               Start = booking.Start,
+               TreatmentId = booking.TreatmentId
             };
         }
 	}
