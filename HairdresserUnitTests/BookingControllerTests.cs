@@ -69,15 +69,15 @@ namespace HairdresserUnitTests
 			var result = await _controller.BookAppointment(bookingDTO);
 
 			// Assert
-			if(result.Result is OkObjectResult okResult)
+			if(result is CreatedAtActionResult createdResult)
 			{
-				BookingResponseDto response = (BookingResponseDto)okResult.Value;
+				BookingResponseDto response = (BookingResponseDto)createdResult.Value;
 				Assert.IsNotNull(response.Id);
-				Assert.AreEqual(bookingDTO.Start, (DateTime)response.Start);
+				Assert.AreEqual(bookingDTO.Start, response.Start);
 			}
 			else
 			{
-				Assert.Fail("Unexpected result type: " + result.Result.GetType().Name);
+				Assert.Fail("Unexpected result type: " + result.GetType().Name);
 			}
 
 		}

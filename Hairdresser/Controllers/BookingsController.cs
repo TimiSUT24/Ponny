@@ -50,10 +50,10 @@ namespace Hairdresser.Controllers
 
         // Book an appointment
         [HttpPost("book")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BookingResponseDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<ActionResult<BookingResponseDto>> BookAppointment([FromBody] BookingRequestDto request)
+        public async Task<IActionResult> BookAppointment([FromBody] BookingRequestDto request)
         {
             var treatment = await _context.Treatments.FindAsync(request.TreatmentId);
             if (treatment == null)
