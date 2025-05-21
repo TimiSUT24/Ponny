@@ -23,7 +23,7 @@ namespace Hairdresser.Controllers
         }
 
         // Get all available times for a hairdresser
-        [HttpGet("available-times")]
+        [HttpGet("Available-times")]
         public async Task<IActionResult> GetAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
         {
             try
@@ -36,10 +36,28 @@ namespace Hairdresser.Controllers
                 return NotFound(ex.Message); 
             }
         }
+        [Authorize]
+        [HttpGet("BookingsById")]
+        public async Task<IActionResult> GetBookingById(int bookingId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User is not logged in.");
+            }
+
+            var booking = await _bookingService.GetBookingByIdAsync(bookingId,userId);
+            if(booking == null)
+            {
+                return NotFound("Booking was not found");
+            }
+               
+            return Ok(booking);
+        }
 
         // Book an appointment
         [Authorize]
-        [HttpPost("book")]
+        [HttpPost("Book Appointment")]
         public async Task<IActionResult> BookAppointment([FromBody] BookingRequestDto request)
         {
             try
@@ -47,10 +65,11 @@ namespace Hairdresser.Controllers
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (userId == null)
                 {
-                    return Unauthorized("Användaren är inte inloggad.");
+                    return Unauthorized("User is not logged in.");
                 }                  
                 var booking = await _bookingService.BookAppointment(userId, request);
-                return Ok(booking);
+                return CreatedAtAction(nameof(GetBookingById), booking);
+                
             }
             catch (Exception ex)
             {
@@ -60,27 +79,23 @@ namespace Hairdresser.Controllers
 
         // Cancel a booking
         [Authorize]
-        [HttpDelete("cancel/{bookingId}")]
-        public async Task<IActionResult> CancelBooking(int bookingId, [FromQuery] string customerId)
+        [HttpDelete("Cancel Booking")]
+        public async Task<IActionResult> CancelBooking(int bookingId)
         {
-            var booking = await _context.Bookings.FindAsync(bookingId);
-
-            if (booking == null)
-                return NotFound("Bokning hittades inte.");
-
-            if (booking.CustomerId != customerId)
-                return Forbid("Du kan bara avboka dina egna tider.");
-
-            _context.Bookings.Remove(booking);
-            await _context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                Message = "Bokningen har avbokats.",
-                booking.Id,
-                booking.Start,
-                booking.TreatmentId
-            });
+           try
+           {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    return Unauthorized("User is not logged in.");
+                }
+                var booking = await _bookingService.CancelBooking(userId, bookingId);
+                return CreatedAtAction(nameof(GetBookingById), booking);
+            }
+           catch (Exception ex)
+           {
+                return BadRequest(ex.Message);
+           }
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Hairdresser.Repositories
 {
-	public class BookingRepository : IGenericRepository<Booking>
+	public class BookingRepository : IBookingRepository
 	{
 		private readonly ApplicationDBContext _context;
 		public BookingRepository(ApplicationDBContext context)
@@ -51,6 +51,15 @@ namespace Hairdresser.Repositories
 		public async Task<bool> AnyAsync(Expression<Func<Booking, bool>> predicate)
         {
             return await _context.Bookings.AnyAsync(predicate);
+        }
+
+        public async Task<Booking?> GetByIdWithDetailsAsync(int id, string customerId)
+        {
+            return await _context.Bookings
+                .Include(b => b.Treatment)
+                .Include(b => b.Customer)
+                .Include(b => b.Hairdresser)
+                .FirstOrDefaultAsync(b => b.Id == id && b.CustomerId == customerId);
         }
     }
 }
