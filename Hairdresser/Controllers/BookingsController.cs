@@ -50,7 +50,7 @@ namespace Hairdresser.Controllers
 
         // Book an appointment
         [HttpPost("book")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<BookingResponseDto>> BookAppointment([FromBody] BookingRequestDto request)
@@ -82,14 +82,16 @@ namespace Hairdresser.Controllers
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            return Ok(new BookingResponseDto
+            var bookingResponseDto = new BookingResponseDto
             {
                 Id = booking.Id,
                 Start = booking.Start,
                 End = booking.End,
-                Treatment = booking.Treatment,
+                Treatment = treatment,
                 Customer = booking.Customer
-            });
+            };
+
+            return CreatedAtAction(nameof(GetBookingById), new { id = booking.Id }, bookingResponseDto);
         }
 
         // Cancel a booking
