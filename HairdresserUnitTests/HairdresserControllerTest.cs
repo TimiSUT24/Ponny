@@ -53,16 +53,15 @@ public class HairdresserControllerTest
         // Act
         var result = await _hairdresserController!.GetAll();
 
-        var okResult = result.Result;
-        
-        var hairdressers = result.Value;
-
-        // Assert
-        if (okResult is not OkObjectResult)
+        if (result.Result is not OkObjectResult)
         {
             Assert.Fail("Expected OkObjectResult");
         }
+        var okResult = result.Result as OkObjectResult;
+        var hairdressers = okResult!.Value as IEnumerable<ApplicationUser>;
+
+        // Assert
         Assert.IsNotNull(hairdressers);
-        Assert.AreEqual(2, hairdressers!.Count());
+        Assert.AreEqual(2, hairdressers.Count());
     }
 }
