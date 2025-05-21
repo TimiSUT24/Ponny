@@ -25,6 +25,14 @@ namespace Hairdresser.Controllers
         [HttpPost("registerUser")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
+            // Kontrollera att användarnamnet inte redan finns
+            if (await _userManager.FindByNameAsync(dto.UserName) != null)
+                return BadRequest($"Användarnamnet '{dto.UserName}' är redan upptaget.");
+
+            // Kontrollera att e-posten inte redan finns
+            if (await _userManager.FindByEmailAsync(dto.Email) != null)
+                return BadRequest($"E-postadressen '{dto.Email}' är redan registrerad.");
+
             var newUser = new ApplicationUser
             {
                 UserName = dto.UserName,
@@ -32,18 +40,18 @@ namespace Hairdresser.Controllers
                 PhoneNumber = dto.PhoneNumber,
             };
 
-            // _context.Users.Add(newUser);
-            // await _context.SaveChangesAsync();
+            // Skapa användare med lösenord
             var result = await _userManager.CreateAsync(newUser, dto.Password);
             if (!result.Succeeded)
-            {
                 return BadRequest(result.Errors);
-            }
+
+            // Tilldela rollen "User"
+            await _userManager.AddToRoleAsync(newUser, "User");
 
             return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
         }
 
-        // Get user
+        // Get user by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
@@ -52,6 +60,32 @@ namespace Hairdresser.Controllers
                 return NotFound();
 
             return Ok(user);
+        }
+
+        // Get all users
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var users = await _userManager.Users.ToListAsync();
+
+            var userDtos = new List<UserDto>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault(); // Tar första rollen, eller null om ingen finns
+
+                userDtos.Add(new UserDto
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    Role = role
+                });
+            }
+
+            return Ok(userDtos);
         }
 
         // Change User Info
