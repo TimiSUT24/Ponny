@@ -3,6 +3,7 @@ using Hairdresser.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Hairdresser.DTOs;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Hairdresser.Controllers
 {
@@ -49,7 +50,10 @@ namespace Hairdresser.Controllers
 
         // Book an appointment
         [HttpPost("book")]
-        public async Task<IActionResult> BookAppointment([FromBody] BookingRequestDto request)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<BookingResponseDto>> BookAppointment([FromBody] BookingRequestDto request)
         {
             var treatment = await _context.Treatments.FindAsync(request.TreatmentId);
             if (treatment == null)
@@ -80,12 +84,12 @@ namespace Hairdresser.Controllers
 
             return Ok(new BookingResponseDto
             {
-				Id = booking.Id,
-				Start = booking.Start,
-				End = booking.End,
-				Treatment = booking.Treatment,
-				Customer = booking.Customer
-			});
+                Id = booking.Id,
+                Start = booking.Start,
+                End = booking.End,
+                Treatment = booking.Treatment,
+                Customer = booking.Customer
+            });
         }
 
         // Cancel a booking
