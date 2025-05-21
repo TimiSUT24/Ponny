@@ -1,5 +1,9 @@
 using Hairdresser.Controllers;
 using Hairdresser.Data;
+using Hairdresser.Repositories;
+using HairdresserClassLibrary.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,7 +24,8 @@ public class HairdresserControllerTest
             .Options;
 
         _context = new ApplicationDBContext(options);
-        _hairdresserController = new HairdresserController(_context, null);
+        var userRepository = new UserRepository(_context);
+        _hairdresserController = new HairdresserController(_context, userRepository);
     }
 
     [TestCleanup]
@@ -28,5 +33,36 @@ public class HairdresserControllerTest
     {
         _context!.Database.EnsureDeleted();
         _context.Dispose();
+    }
+
+    [TestMethod]
+    public async Task GetAllHairdressers_ShouldReturnAllHairdressers_Users()
+    {
+        // Arrange
+        var hairdresser1 = new ApplicationUser { Id = "1", FirstName = "John", LastName = "Doe" };
+        var hairdresser2 = new ApplicationUser { Id = "2", FirstName = "Jane", LastName = "Smith" };
+
+        var passwordHasher = new PasswordHasher<ApplicationUser>();
+        hairdresser1.PasswordHash = passwordHasher.HashPassword(hairdresser1, "password123");
+        hairdresser2.PasswordHash = passwordHasher.HashPassword(hairdresser2, "password123");
+
+        _context!.ApplicationUser.Add(hairdresser1);
+        _context.ApplicationUser.Add(hairdresser2);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _hairdresserController!.GetAll();
+
+        var okResult = result.Result;
+        
+        var hairdressers = result.Value;
+
+        // Assert
+        if (okResult is not OkObjectResult)
+        {
+            Assert.Fail("Expected OkObjectResult");
+        }
+        Assert.IsNotNull(hairdressers);
+        Assert.AreEqual(2, hairdressers!.Count());
     }
 }

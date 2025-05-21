@@ -18,7 +18,7 @@ namespace Hairdresser.Controllers
 
         [AllowAnonymous]
         [HttpGet(Name = "GetAllHairdressers")]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<ApplicationUser>>> GetAll()
         {
             var hairdressers = await _repository.GetAllAsync();
             return Ok(hairdressers);
