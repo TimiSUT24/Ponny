@@ -102,5 +102,58 @@ namespace Hairdresser.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
             }
         }
+
+        // [Authorize(Roles = "Admin")]
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HairdresserRespondDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetHairdresserById(string id)
+        {
+            var adminRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
+
+            if (adminRole == null)
+            {
+                return NotFound("Admin role not found");
+            }
+
+            var adminUsers = await _context.UserRoles
+                .Where(ur => ur.RoleId == adminRole.Id)
+                .Select(ur => ur.UserId)
+                .Distinct()
+                .ToListAsync();
+
+            var hairdresser = await _context.Users
+                .Where(u => u.Id == id)
+                .Include(u => u.Bookings)
+                    .ThenInclude(b => b.Treatment)
+                .Include(u => u.Bookings)
+                    .ThenInclude(b => b.Customer)
+                .Select(u => new HairdresserRespondDTO
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email ?? string.Empty,
+                    PhoneNumber = u.PhoneNumber ?? string.Empty,
+                    Bookings = u.Bookings.Select(b => new HairdresserBookingRespondDTO
+                    {
+                        Id = b.Id,
+                        Start = b.Start,
+                        End = b.End,
+                        Treatment = new TreatmentDTO
+                        {
+                            Price = b.Treatment.Price,
+                            Duration = b.Treatment.Duration 
+
+                        }
+                    }).ToList()
+                })
+                .ToListAsync();
+            if (hairdresser == null)
+            {
+                return NotFound("Hairdresser not found");
+            }
+            return Ok(hairdresser);
+        }
     }
 }
