@@ -22,4 +22,11 @@ public class HairdresserControllerTest
         _context = new ApplicationDBContext(options);
         _hairdresserController = new HairdresserController(_context, null);
     }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        _context!.Database.EnsureDeleted();
+        _context.Dispose();
+    }
 }
