@@ -39,8 +39,8 @@ public class HairdresserControllerTest
     public async Task GetAll_ShouldReturnAllHairdressers_Users()
     {
         // Arrange
-        var hairdresser1 = new ApplicationUser { Id = "1", FirstName = "John", LastName = "Doe" };
-        var hairdresser2 = new ApplicationUser { Id = "2", FirstName = "Jane", LastName = "Smith" };
+        var hairdresser1 = new ApplicationUser { FirstName = "John", LastName = "Doe" };
+        var hairdresser2 = new ApplicationUser { FirstName = "Jane", LastName = "Smith" };
 
         var passwordHasher = new PasswordHasher<ApplicationUser>();
         hairdresser1.PasswordHash = passwordHasher.HashPassword(hairdresser1, "password123");
@@ -66,6 +66,25 @@ public class HairdresserControllerTest
         // Assert
         Assert.IsNotNull(hairdressers);
         Assert.AreEqual(0, hairdressers.Count());
+    }
+
+    [TestMethod]
+    public async Task GetHairdresserById_ShudlReturnHairdresserIdWhenFound()
+    {
+        // Arrange
+        var hairdresser = new ApplicationUser { FirstName = "John", LastName = "Doe" };
+        var passwordHasher = new PasswordHasher<ApplicationUser>();
+        hairdresser.PasswordHash = passwordHasher.HashPassword(hairdresser, "password123");
+
+        _context!.ApplicationUser.Add(hairdresser);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _hairdresserController!.GetHairdresserById(hairdresser.Id) as OkObjectResult;
+        var hairdresserResult = result?.Value as ApplicationUser;
+
+        // Assert
+        Assert.IsNotNull(hairdresserResult);
     }
 
     private async Task<IEnumerable<ApplicationUser>?> GetAllHairdressersAsync()
