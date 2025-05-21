@@ -3,6 +3,7 @@ using Hairdresser.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Hairdresser.DTOs;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Hairdresser.Controllers
 {
@@ -49,6 +50,9 @@ namespace Hairdresser.Controllers
 
         // Book an appointment
         [HttpPost("book")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BookingResponseDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> BookAppointment([FromBody] BookingRequestDto request)
         {
             var treatment = await _context.Treatments.FindAsync(request.TreatmentId);
@@ -78,16 +82,25 @@ namespace Hairdresser.Controllers
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            return Ok(new
+            var bookingResponseDto = new BookingResponseDto
             {
-                Message = "Bokning skapad!",
-                booking.Id,
-                booking.Start,
-                booking.End
-            });
+                Id = booking.Id,
+                Start = booking.Start,
+                End = booking.End,
+                Treatment = treatment,
+                Customer = booking.Customer
+            };
+
+            return CreatedAtAction(nameof(GetBookingById), new { id = booking.Id }, bookingResponseDto);
+        }
+
+        private object GetBookingById()
+        {
+            throw new NotImplementedException();
         }
 
         // Cancel a booking
+
         [HttpDelete("cancel/{bookingId}")]
         public async Task<IActionResult> CancelBooking(int bookingId, [FromQuery] string customerId)
         {
