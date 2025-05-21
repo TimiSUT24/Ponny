@@ -3,7 +3,9 @@ using Hairdresser.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Hairdresser.DTOs;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Hairdresser.Repositories.Interfaces;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hairdresser.Controllers
 {
@@ -12,116 +14,88 @@ namespace Hairdresser.Controllers
     public class BookingsController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
+        private readonly IBookingService _bookingService;
 
-        public BookingsController(ApplicationDBContext context)
+        public BookingsController(ApplicationDBContext context, IBookingService bookingService)
         {
             _context = context;
+            _bookingService = bookingService; 
         }
 
         // Get all available times for a hairdresser
-        [HttpGet("available-times")]
+        [HttpGet("Available-times")]
         public async Task<IActionResult> GetAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
         {
-            var treatment = await _context.Treatments.FindAsync(treatmentId);
-            if (treatment == null) return NotFound("Behandling hittades inte");
-
-            var startOfDay = day.Date.AddHours(9); // frisör jobbar från 09:00
-            var endOfDay = day.Date.AddHours(17);  // till 17:00
-            var duration = TimeSpan.FromMinutes(treatment.Duration);
-
-            // Hämta bokade tider
-            var bookings = await _context.Bookings
-                .Where(b => b.HairdresserId == hairdresserId && b.Start.Date == day.Date)
-                .ToListAsync();
-
-            var availableSlots = new List<DateTime>();
-
-            for (var time = startOfDay; time + duration <= endOfDay; time += TimeSpan.FromMinutes(15))
+            try
             {
-                bool overlaps = bookings.Any(b =>
-                    time < b.End && (time + duration) > b.Start);
-
-                if (!overlaps)
-                    availableSlots.Add(time);
+                var availableTimes = await _bookingService.GetAllAvailableTimes(hairdresserId, treatmentId, day);
+                return Ok(availableTimes);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message); 
+            }
+        }
+        [Authorize]
+        [HttpGet("BookingsById")]
+        public async Task<IActionResult> GetBookingById(int bookingId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User is not logged in.");
             }
 
-            return Ok(availableSlots);
+            var booking = await _bookingService.GetBookingByIdAsync(bookingId,userId);
+            if(booking == null)
+            {
+                return NotFound("Booking was not found");
+            }
+               
+            return Ok(booking);
         }
 
         // Book an appointment
-        [HttpPost("book")]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BookingResponseDto))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [Authorize]
+        [HttpPost("Book Appointment")]
         public async Task<IActionResult> BookAppointment([FromBody] BookingRequestDto request)
         {
-            var treatment = await _context.Treatments.FindAsync(request.TreatmentId);
-            if (treatment == null)
-                return NotFound("Behandling hittades inte.");
-
-            var end = request.Start.AddMinutes(treatment.Duration);
-
-            // Kontrollera om frisören är upptagen
-            bool isAvailable = !await _context.Bookings.AnyAsync(b =>
-                b.HairdresserId == request.HairdresserId &&
-                b.Start < end && b.End > request.Start
-            );
-
-            if (!isAvailable)
-                return Conflict("Frisören är upptagen vid denna tid.");
-
-            var booking = new Booking
+            try
             {
-                CustomerId = request.CustomerId,
-                HairdresserId = request.HairdresserId,
-                TreatmentId = request.TreatmentId,
-                Start = request.Start,
-                End = end
-            };
-
-            _context.Bookings.Add(booking);
-            await _context.SaveChangesAsync();
-
-            var bookingResponseDto = new BookingResponseDto
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    return Unauthorized("User is not logged in.");
+                }                  
+                var booking = await _bookingService.BookAppointment(userId, request);
+                return CreatedAtAction(nameof(GetBookingById), booking);
+                
+            }
+            catch (Exception ex)
             {
-                Id = booking.Id,
-                Start = booking.Start,
-                End = booking.End,
-                Treatment = treatment,
-                Customer = booking.Customer
-            };
-
-            return CreatedAtAction(nameof(GetBookingById), new { id = booking.Id }, bookingResponseDto);
-        }
-
-        private object GetBookingById()
-        {
-            throw new NotImplementedException();
+                return BadRequest(ex.Message);
+            }
         }
 
         // Cancel a booking
-
-        [HttpDelete("cancel/{bookingId}")]
-        public async Task<IActionResult> CancelBooking(int bookingId, [FromQuery] string customerId)
+        [Authorize]
+        [HttpDelete("Cancel Booking")]
+        public async Task<IActionResult> CancelBooking(int bookingId)
         {
-            var booking = await _context.Bookings.FindAsync(bookingId);
-
-            if (booking == null)
-                return NotFound("Bokning hittades inte.");
-
-            if (booking.CustomerId != customerId)
-                return Forbid("Du kan bara avboka dina egna tider.");
-
-            _context.Bookings.Remove(booking);
-            await _context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                Message = "Bokningen har avbokats.",
-                booking.Id,
-                booking.Start,
-                booking.TreatmentId
-            });
+           try
+           {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    return Unauthorized("User is not logged in.");
+                }
+                var booking = await _bookingService.CancelBooking(userId, bookingId);
+                return CreatedAtAction(nameof(GetBookingById), booking);
+            }
+           catch (Exception ex)
+           {
+                return BadRequest(ex.Message);
+           }
         }
     }
 }

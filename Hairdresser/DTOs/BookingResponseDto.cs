@@ -11,4 +11,5 @@ public class BookingResponseDto
 
     public Treatment Treatment { get; set; } = null!;
     public ApplicationUser Customer { get; set; } = null!;
+    public ApplicationUser Hairdresser { get; set; } = null!;
 }
