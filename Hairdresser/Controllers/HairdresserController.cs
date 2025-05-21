@@ -68,7 +68,7 @@ namespace Hairdresser.Controllers
                 var booking = await _context.Bookings
                     .Include(b => b.Customer)
                     .Include(b => b.Treatment)
-                    .Select(b => new BookingRespondDto()
+                    .Select(b => new BookingResponseDto()
                     {
                         Id = b.Id,
                         Start = b.Start,
