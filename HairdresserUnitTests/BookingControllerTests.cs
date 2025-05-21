@@ -30,7 +30,9 @@ namespace HairdresserUnitTests
 
 			// Seed test data
 			_context.Bookings.AddRange(
-				new Booking { Id = 1,
+				new Booking
+				{
+					Id = 1,
 					CustomerId = "1",
 					Start = DateTime.Now,
 					End = DateTime.Now.AddMinutes(60),
@@ -69,11 +71,39 @@ namespace HairdresserUnitTests
 			var result = await _controller.BookAppointment(bookingDTO);
 
 			// Assert
-			if(result is CreatedAtActionResult createdResult)
+			if (result is CreatedAtActionResult createdResult)
 			{
 				BookingResponseDto response = (BookingResponseDto)createdResult.Value;
 				Assert.IsNotNull(response.Id);
 				Assert.AreEqual(bookingDTO.Start, response.Start);
+			}
+			else
+			{
+				Assert.Fail("Unexpected result type: " + result.GetType().Name);
+			}
+		}
+
+		[TestMethod]
+		public async Task Book_NonExisting_Treatment_Returns404()
+		{
+			// Arrange
+			var bookingDTO = new BookingRequestDto
+			{
+				Start = DateTime.Now.AddDays(2),
+				TreatmentId = 5, // Non-existing treatment
+				HairdresserId = "1",
+				CustomerId = "1"
+			};
+
+			await _context.SaveChangesAsync();
+
+			// Act
+			var result = await _controller.BookAppointment(bookingDTO);
+
+			// Assert
+			if (result is NotFoundObjectResult notFoundResult)
+			{
+				Assert.AreEqual(404, notFoundResult.StatusCode);
 			}
 			else
 			{
