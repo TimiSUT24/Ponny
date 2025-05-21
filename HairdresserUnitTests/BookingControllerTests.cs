@@ -16,8 +16,8 @@ namespace HairdresserUnitTests
 	[TestClass]
 	public class BookingControllerTests
 	{
-		private ApplicationDBContext _context;
-		private BookingsController _controller;
+		private ApplicationDBContext? _context;
+		private BookingsController? _controller;
 
 		[TestInitialize]
 		public void Setup()
@@ -69,7 +69,7 @@ namespace HairdresserUnitTests
 			var result = await _controller.BookAppointment(bookingDTO);
 
 			// Assert
-			if(result is OkObjectResult okResult)
+			if(result.Result is OkObjectResult okResult)
 			{
 				BookingResponseDto response = (BookingResponseDto)okResult.Value;
 				Assert.IsNotNull(response.Id);
@@ -77,7 +77,7 @@ namespace HairdresserUnitTests
 			}
 			else
 			{
-				Assert.Fail("Unexpected result type: " + result.GetType().Name);
+				Assert.Fail("Unexpected result type: " + result.Result.GetType().Name);
 			}
 
 		}

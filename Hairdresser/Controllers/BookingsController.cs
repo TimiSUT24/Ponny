@@ -94,7 +94,13 @@ namespace Hairdresser.Controllers
             return CreatedAtAction(nameof(GetBookingById), new { id = booking.Id }, bookingResponseDto);
         }
 
+        private object GetBookingById()
+        {
+            throw new NotImplementedException();
+        }
+
         // Cancel a booking
+
         [HttpDelete("cancel/{bookingId}")]
         public async Task<IActionResult> CancelBooking(int bookingId, [FromQuery] string customerId)
         {
