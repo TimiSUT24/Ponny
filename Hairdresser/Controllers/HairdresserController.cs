@@ -117,10 +117,14 @@ namespace Hairdresser.Controllers
             }
 
             var adminUsers = await _context.UserRoles
-                .Where(ur => ur.RoleId == adminRole.Id)
-                .Select(ur => ur.UserId)
-                .Distinct()
-                .ToListAsync();
+                .Where(userRole => userRole.RoleId == adminRole.Id && userRole.UserId == id)
+                .Select(userRole => userRole.UserId)
+                .FirstOrDefaultAsync();
+
+            if (adminUsers == null)
+            {
+                return Unauthorized("you are not authorized to access this resource");
+            }
 
             var hairdresser = await _context.Users
                 .Include(u => u.CustomerBookings)
@@ -145,7 +149,7 @@ namespace Hairdresser.Controllers
                         }
                     }).ToList()
                 })
-                .FirstOrDefaultAsync(user => user.Id == id);
+                .FirstOrDefaultAsync(user => user.Id == adminUsers);
             if (hairdresser == null)
             {
                 return NotFound("Hairdresser not found");
