@@ -14,5 +14,5 @@ public class Treatment
     public double Price { get; set; }
 
     // Navigation properties
-    public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+    public ICollection<Booking> TreatmentBookings { get; set; } = [];
 }
