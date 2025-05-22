@@ -123,32 +123,29 @@ namespace Hairdresser.Controllers
                 .ToListAsync();
 
             var hairdresser = await _context.Users
-                .Where(u => u.Id == id)
-                .Include(u => u.Bookings)
+                .Include(u => u.CustomerBookings)
                     .ThenInclude(b => b.Treatment)
-                .Include(u => u.Bookings)
-                    .ThenInclude(b => b.Customer)
-                .Select(u => new HairdresserRespondDTO
+                .Select(user => new HairdresserRespondDTO
                 {
-                    Id = u.Id,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    Email = u.Email ?? string.Empty,
-                    PhoneNumber = u.PhoneNumber ?? string.Empty,
-                    Bookings = u.Bookings.Select(b => new HairdresserBookingRespondDTO
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email ?? string.Empty,
+                    PhoneNumber = user.PhoneNumber ?? string.Empty,
+                    Bookings = user.HairdresserBookings.Select(booking => new HairdresserBookingRespondDTO
                     {
-                        Id = b.Id,
-                        Start = b.Start,
-                        End = b.End,
+                        Id = booking.Id,
+                        Start = booking.Start,
+                        End = booking.End,
                         Treatment = new TreatmentDTO
                         {
-                            Price = b.Treatment.Price,
-                            Duration = b.Treatment.Duration 
-
+                            Name = booking.Treatment.Name,
+                            Duration = booking.Treatment.Duration,
+                            Price = booking.Treatment.Price
                         }
                     }).ToList()
                 })
-                .ToListAsync();
+                .FirstOrDefaultAsync(user => user.Id == id);
             if (hairdresser == null)
             {
                 return NotFound("Hairdresser not found");
