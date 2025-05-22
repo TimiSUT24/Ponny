@@ -13,12 +13,10 @@ namespace Hairdresser.Controllers
     [Route("api/[controller]")]
     public class BookingsController : ControllerBase
     {
-        private readonly ApplicationDBContext _context;
         private readonly IBookingService _bookingService;
 
-        public BookingsController(ApplicationDBContext context, IBookingService bookingService)
+        public BookingsController(IBookingService bookingService)
         {
-            _context = context;
             _bookingService = bookingService; 
         }
 
