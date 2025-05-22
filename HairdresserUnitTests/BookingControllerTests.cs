@@ -193,36 +193,53 @@ namespace HairdresserUnitTests
 			{
 				Assert.Fail("Unexpected result type: " + result.GetType().Name);
 			}
+
+			Cleanup();
 		}
 
-		/*		[TestMethod]
-				public async Task Book_InvalidTime_ReturnsConflict()
-				{
-					// Arrange
-					var bookingDTO = new BookingRequestDto
-					{
-						Start = DateTime.Parse("2024-01-21"),
-						TreatmentId = 1,
-						HairdresserId = "1",
-						CustomerId = "1"
-					};
+		[TestMethod]
+		public async Task Book_InvalidTime_ReturnsConflict()
+		{
 
-					await _context.SaveChangesAsync();
+			// Arrange
+			var customerId = "customer-1";
+			var hairdresserId = "hairdresser-1";
+			var treatmentId = 1;
+			var startTime = DateTime.Now.AddDays(2);
 
-					// Act
-					var result = await _controller.BookAppointment(bookingDTO);
+			var bookingDTO = new BookingRequestDto
+			{
+				Start = startTime,
+				TreatmentId = treatmentId,
+				HairdresserId = hairdresserId
+			};
 
-					// Assert
-					if (result is BadRequestObjectResult notFoundResult)
-					{
-						Assert.AreEqual(400, notFoundResult.StatusCode);
-					}
-					else
-					{
-						Assert.Fail("Unexpected result type: " + result.GetType().Name);
-					}
 
-				}*/
+			// Mock authenticated user
+			var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+			{
+				new Claim(ClaimTypes.NameIdentifier, customerId)
+			}, "mock"));
+
+			_controller!.ControllerContext = new ControllerContext
+			{
+				HttpContext = new DefaultHttpContext { User = user }
+			};
+
+			// Act
+			var result = await _controller.BookAppointment(bookingDTO);
+
+			// Assert
+			if (result is BadRequestObjectResult notFoundResult)
+			{
+				Assert.AreEqual(400, notFoundResult.StatusCode);
+			}
+			else
+			{
+				Assert.Fail("Unexpected result type: " + result.GetType().Name);
+			}
+			Cleanup();
+		}
 
 
 	}
