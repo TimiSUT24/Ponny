@@ -157,5 +157,51 @@ namespace Hairdresser.Controllers
                 return BadRequest(ex.Message);
            }
         }
+
+        // Rebook a booking
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize]
+        [HttpPut("Rebook")]
+        public async Task<IActionResult> Rebook(int bookingId, BookingRequestDto request)
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId == null)
+                {
+                    return Unauthorized("User is not logged in.");
+                }
+
+                var booking = await _bookingService.RebookBooking(userId, bookingId, request);
+
+                if (booking == null)
+                {
+                    return NotFound("Booking was not found");
+                }
+
+                return Ok(booking);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

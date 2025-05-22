@@ -188,9 +188,17 @@ namespace Hairdresser.Services
             {
                 throw new InvalidOperationException("Hairdresser is booked at this time.");
             }
-
+            booking.Id = bookingId;
+            booking.CustomerId = customerId;
+            booking.HairdresserId = bookingRequestDto.HairdresserId;
+            booking.TreatmentId = bookingRequestDto.TreatmentId;
             booking.Start = bookingRequestDto.Start;
             booking.End = end;
+
+            await _bookingRepository.UpdateAsync(booking);
+            await _bookingRepository.SaveChangesAsync();
+
+            var updatedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
             return new BookingResponseDto
             {
@@ -199,10 +207,10 @@ namespace Hairdresser.Services
                 End = booking.End,
                 UserDto = new UserDto
                 {
-                    Id = booking.CustomerId,
-                    UserName = booking.Customer.UserName,
-                    Email = booking.Customer.Email,
-                    PhoneNumber = booking.Customer.PhoneNumber
+                    Id = updatedBooking.CustomerId,
+                    UserName = updatedBooking.Customer.UserName,
+                    Email = updatedBooking.Customer.Email,
+                    PhoneNumber = updatedBooking.Customer.PhoneNumber
                 }
             };
 
