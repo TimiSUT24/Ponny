@@ -23,7 +23,7 @@ namespace Hairdresser.Services
             var treatment = await _treatmentRepository.GetByIdAsync(treatmentId);
             if (treatment == null)
             {
-                throw new Exception("Treatment was not found");
+                throw new KeyNotFoundException("Treatment was not found");
             }
             var startOfDay = day.Date.AddHours(9); // frisör jobbar från 09:00
             var endOfDay = day.Date.AddHours(17);  // till 17:00
@@ -115,13 +115,13 @@ namespace Hairdresser.Services
 
             if (booking == null)
             {
-                throw new Exception("Booking was not found.");
+                throw new KeyNotFoundException("Booking was not found.");
             }
                 
 
             if (booking.CustomerId != customerId)
             {
-                throw new Exception("Can only cancel your own bookings.");
+                throw new UnauthorizedAccessException("Can only cancel your own bookings.");
             }
                
 
@@ -141,12 +141,12 @@ namespace Hairdresser.Services
             var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId,customerId);
             if (booking == null)
             {
-                throw new Exception("Booking was not found.");
+                throw new KeyNotFoundException("Booking was not found.");
             }
 
             if (booking.CustomerId != customerId)
             {
-                throw new Exception("Can only see your own bookings.");
+                throw new UnauthorizedAccessException("Can only see your own bookings.");
             }
 
             return new BookingResponseDto

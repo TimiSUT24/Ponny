@@ -12,17 +12,18 @@ namespace Hairdresser.Controllers
     [ApiController]
     [Route("api/[controller]")]
     public class BookingsController : ControllerBase
-    {
-        private readonly ApplicationDBContext _context;
+    {      
         private readonly IBookingService _bookingService;
 
-        public BookingsController(ApplicationDBContext context, IBookingService bookingService)
-        {
-            _context = context;
+        public BookingsController(IBookingService bookingService)
+        {          
             _bookingService = bookingService; 
         }
 
         // Get all available times for a hairdresser
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("Available-times")]
         public async Task<IActionResult> GetAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
         {
@@ -31,28 +32,51 @@ namespace Hairdresser.Controllers
                 var availableTimes = await _bookingService.GetAllAvailableTimes(hairdresserId, treatmentId, day);
                 return Ok(availableTimes);
             }
-            catch (ArgumentException ex)
+            catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message); 
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); 
             }
         }
+        //Get booking for user
+        [ProducesResponseType(typeof(List<BookingResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize]
         [HttpGet("BookingsById")]
         public async Task<IActionResult> GetBookingById(int bookingId)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
+            try
             {
-                return Unauthorized("User is not logged in.");
-            }
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    return Unauthorized("User is not logged in.");
+                }
 
-            var booking = await _bookingService.GetBookingByIdAsync(bookingId,userId);
-            if(booking == null)
-            {
-                return NotFound("Booking was not found");
+                var booking = await _bookingService.GetBookingByIdAsync(bookingId, userId);
+                if (booking == null)
+                {
+                    return NotFound("Booking was not found");
+                }
+                return Ok(booking);
             }
-               
-            return Ok(booking);
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }                                   
         }
 
         // Book an appointment
@@ -99,6 +123,9 @@ namespace Hairdresser.Controllers
         }
 
         // Cancel a booking
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize]
         [HttpDelete("Cancel Booking")]
         public async Task<IActionResult> CancelBooking(int bookingId)
@@ -111,8 +138,20 @@ namespace Hairdresser.Controllers
                     return Unauthorized("User is not logged in.");
                 }
                 var booking = await _bookingService.CancelBooking(userId, bookingId);
-                return CreatedAtAction(nameof(GetBookingById), booking);
-            }
+                if(booking == null)
+                {
+                    return NotFound("Booking was not cancelled");
+                }
+                return Ok(booking);
+           }
+           catch (KeyNotFoundException ex)
+           {
+                return NotFound(ex.Message);
+           }
+           catch (UnauthorizedAccessException ex)
+           {
+                return Forbid(ex.Message);
+           }
            catch (Exception ex)
            {
                 return BadRequest(ex.Message);
