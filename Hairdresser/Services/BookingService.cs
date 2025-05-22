@@ -57,7 +57,7 @@ namespace Hairdresser.Services
             var treatment = await _treatmentRepository.GetByIdAsync(request.TreatmentId);
             if (treatment == null)
             {
-                throw new Exception("Treatment was not found.");
+                throw new KeyNotFoundException("Treatment was not found.");
             }               
 
             var end = request.Start.AddMinutes(treatment.Duration);
@@ -70,7 +70,7 @@ namespace Hairdresser.Services
 
             if (!isAvailable)
             {
-                throw new Exception("Hairdresser is booked at this time.");
+                throw new InvalidOperationException("Hairdresser is booked at this time.");
             }
             
 
@@ -81,11 +81,11 @@ namespace Hairdresser.Services
                 TreatmentId = request.TreatmentId,
                 Start = request.Start,
                 End = end
-            };
+            };           
 
             if(booking.Start < DateTime.Now ||  booking.Start > DateTime.Now.AddMonths(4))
             {
-                throw new Exception("Can only book from today and up to 4 month in advance.");
+                throw new ArgumentException("Can only book from today and up to 4 month in advance.");
             }
 
             await _bookingRepository.AddAsync(booking);

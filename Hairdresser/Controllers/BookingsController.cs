@@ -56,6 +56,11 @@ namespace Hairdresser.Controllers
         }
 
         // Book an appointment
+        [ProducesResponseType(typeof(BookingResponseDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [Authorize]
         [HttpPost("Book Appointment")]
         public async Task<IActionResult> BookAppointment([FromBody] BookingRequestDto request)
@@ -68,8 +73,24 @@ namespace Hairdresser.Controllers
                     return Unauthorized("User is not logged in.");
                 }                  
                 var booking = await _bookingService.BookAppointment(userId, request);
+                if (booking == null)
+                {
+                    return NotFound("Booking was not found"); 
+                }
                 return CreatedAtAction(nameof(GetBookingById), booking);
                 
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
             }
             catch (Exception ex)
             {
