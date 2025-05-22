@@ -91,11 +91,21 @@ namespace Hairdresser.Services
             await _bookingRepository.AddAsync(booking);
             await _bookingRepository.SaveChangesAsync();
 
+            var savedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id,customerId);
+
             return new BookingResponseDto
             {
                 Id = booking.Id,
-                Start = booking.Start,     
-              
+                Start = booking.Start,  
+                End = booking.End,
+                UserDto = new UserDto
+                {
+                    Id = savedBooking.CustomerId,
+                    UserName =  savedBooking.Customer.UserName,
+                    Email = savedBooking.Customer.Email,
+                    PhoneNumber = savedBooking.Customer.PhoneNumber
+                },
+
             };
         }
 
@@ -142,7 +152,7 @@ namespace Hairdresser.Services
             return new BookingResponseDto
             {
                 Id = booking.Id,
-                Customer = booking.Customer,
+                //Customer = booking.Customer,
             };
 
         }

@@ -78,13 +78,13 @@ namespace Hairdresser.Controllers
                             Name = b.Treatment.Name,
                             Price = b.Treatment.Price
                         },
-                        Customer = new ApplicationUser
+                       /* Customer = new ApplicationUser
                         {
                             FirstName = b.Customer.FirstName,
                             LastName = b.Customer.LastName,
                             Email = b.Customer.Email,
                             PhoneNumber = b.Customer.PhoneNumber
-                        },
+                        },*/
                     })
                     .FirstOrDefaultAsync(booking => booking.Id == id);
 
