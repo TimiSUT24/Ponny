@@ -43,7 +43,7 @@ namespace HairdresserUnitTests
 		public async Task BookAppointment_ReturnsOkWithCorrectBookingData()
 		{
 			// Arrange
-			var treatment = new Treatment { Id = 1, Duration = 30 };
+			var treatment = new Treatment { Id = 2, Duration = 30 };
 			var bookingDTO = new BookingRequestDto
 			{
 				Start = DateTime.Now.AddDays(2),
@@ -69,6 +69,7 @@ namespace HairdresserUnitTests
 			{
 				Assert.Fail("Unexpected result type: " + result.GetType().Name);
 			}
+			Cleanup();
 		}
 
 		[TestMethod]
