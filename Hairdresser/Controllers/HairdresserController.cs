@@ -1,5 +1,6 @@
 ﻿using Hairdresser.Data;
 using Hairdresser.DTOs;
+using Hairdresser.Enums;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -109,21 +110,10 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetHairdresserById(string id)
         {
-            var adminRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
-
-            if (adminRole == null)
+            var adminUser = await GetUserByRoleAsync(id, UserRoleEnum.Admin);
+            if (adminUser == null)
             {
-                return NotFound("Admin role not found");
-            }
-
-            var adminUsers = await _context.UserRoles
-                .Where(userRole => userRole.RoleId == adminRole.Id && userRole.UserId == id)
-                .Select(userRole => userRole.UserId)
-                .FirstOrDefaultAsync();
-
-            if (adminUsers == null)
-            {
-                return Unauthorized("you are not authorized to access this resource");
+                return NotFound("Hairdresser not found");
             }
 
             var hairdresser = await _context.Users
@@ -149,12 +139,35 @@ namespace Hairdresser.Controllers
                         }
                     }).ToList()
                 })
-                .FirstOrDefaultAsync(user => user.Id == adminUsers);
+                .FirstOrDefaultAsync(user => user.Id == adminUser.Id);
             if (hairdresser == null)
             {
                 return NotFound("Hairdresser not found");
             }
             return Ok(hairdresser);
+        }
+
+        public async Task<ApplicationUser?> GetUserByRoleAsync(string id, UserRoleEnum userRole)
+        {
+            var roleId = await _context.Roles
+                .Where(r => r.Name == userRole.ToString())
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+            if (roleId == null)
+            {
+                return null;
+            }
+            // Get the userId with the specified role
+            var userId = await _context.UserRoles
+                .Where(ur => ur.RoleId == roleId && ur.UserId == id)
+                .Select(ur => ur.UserId)
+                .FirstOrDefaultAsync();
+            if (userId == null)
+            {
+                return null;
+            }
+
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
     }
 }
