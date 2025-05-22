@@ -72,7 +72,7 @@ namespace Hairdresser.Services
             {
                 throw new Exception("Hairdresser is booked at this time.");
             }
-                
+            
 
             var booking = new Booking
             {
@@ -82,6 +82,11 @@ namespace Hairdresser.Services
                 Start = request.Start,
                 End = end
             };
+
+            if(booking.Start < DateTime.Now ||  booking.Start > DateTime.Now.AddMonths(4))
+            {
+                throw new Exception("Can only book from today and up to 4 month in advance.");
+            }
 
             await _bookingRepository.AddAsync(booking);
             await _bookingRepository.SaveChangesAsync();
