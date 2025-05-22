@@ -156,5 +156,56 @@ namespace Hairdresser.Services
             };
 
         }
+
+        public async Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto)
+        {
+            var booking = await _bookingRepository.GetByIdAsync(bookingId);
+
+            if(booking == null)
+            {
+                throw new KeyNotFoundException("Booking was not found.");
+            }
+
+            if (booking.CustomerId != customerId)
+            {
+                throw new UnauthorizedAccessException("Can only update your own bookings.");
+            }
+
+            var treatment = await _treatmentRepository.GetByIdAsync(booking.TreatmentId);
+            if (treatment == null)
+            {
+                throw new KeyNotFoundException("Treatment was not found.");
+            }
+            var end = bookingRequestDto.Start.AddMinutes(treatment.Duration);
+
+            bool isAvailable = !await _bookingRepository.AnyAsync(b =>
+              b.Id == booking.Id &&
+              b.HairdresserId == bookingRequestDto.HairdresserId &&
+              b.Start < end && b.End > bookingRequestDto.Start
+            );
+
+            if (!isAvailable)
+            {
+                throw new InvalidOperationException("Hairdresser is booked at this time.");
+            }
+
+            booking.Start = bookingRequestDto.Start;
+            booking.End = end;
+
+            return new BookingResponseDto
+            {
+                Id = booking.Id,
+                Start = booking.Start,
+                End = booking.End,
+                UserDto = new UserDto
+                {
+                    Id = booking.CustomerId,
+                    UserName = booking.Customer.UserName,
+                    Email = booking.Customer.Email,
+                    PhoneNumber = booking.Customer.PhoneNumber
+                }
+            };
+
+        }
 	}
 }

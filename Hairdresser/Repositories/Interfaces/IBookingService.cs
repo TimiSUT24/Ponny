@@ -11,5 +11,7 @@ namespace Hairdresser.Repositories.Interfaces
 
         Task<BookingRequestDto> CancelBooking(string customerId, int bookingId);
         Task<BookingResponseDto> GetBookingByIdAsync(int bookingId,string customerId);
+
+        Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto);
     }
 }
