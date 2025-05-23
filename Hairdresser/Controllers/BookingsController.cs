@@ -165,7 +165,7 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize]
-        [HttpPut("Rebook")]
+        [HttpPut("Reschedule")]
         public async Task<IActionResult> Rebook(int bookingId, BookingRequestDto request)
         {
             try
