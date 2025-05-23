@@ -11,9 +11,9 @@ namespace Hairdresser.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HairdresserController(ApplicationDBContext context, IGenericRepository<ApplicationUser> repository) : ControllerBase
+    public class HairdresserController(ApplicationDBContext context, IUserRepository repository) : ControllerBase
     {
-        private readonly IGenericRepository<ApplicationUser> _repository = repository;
+        private readonly IUserRepository _repository = repository;
         private readonly ApplicationDBContext _context = context;
 
 
@@ -147,7 +147,7 @@ namespace Hairdresser.Controllers
             return Ok(hairdresser);
         }
 
-        public async Task<ApplicationUser?> GetUserByRoleAsync(string id, UserRoleEnum userRole)
+        private async Task<ApplicationUser?> GetUserByRoleAsync(string id, UserRoleEnum userRole)
         {
             var roleId = await _context.Roles
                 .Where(r => r.Name == userRole.ToString())
@@ -157,17 +157,17 @@ namespace Hairdresser.Controllers
             {
                 return null;
             }
-            // Get the userId with the specified role
             var userId = await _context.UserRoles
                 .Where(ur => ur.RoleId == roleId && ur.UserId == id)
                 .Select(ur => ur.UserId)
                 .FirstOrDefaultAsync();
-            if (userId == null)
+
+            if (!Guid.TryParse(userId, out Guid userGuid))
             {
                 return null;
             }
 
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            return await _repository.GetByIdAsync(userGuid);
         }
     }
 }
