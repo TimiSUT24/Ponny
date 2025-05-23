@@ -2,6 +2,7 @@
 using Hairdresser.DTOs;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,28 +12,42 @@ namespace Hairdresser.Services
 	{
         private readonly IBookingRepository _bookingRepository;       
         private readonly IGenericRepository<Treatment> _treatmentRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public BookingService(IGenericRepository<Treatment> treatment, IBookingRepository bookingRepository)
+        public BookingService(IGenericRepository<Treatment> treatment, IBookingRepository bookingRepository, UserManager<ApplicationUser> usermanager)
 		{			
             _treatmentRepository = treatment;
-            _bookingRepository = bookingRepository;           
+            _bookingRepository = bookingRepository;
+            _userManager = usermanager;
         }
 
 		public async Task<List<DateTime>> GetAllAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
 		{
+            var hairdresser = await _userManager.FindByIdAsync(hairdresserId);
+            if (hairdresser == null)
+            {
+                throw new KeyNotFoundException("Hairdresser was not found");
+            }            
+
             var treatment = await _treatmentRepository.GetByIdAsync(treatmentId);
             if (treatment == null)
             {
                 throw new KeyNotFoundException("Treatment was not found");
             }
+
+            if (day.Date < DateTime.Now.Date || day.Date > DateTime.Now.AddMonths(4).Date)
+            {
+                throw new ArgumentException("Can only book from today and up to 4 month in advance.");
+            }
+
             var startOfDay = day.Date.AddHours(9); // frisör jobbar från 09:00
             var endOfDay = day.Date.AddHours(17);  // till 17:00
-            var duration = TimeSpan.FromMinutes(treatment.Duration);
-
+            var duration = TimeSpan.FromMinutes(treatment.Duration);           
+            
             // Hämta bokade tider
             var bookings = await _bookingRepository
-                .FindAsync(b => b.HairdresserId == hairdresserId && b.Start.Date == day.Date);     
-
+                .FindAsync(b => b.HairdresserId == hairdresserId && b.Start.Date == day.Date); 
+           
             var availableSlots = new List<DateTime>();
 
             for (var time = startOfDay; time + duration <= endOfDay; time += TimeSpan.FromMinutes(15))

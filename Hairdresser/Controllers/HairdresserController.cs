@@ -73,7 +73,7 @@ namespace Hairdresser.Controllers
                         Id = b.Id,
                         Start = b.Start,
                         End = b.End,
-                        Treatment = new Treatment
+                        /*Treatment = new Treatment
                         {
                             Name = b.Treatment.Name,
                             Price = b.Treatment.Price
