@@ -101,9 +101,9 @@ namespace HairdresserUnitTests
 			var result = await _controller.BookAppointment(bookingDTO);
 
 			// Assert
-			if (result is ConflictObjectResult conflictResult)
+			if (result is NotFoundObjectResult notFoundResult)
 			{
-				Assert.AreEqual(409, conflictResult.StatusCode);
+				Assert.AreEqual(404, notFoundResult.StatusCode);
 			}
 			else
 			{
