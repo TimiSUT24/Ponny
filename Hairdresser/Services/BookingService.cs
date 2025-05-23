@@ -31,8 +31,7 @@ namespace Hairdresser.Services
 
             // Hämta bokade tider
             var bookings = await _bookingRepository
-                .FindAsync(b => b.HairdresserId == hairdresserId && b.Start.Date == day.Date);
-       
+                .FindAsync(b => b.HairdresserId == hairdresserId && b.Start.Date == day.Date);     
 
             var availableSlots = new List<DateTime>();
 
