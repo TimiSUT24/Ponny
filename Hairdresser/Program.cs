@@ -65,6 +65,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IGenericRepository<Treatment>, TreatmentRepository>();
 builder.Services.AddScoped<IGenericRepository<Booking>, BookingRepository>();
 builder.Services.AddScoped<IGenericRepository<ApplicationUser>, UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 //Services
 

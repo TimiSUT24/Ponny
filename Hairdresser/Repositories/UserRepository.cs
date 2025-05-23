@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace Hairdresser.Repositories
 {
-	public class UserRepository :IGenericRepository<ApplicationUser>
+	public class UserRepository :IGenericRepository<ApplicationUser>, IUserRepository
 	{
 		private readonly ApplicationDBContext _context;
 		public UserRepository(ApplicationDBContext context)
@@ -46,5 +46,10 @@ namespace Hairdresser.Repositories
 		{
 			await _context.SaveChangesAsync();
 		}
-	}
+
+        public Task<ApplicationUser?> GetByIdAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
