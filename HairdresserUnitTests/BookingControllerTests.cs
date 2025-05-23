@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace HairdresserUnitTests
 {
-	/*[TestClass]
+	[TestClass]
 	public class BookingControllerTests
 	{
 		private ApplicationDBContext? _context;
@@ -171,5 +171,5 @@ namespace HairdresserUnitTests
 		}
 
 
-	}*/
+	}
 }
