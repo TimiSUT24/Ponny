@@ -109,7 +109,7 @@ namespace HairdresserUnitTests
 			{
 				Assert.Fail("Unexpected result type: " + result.GetType().Name);
 			}
-
+			Cleanup();
 		}
 
 
@@ -139,7 +139,7 @@ namespace HairdresserUnitTests
 			{
 				Assert.Fail("Unexpected result type: " + result.GetType().Name);
 			}
-
+			Cleanup();
 		}
 
 		[TestMethod]
@@ -168,7 +168,7 @@ namespace HairdresserUnitTests
 			{
 				Assert.Fail("Unexpected result type: " + result.GetType().Name);
 			}
-
+			Cleanup();
 		}
 
 
