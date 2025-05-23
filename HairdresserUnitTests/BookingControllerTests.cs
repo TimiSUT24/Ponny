@@ -23,7 +23,7 @@ namespace HairdresserUnitTests
 		public void Setup()
 		{
 			var options = new DbContextOptionsBuilder<ApplicationDBContext>()
-				.UseInMemoryDatabase("testdb")
+				.UseInMemoryDatabase(Guid.NewGuid().ToString())
 				.Options;
 
 			_context = new ApplicationDBContext(options);
