@@ -93,7 +93,6 @@ namespace HairdresserUnitTests
 			Assert.AreEqual(expectedResponse.Start, response.Start);
 			Assert.AreEqual(expectedResponse.End, response.End);
 
-			Cleanup();
 		}
 
 
@@ -137,7 +136,6 @@ namespace HairdresserUnitTests
 			{
 				Assert.Fail("Unexpected result type: " + result.GetType().Name);
 			}
-			Cleanup();
 
 		}
 
@@ -194,7 +192,6 @@ namespace HairdresserUnitTests
 				Assert.Fail("Unexpected result type: " + result.GetType().Name);
 			}
 
-			Cleanup();
 		}
 
 		[TestMethod]
@@ -238,7 +235,6 @@ namespace HairdresserUnitTests
 			{
 				Assert.Fail("Unexpected result type: " + result.GetType().Name);
 			}
-			Cleanup();
 		}
 
 
