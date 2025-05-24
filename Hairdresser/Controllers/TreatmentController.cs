@@ -64,15 +64,23 @@ namespace Hairdresser.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPut(Name = "UpdateTreatment")]
-        public async Task<IActionResult> Update(int id, [FromBody] Treatment treatment)
+        [HttpPut("{id}", Name = "UpdateTreatment")]
+        public async Task<IActionResult> Update(int id, [FromBody] TreatmentCreateUpdateDto dto)
         {
-            if(treatment.Id == id)
+            var treatment = await _repository.GetByIdAsync(id);
+            if (treatment == null)
             {
-                await _repository.UpdateAsync(treatment);
-                await _repository.SaveChangesAsync();
+                return NotFound("Treatment not found");
             }
-           
+
+            treatment.Name = dto.Name;
+            treatment.Description = dto.Description;
+            treatment.Duration = dto.Duration;
+            treatment.Price = dto.Price;
+
+            await _repository.UpdateAsync(treatment);
+            await _repository.SaveChangesAsync();
+
             return Ok("Treatment was updated");
         }
 
