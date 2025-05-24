@@ -68,14 +68,14 @@ namespace Hairdresser.Controllers
         {
             var users = await _userManager.Users.ToListAsync();
 
-            var userDtos = new List<UserDto>();
+            var userRespondDtos = new List<UserRespondDto>();
 
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 var role = roles.FirstOrDefault(); // Tar första rollen, eller null om ingen finns
 
-                userDtos.Add(new UserDto
+                userRespondDtos.Add(new UserRespondDto
                 {
                     Id = user.Id,
                     UserName = user.UserName,
@@ -85,7 +85,7 @@ namespace Hairdresser.Controllers
                 });
             }
 
-            return Ok(userDtos);
+            return Ok(userRespondDtos);
         }
 
         // Change User Info
