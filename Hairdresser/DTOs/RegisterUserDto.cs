@@ -4,6 +4,11 @@ namespace Hairdresser.DTOs
 {
     public class RegisterUserDto
     {
+        [Required]
+        public string FirstName { get; set; } = string.Empty;
+        [Required]
+        public string LastName { get; set; } = string.Empty;
+        [Required]
         public string UserName { get; set; } = string.Empty;
         [Required]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]

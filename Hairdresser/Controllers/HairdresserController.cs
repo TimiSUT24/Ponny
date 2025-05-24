@@ -28,17 +28,20 @@ namespace Hairdresser.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost(Name = "AddNewHairdresser")]
-        public async Task<IActionResult> Create(string firstName, string lastName, string email, string phone)
-        {
-            var hairdresser = new ApplicationUser
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Create([FromBody] RegisterUserDto userRequest)
+        {   
+            var hairdresser = await _repository.RigisterUserAsync(userRequest, UserRoleEnum.Hairdresser);
+
+            if (hairdresser == null)
             {
-                FirstName = firstName,
-                LastName = lastName,
-                Email = email,
-                PhoneNumber = phone,
-            };
-            await _repository.AddAsync(hairdresser);
+                return BadRequest("Failed to create hairdresser");
+            }
+
             await _repository.SaveChangesAsync();
+
             return CreatedAtAction(nameof(GetAll), hairdresser);
         }
 

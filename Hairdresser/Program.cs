@@ -30,7 +30,10 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
             await TreatmentSeed.SeedTreatmentsAsync(context);
         }));
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+})
                 .AddEntityFrameworkStores<ApplicationDBContext>()
                 .AddDefaultTokenProviders()
                 .AddApiEndpoints();
