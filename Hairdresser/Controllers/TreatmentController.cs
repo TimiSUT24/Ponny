@@ -37,20 +37,32 @@ namespace Hairdresser.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost(Name = "AddNewTreatment")]
-        public async Task<IActionResult> Create(string name, string description, int duration, double price  )
+        public async Task<IActionResult> Create([FromBody] TreatmentCreateUpdateDto dto)
         {
             var treatment = new Treatment
             {
-                Name = name,
-                Description = description,
-                Price = price,
-                Duration = duration,
-
+                Name = dto.Name,
+                Description = dto.Description,
+                Duration = dto.Duration,
+                Price = dto.Price
             };
+
             await _repository.AddAsync(treatment);
             await _repository.SaveChangesAsync();
-            return CreatedAtAction(nameof(Treatment), treatment);
+
+            // Returnera en TreatmentDto som bekräftelse
+            var result = new TreatmentDto
+            {
+                Id = treatment.Id,
+                Name = treatment.Name,
+                Description = treatment.Description,
+                Duration = treatment.Duration,
+                Price = treatment.Price
+            };
+
+            return CreatedAtAction(nameof(GetAll), new { id = treatment.Id }, result);
         }
+
         [Authorize(Roles = "Admin")]
         [HttpPut(Name = "UpdateTreatment")]
         public async Task<IActionResult> Update(int id, [FromBody] Treatment treatment)
