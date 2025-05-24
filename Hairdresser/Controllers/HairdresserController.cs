@@ -24,22 +24,6 @@ namespace Hairdresser.Controllers
             return Ok(hairdressers);
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPost(Name = "AddNewHairdresser")]
-        public async Task<IActionResult> Create(string firstName, string lastName, string email, string phone)
-        {
-            var hairdresser = new ApplicationUser
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                Email = email,
-                PhoneNumber = phone,
-            };
-            await _repository.AddAsync(hairdresser);
-            await _repository.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetAll), hairdresser);
-        }
-
         // Get week schedule for hairdresser
         [Authorize(Roles = "Hairdresser")]
         [HttpGet("schedule")]
