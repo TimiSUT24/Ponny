@@ -2,7 +2,7 @@ using System;
 
 namespace Hairdresser.DTOs;
 
-public class UserDTO
+public record UserDTO
 {
     public string Id { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
