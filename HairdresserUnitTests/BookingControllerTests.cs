@@ -4,6 +4,7 @@ using Hairdresser.DTOs;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -139,62 +140,48 @@ namespace HairdresserUnitTests
 
 		}
 
+        [TestMethod]
+        public async Task Book_Occupied_Time_ReturnsConflict()
+        {
+            // Arrange
+            var mockBookingService = new Mock<IBookingService>();
 
-		[TestMethod]
-		public async Task Book_Occupied_Time_ReturnsConflict()
-		{
-			// Arrange
-			_context.Bookings.Add(new Booking
-			{
-				Start = DateTime.Now.AddDays(2),
-				End = DateTime.Now.AddDays(2).AddMinutes(40),
-				HairdresserId = "1",
-				TreatmentId = 1,
-				CustomerId = "2"
-			});
-			_context.SaveChanges();
+            var dto = new BookingRequestDto
+            {
+                HairdresserId = "h1",
+                TreatmentId = 1,
+                Start = DateTime.Now.AddHours(1)
+            };
 
+            var fakeUserId = "u1";
 
-			var customerId = "customer-1";
-			var hairdresserId = "hairdresser-1";
-			var treatmentId = 1;
-			var startTime = DateTime.Now.AddDays(2);
+            mockBookingService
+                .Setup(s => s.BookAppointment(fakeUserId, dto))
+                .ThrowsAsync(new InvalidOperationException("Hairdresser already has a booking during this time."));
 
-			var bookingDTO = new BookingRequestDto
-			{
-				Start = startTime,
-				TreatmentId = treatmentId,
-				HairdresserId = hairdresserId
-			};
+            var controller = new BookingsController(mockBookingService.Object);
 
+            // Simulera inloggad användare (Claim-based)
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+        new Claim(ClaimTypes.NameIdentifier, fakeUserId)
+            }, "mock"));
 
-			// Mock authenticated user
-			var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
-			{
-				new Claim(ClaimTypes.NameIdentifier, customerId)
-			}, "mock"));
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
 
-			_controller!.ControllerContext = new ControllerContext
-			{
-				HttpContext = new DefaultHttpContext { User = user }
-			};
+            // Act
+            var result = await controller.BookAppointment(dto);
 
-			// Act
-			var result = await _controller.BookAppointment(bookingDTO);
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(ConflictObjectResult));
+            var conflict = result as ConflictObjectResult;
+            Assert.AreEqual("Hairdresser already has a booking during this time.", conflict?.Value);
+        }
 
-			// Assert
-			if (result is ConflictObjectResult conflictResult)
-			{
-				Assert.AreEqual(409, conflictResult.StatusCode);
-			}
-			else
-			{
-				Assert.Fail("Unexpected result type: " + result.GetType().Name);
-			}
-
-		}
-
-		[TestMethod]
+        [TestMethod]
 		public async Task Book_InvalidTime_ReturnsConflict()
 		{
 
