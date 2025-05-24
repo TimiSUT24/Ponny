@@ -43,7 +43,7 @@ namespace HairdresseerUnitTests
             Assert.IsNotNull(okResult);
             var returnValue = okResult.Value as IEnumerable<TreatmentDto>;
             Assert.IsNotNull(returnValue);
-            Assert.AreEqual(2, ((List<TreatmentDto>)returnValue).Count);
+            Assert.AreEqual(2, returnValue.Count());
         }
 
         [TestMethod]
