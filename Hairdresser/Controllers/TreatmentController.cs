@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Hairdresser.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Authorization;
+using Hairdresser.DTOs;
 
 namespace Hairdresser.Controllers
 {
@@ -22,7 +23,16 @@ namespace Hairdresser.Controllers
         public async Task<IActionResult> GetAll()
         {
             var treatments = await _repository.GetAllAsync();
-            return Ok(treatments);
+            var treatmentDtos = treatments.Select(t => new TreatmentDto
+            {
+                Id = t.Id,
+                Name = t.Name,
+                Description = t.Description,
+                Duration = t.Duration,
+                Price = t.Price
+            });
+
+            return Ok(treatmentDtos);
         }
 
         [Authorize(Roles = "Admin")]
