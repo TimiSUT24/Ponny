@@ -100,18 +100,17 @@ namespace Hairdresser.Controllers
                 return NotFound("Hairdresser not found");
             }
 
-            var hairdresser = await _context.Users
-                .Include(u => u.CustomerBookings)
-                    .ThenInclude(b => b.Treatment)
-                .Select(user => user.MapToHairdresserWithBookingsRespondDTO())
-                .FirstOrDefaultAsync(user => user.Id == adminUser.Id);
+            var hairdresser = await _repository.GetHairdressersWithBookings(adminUser.Id);
+
             if (hairdresser == null)
             {
                 return NotFound("Hairdresser not found");
             }
+
             return Ok(hairdresser);
         }
 
+        // Move this method to a more appropriate place, like a service
         private async Task<ApplicationUser?> GetUserByRoleAsync(string id, UserRoleEnum userRole)
         {
             var roleId = await _context.Roles

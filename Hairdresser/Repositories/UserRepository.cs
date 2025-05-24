@@ -1,4 +1,6 @@
 ﻿using Hairdresser.Data;
+using Hairdresser.DTOs;
+using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.EntityFrameworkCore;
@@ -6,13 +8,10 @@ using System.Linq.Expressions;
 
 namespace Hairdresser.Repositories
 {
-	public class UserRepository :IGenericRepository<ApplicationUser>, IUserRepository
+	public class UserRepository(ApplicationDBContext context) : IGenericRepository<ApplicationUser>, IUserRepository
 	{
-		private readonly ApplicationDBContext _context;
-		public UserRepository(ApplicationDBContext context)
-		{
-			_context = context;
-		}
+		private readonly ApplicationDBContext _context = context;
+
 		public async Task AddAsync(ApplicationUser entity)
 		{
 			await _context.Users.AddAsync(entity);
@@ -47,9 +46,20 @@ namespace Hairdresser.Repositories
 			await _context.SaveChangesAsync();
 		}
 
-        public Task<ApplicationUser?> GetByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public Task<ApplicationUser?> GetByIdAsync(Guid id)
+		{
+			return _context.Users.FindAsync(id).AsTask();
+		}
+
+		public async Task<HairdresserRespondDTO?> GetHairdressersWithBookings(string userId)
+		{
+			ArgumentNullException.ThrowIfNullOrWhiteSpace(userId, nameof(userId));
+
+			return await _context.Users
+							.Include(u => u.CustomerBookings)
+								.ThenInclude(b => b.Treatment)
+							.Select(user => user.MapToHairdresserWithBookingsRespondDTO())
+							.FirstOrDefaultAsync(user => user.Id == userId);
+		}
+	}
 }
