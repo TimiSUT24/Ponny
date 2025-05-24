@@ -6,6 +6,6 @@ namespace Hairdresser.Repositories.Interfaces;
 
 public interface IUserRepository : IGenericRepository<ApplicationUser>
 {
-    Task<ApplicationUser?> GetByIdAsync(Guid id);
+    Task<ApplicationUser?> GetByIdAsync(string id);
     Task<HairdresserRespondDTO?> GetHairdressersWithBookings(string userId);
 }

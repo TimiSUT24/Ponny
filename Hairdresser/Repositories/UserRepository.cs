@@ -46,9 +46,9 @@ namespace Hairdresser.Repositories
 			await _context.SaveChangesAsync();
 		}
 
-		public Task<ApplicationUser?> GetByIdAsync(Guid id)
+		public async Task<ApplicationUser?> GetByIdAsync(string id)
 		{
-			return _context.Users.FindAsync(id).AsTask();
+			return await _context.Users.FindAsync(id);
 		}
 
 		public async Task<HairdresserRespondDTO?> GetHairdressersWithBookings(string userId)
@@ -56,10 +56,11 @@ namespace Hairdresser.Repositories
 			ArgumentNullException.ThrowIfNullOrWhiteSpace(userId, nameof(userId));
 
 			return await _context.Users
+							.Where(user => user.Id == userId)
 							.Include(u => u.CustomerBookings)
 								.ThenInclude(b => b.Treatment)
 							.Select(user => user.MapToHairdresserWithBookingsRespondDTO())
-							.FirstOrDefaultAsync(user => user.Id == userId);
+							.FirstOrDefaultAsync();
 		}
 	}
 }
