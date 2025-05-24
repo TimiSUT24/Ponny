@@ -25,14 +25,6 @@ namespace Hairdresser.Controllers
         [HttpPost("registerUser")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
-            // Kontrollera att användarnamnet inte redan finns
-            if (await _userManager.FindByNameAsync(dto.UserName) != null)
-                return BadRequest($"Användarnamnet '{dto.UserName}' är redan upptaget.");
-
-            // Kontrollera att e-posten inte redan finns
-            if (await _userManager.FindByEmailAsync(dto.Email) != null)
-                return BadRequest($"E-postadressen '{dto.Email}' är redan registrerad.");
-
             var newUser = new ApplicationUser
             {
                 UserName = dto.UserName,
