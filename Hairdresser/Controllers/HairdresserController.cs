@@ -42,7 +42,7 @@ namespace Hairdresser.Controllers
 
             await _repository.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetAll), hairdresser);
+            return CreatedAtAction(nameof(GetHairdresserById), new { id = hairdresser.Id }, hairdresser);
         }
 
         // Get week schedule for hairdresser
@@ -91,14 +91,14 @@ namespace Hairdresser.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HairdresserRespondDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetHairdresserById(string id)
         {
-            var adminUser = await GetUserByRoleAsync(id, UserRoleEnum.Admin);
+            var adminUser = await GetUserByRoleAsync(id, UserRoleEnum.Hairdresser);
             if (adminUser == null)
             {
                 return Unauthorized("Hairdresser is Unauthorized");
