@@ -182,48 +182,44 @@ namespace HairdresserUnitTests
         }
 
         [TestMethod]
-		public async Task Book_InvalidTime_ReturnsConflict()
-		{
+        public async Task Book_InvalidTime_ReturnsConflict()
+        {
+            // Arrange
+            var customerId = "customer-1";
+            var hairdresserId = "hairdresser-1";
+            var treatmentId = 1;
+            var startTime = DateTime.Now.AddDays(2);
 
-			// Arrange
-			var customerId = "customer-1";
-			var hairdresserId = "hairdresser-1";
-			var treatmentId = 1;
-			var startTime = DateTime.Now.AddDays(2);
+            var bookingDTO = new BookingRequestDto
+            {
+                Start = startTime,
+                TreatmentId = treatmentId,
+                HairdresserId = hairdresserId
+            };
 
-			var bookingDTO = new BookingRequestDto
-			{
-				Start = startTime,
-				TreatmentId = treatmentId,
-				HairdresserId = hairdresserId
-			};
+            // Mock authenticated user
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+        new Claim(ClaimTypes.NameIdentifier, customerId)
+    }, "mock"));
 
+            _controller!.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
 
-			// Mock authenticated user
-			var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
-			{
-				new Claim(ClaimTypes.NameIdentifier, customerId)
-			}, "mock"));
+            // Mocka att bokningen krockar med en annan
+            _mockBookingService!
+                .Setup(s => s.BookAppointment(customerId, bookingDTO))
+                .ThrowsAsync(new InvalidOperationException("Time conflict"));
 
-			_controller!.ControllerContext = new ControllerContext
-			{
-				HttpContext = new DefaultHttpContext { User = user }
-			};
+            // Act
+            var result = await _controller.BookAppointment(bookingDTO);
 
-			// Act
-			var result = await _controller.BookAppointment(bookingDTO);
-
-			// Assert
-			if (result is BadRequestObjectResult notFoundResult)
-			{
-				Assert.AreEqual(400, notFoundResult.StatusCode);
-			}
-			else
-			{
-				Assert.Fail("Unexpected result type: " + result.GetType().Name);
-			}
-		}
-
-
-	}
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(ConflictObjectResult));
+            var conflict = result as ConflictObjectResult;
+            Assert.AreEqual("Time conflict", conflict?.Value);
+        }
+    }
 }
