@@ -20,9 +20,9 @@ namespace Hairdresser.Controllers
 
         [AllowAnonymous]
         [HttpGet(Name = "GetAllHairdressers")]
-        public async Task<ActionResult<IEnumerable<ApplicationUser>>> GetAll()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAll()
         {
-            var hairdressers = await _repository.GetAllAsync();
+            var hairdressers = (await _repository.GetAllAsync()).Select(user => user.MapToUserDTO());
             return Ok(hairdressers);
         }
 
@@ -88,16 +88,17 @@ namespace Hairdresser.Controllers
             }
         }
 
-        // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HairdresserRespondDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetHairdresserById(string id)
         {
             var adminUser = await GetUserByRoleAsync(id, UserRoleEnum.Admin);
             if (adminUser == null)
             {
-                return NotFound("Hairdresser not found");
+                return Unauthorized("Hairdresser is Unauthorized");
             }
 
             var hairdresser = await _repository.GetHairdressersWithBookings(adminUser.Id);
@@ -126,12 +127,12 @@ namespace Hairdresser.Controllers
                 .Select(ur => ur.UserId)
                 .FirstOrDefaultAsync();
 
-            if (!Guid.TryParse(userId, out Guid userGuid))
+            if (userId is null)
             {
                 return null;
             }
 
-            return await _repository.GetByIdAsync(userGuid);
+            return await _repository.GetByIdAsync(userId);
         }
     }
 }
