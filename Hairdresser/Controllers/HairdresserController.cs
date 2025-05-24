@@ -1,6 +1,7 @@
 ﻿using Hairdresser.Data;
 using Hairdresser.DTOs;
 using Hairdresser.Enums;
+using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -69,24 +70,7 @@ namespace Hairdresser.Controllers
                 var booking = await _context.Bookings
                     .Include(b => b.Customer)
                     .Include(b => b.Treatment)
-                    .Select(b => new BookingResponseDto()
-                    {
-                        Id = b.Id,
-                        Start = b.Start,
-                        End = b.End,
-                        Treatment = new Treatment
-                        {
-                            Name = b.Treatment.Name,
-                            Price = b.Treatment.Price
-                        },
-                        Customer = new ApplicationUser
-                        {
-                            FirstName = b.Customer.FirstName,
-                            LastName = b.Customer.LastName,
-                            Email = b.Customer.Email,
-                            PhoneNumber = b.Customer.PhoneNumber
-                        },
-                    })
+                    .Select(booking => booking.MapToBookingResponseDto())
                     .FirstOrDefaultAsync(booking => booking.Id == id);
 
                 if (booking == null)
@@ -119,26 +103,7 @@ namespace Hairdresser.Controllers
             var hairdresser = await _context.Users
                 .Include(u => u.CustomerBookings)
                     .ThenInclude(b => b.Treatment)
-                .Select(user => new HairdresserRespondDTO
-                {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email ?? string.Empty,
-                    PhoneNumber = user.PhoneNumber ?? string.Empty,
-                    Bookings = user.HairdresserBookings.Select(booking => new HairdresserBookingRespondDTO
-                    {
-                        Id = booking.Id,
-                        Start = booking.Start,
-                        End = booking.End,
-                        Treatment = new TreatmentDTO
-                        {
-                            Name = booking.Treatment.Name,
-                            Duration = booking.Treatment.Duration,
-                            Price = booking.Treatment.Price
-                        }
-                    }).ToList()
-                })
+                .Select(user => user.MapToHairdresserWithBookingsRespondDTO())
                 .FirstOrDefaultAsync(user => user.Id == adminUser.Id);
             if (hairdresser == null)
             {
