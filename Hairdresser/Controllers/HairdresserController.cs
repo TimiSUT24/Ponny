@@ -101,30 +101,28 @@ namespace Hairdresser.Controllers
                 var booking = await _context.Bookings
                     .Include(b => b.Customer)
                     .Include(b => b.Treatment)
-                    .Select(b => new BookingResponseDto()
-                    {
-                        Id = b.Id,
-                        Start = b.Start,
-                        End = b.End,
-                        Treatment = new Treatment
-                        {
-                            Name = b.Treatment.Name,
-                            Price = b.Treatment.Price
-                        },
-                        Customer = new ApplicationUser
-                        {
-                            FirstName = b.Customer.FirstName,
-                            LastName = b.Customer.LastName,
-                            Email = b.Customer.Email,
-                            PhoneNumber = b.Customer.PhoneNumber
-                        },
-                    })
-                    .FirstOrDefaultAsync(booking => booking.Id == id);
+                    .Include(b => b.Hairdresser)
+                    .FirstOrDefaultAsync(b => b.Id == id);
 
                 if (booking == null)
                     return NotFound();
 
-                return Ok(booking);
+                var dto = new BookingResponseDto
+                {
+                    Id = booking.Id,
+                    Start = booking.Start,
+                    End = booking.End,
+                    Treatment = booking.Treatment,
+                    UserDto = new UserDto
+                    {
+                        UserName = booking.Customer.UserName,
+                        Email = booking.Customer.Email,
+                        PhoneNumber = booking.Customer.PhoneNumber
+                    },
+                    Hairdresser = booking.Hairdresser
+                };
+
+                return Ok(dto);
             }
             catch (ArgumentNullException)
             {
