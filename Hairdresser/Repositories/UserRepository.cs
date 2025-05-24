@@ -1,16 +1,19 @@
 ﻿using Hairdresser.Data;
 using Hairdresser.DTOs;
+using Hairdresser.Enums;
 using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Hairdresser.Repositories
 {
-	public class UserRepository(ApplicationDBContext context) : IGenericRepository<ApplicationUser>, IUserRepository
+	public class UserRepository(ApplicationDBContext context, UserManager<ApplicationUser> userManager) : IGenericRepository<ApplicationUser>, IUserRepository
 	{
 		private readonly ApplicationDBContext _context = context;
+		private readonly UserManager<ApplicationUser> _userManager = userManager;
 
 		public async Task AddAsync(ApplicationUser entity)
 		{
@@ -61,6 +64,29 @@ namespace Hairdresser.Repositories
 								.ThenInclude(b => b.Treatment)
 							.Select(user => user.MapToHairdresserWithBookingsRespondDTO())
 							.FirstOrDefaultAsync();
+		}
+
+		public async Task<UserDTO?> RigisterUserAsync(RegisterUserDto registerUserDto, UserRoleEnum userRole)
+		{
+			ArgumentNullException.ThrowIfNull(registerUserDto, nameof(registerUserDto));
+
+			var user = new ApplicationUser
+			{
+				FirstName = registerUserDto.FirstName,
+				LastName = registerUserDto.LastName,
+				UserName = registerUserDto.UserName,
+				Email = registerUserDto.Email,
+				PhoneNumber = registerUserDto.PhoneNumber
+			};
+			var result = await _userManager.CreateAsync(user, registerUserDto.Password);
+
+			if (!result.Succeeded)
+			{
+				return null;
+			}
+
+			await _userManager.AddToRoleAsync(user, userRole.ToString());
+			return user.MapToUserDTO();
 		}
 	}
 }
