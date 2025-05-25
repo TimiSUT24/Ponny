@@ -1,5 +1,6 @@
 ﻿using Hairdresser.Data;
 using Hairdresser.DTOs;
+using Hairdresser.DTOs.User;
 using Hairdresser.Enums;
 using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
@@ -32,7 +33,7 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Create([FromBody] RegisterUserDto userRequest)
-        {   
+        {
             var hairdresser = await _repository.RigisterUserAsync(userRequest, UserRoleEnum.Hairdresser);
 
             if (hairdresser == null)
@@ -45,6 +46,34 @@ namespace Hairdresser.Controllers
             return CreatedAtAction(nameof(GetHairdresserById), new { id = hairdresser.Id }, hairdresser);
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> UpdateHairdresser(string id, [FromBody] RegisterUserDto userRequest)
+        {
+            var hairdresser = await _repository.GetByIdAsync(id);
+
+            if (hairdresser is null)
+            {
+                return NotFound("Hairdresser not found");
+            }
+
+            hairdresser.FirstName = userRequest.FirstName;
+            hairdresser.LastName = userRequest.LastName;
+            hairdresser.Email = userRequest.Email;
+            hairdresser.PhoneNumber = userRequest.PhoneNumber;
+            hairdresser.UserName = userRequest.Email;
+
+            await _repository.UpdateAsync(hairdresser);
+
+            await _repository.SaveChangesAsync();
+            await _repository.SaveChangesAsync();
+
+            return Ok(hairdresser.MapToUserDTO());
+        }
         // Get week schedule for hairdresser
         [Authorize(Roles = "Hairdresser")]
         [HttpGet("schedule")]
