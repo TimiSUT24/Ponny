@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using HairdresserClassLibrary.Models;
 using Hairdresser.Data;
-using Hairdresser.DTOs;
 using Microsoft.AspNetCore.Identity;
+using Hairdresser.DTOs.User;
 
 namespace Hairdresser.Controllers
 {

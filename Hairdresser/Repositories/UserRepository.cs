@@ -1,5 +1,5 @@
 ﻿using Hairdresser.Data;
-using Hairdresser.DTOs;
+using Hairdresser.DTOs.User;
 using Hairdresser.Enums;
 using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
@@ -42,7 +42,7 @@ namespace Hairdresser.Repositories
 
 		public async Task UpdateAsync(ApplicationUser entity)
 		{
-			_context.Users.Update(entity);
+			await _userManager.UpdateAsync(entity);
 		}
 		public async Task SaveChangesAsync()
 		{

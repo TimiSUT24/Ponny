@@ -1,4 +1,4 @@
-﻿using Hairdresser.DTOs;
+﻿using Hairdresser.DTOs.User;
 using Hairdresser.Services;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Http;
