@@ -52,13 +52,14 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> UpdateHairdresser(string id, [FromBody] RegisterUserDto userRequest)
+        public async Task<IActionResult> UpdateHairdresser(string id, [FromBody] UpdateUserDTO userRequest)
         {
-            var hairdresser = await _repository.GetByIdAsync(id);
+            var hairdresser = await GetUserByRoleAsync(id, UserRoleEnum.Hairdresser);
+            // var hairdresser = await _repository.GetByIdAsync(id);
 
             if (hairdresser is null)
             {
-                return NotFound("Hairdresser not found");
+                return Unauthorized("Hairdresser is Unauthorized");
             }
 
             hairdresser.FirstName = userRequest.FirstName;
