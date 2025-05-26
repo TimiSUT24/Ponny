@@ -13,9 +13,10 @@ namespace Hairdresser.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HairdresserController(ApplicationDBContext context, IUserRepository repository) : ControllerBase
+    public class HairdresserController(ApplicationDBContext context, IUserRepository UserRepository, IGenericRepository<Booking> BookingRepository) : ControllerBase
     {
-        private readonly IUserRepository _repository = repository;
+        private readonly IUserRepository _userRepository = UserRepository;
+        private readonly IGenericRepository<Booking> _bookingRepository = BookingRepository;
         private readonly ApplicationDBContext _context = context;
 
 
@@ -23,7 +24,7 @@ namespace Hairdresser.Controllers
         [HttpGet(Name = "GetAllHairdressers")]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAll()
         {
-            var hairdressers = (await _repository.GetAllAsync()).Select(user => user.MapToUserDTO());
+            var hairdressers = (await _userRepository.GetAllAsync()).Select(user => user.MapToUserDTO());
             return Ok(hairdressers);
         }
 
@@ -34,14 +35,14 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Create([FromBody] RegisterUserDto userRequest)
         {
-            var hairdresser = await _repository.RigisterUserAsync(userRequest, UserRoleEnum.Hairdresser);
+            var hairdresser = await _userRepository.RigisterUserAsync(userRequest, UserRoleEnum.Hairdresser);
 
             if (hairdresser == null)
             {
                 return BadRequest("Failed to create hairdresser");
             }
 
-            await _repository.SaveChangesAsync();
+            await _userRepository.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetHairdresserById), new { id = hairdresser.Id }, hairdresser);
         }
@@ -68,13 +69,42 @@ namespace Hairdresser.Controllers
             hairdresser.PhoneNumber = userRequest.PhoneNumber;
             hairdresser.UserName = userRequest.Email;
 
-            await _repository.UpdateAsync(hairdresser);
+            await _userRepository.UpdateAsync(hairdresser);
 
-            await _repository.SaveChangesAsync();
-            await _repository.SaveChangesAsync();
+            await _userRepository.SaveChangesAsync();
+            await _userRepository.SaveChangesAsync();
 
             return Ok(hairdresser.MapToUserDTO());
         }
+
+        [Authorize(Roles = "Hairdresser,Admin")]
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteHairdresser(string id)
+        {
+            var hairdresser = await _userRepository.GetByIdAsync(id);
+
+            if (hairdresser is null)
+            {
+                return NotFound("Hairdresser not found");
+            }
+
+            var userBookings = await _bookingRepository.FindAsync(booking => booking.HairdresserId == hairdresser.Id);
+
+            if (userBookings.Any())
+            {
+                return BadRequest("Cannot delete hairdresser with existing bookings");
+            }
+
+            await _userRepository.DeleteAsync(hairdresser);
+            await _userRepository.SaveChangesAsync();
+
+            return NoContent();
+        }
+        
         // Get week schedule for hairdresser
         [Authorize(Roles = "Hairdresser")]
         [HttpGet("schedule")]
@@ -134,7 +164,7 @@ namespace Hairdresser.Controllers
                 return Unauthorized("Hairdresser is Unauthorized");
             }
 
-            var hairdresser = await _repository.GetHairdressersWithBookings(adminUser.Id);
+            var hairdresser = await _userRepository.GetHairdressersWithBookings(adminUser.Id);
 
             if (hairdresser == null)
             {
@@ -165,7 +195,7 @@ namespace Hairdresser.Controllers
                 return null;
             }
 
-            return await _repository.GetByIdAsync(userId);
+            return await _userRepository.GetByIdAsync(userId);
         }
     }
 }
