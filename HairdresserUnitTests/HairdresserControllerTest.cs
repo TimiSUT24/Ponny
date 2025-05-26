@@ -1,11 +1,13 @@
 using Hairdresser.Controllers;
 using Hairdresser.Data;
 using Hairdresser.Repositories;
+using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Company.TestProject1;
 
@@ -14,6 +16,7 @@ public class HairdresserControllerTest
 {
     private ApplicationDBContext? _context;
     private HairdresserController? _hairdresserController;
+    private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
 
     [TestInitialize]
     public void Setup()
@@ -23,9 +26,15 @@ public class HairdresserControllerTest
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
+        var userStore = new Mock<IUserStore<ApplicationUser>>();
+        var userManager = new UserManager<ApplicationUser>(
+                userStore.Object, null!, null!, null!, null!, null!, null!, null!, null!
+            );
+
         _context = new ApplicationDBContext(options);
-        var userRepository = new UserRepository(_context);
-        _hairdresserController = new HairdresserController(_context, userRepository);
+        var userRepository = new UserRepository(_context, userManager);
+        var bookingRepository = new Mock<IGenericRepository<Booking>>().Object;
+        _hairdresserController = new HairdresserController(_context, userRepository, bookingRepository);
     }
 
     [TestCleanup]

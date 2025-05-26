@@ -1,13 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+﻿using Moq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Hairdresser.Controllers;
 using Hairdresser.Data;
-using Hairdresser.DTOs;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
+using Hairdresser.DTOs.User;
 
 namespace HairdresserUnitTests
 {
