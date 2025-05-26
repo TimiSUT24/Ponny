@@ -61,5 +61,25 @@ namespace Hairdresser.Repositories
                 .Include(b => b.Hairdresser)
                 .FirstOrDefaultAsync(b => b.Id == id && b.CustomerId == customerId);
         }
+
+        public async Task<IEnumerable<Booking>> GetWeekScheduleWithDetailsAsync(string hairdresserId, DateTime weekStart)
+        {
+            var weekEnd = weekStart.AddDays(7);
+            return await _context.Bookings
+                .Where(b => b.HairdresserId == hairdresserId && b.Start >= weekStart && b.Start < weekEnd)
+                .Include(b => b.Customer)
+                .Include(b => b.Treatment)
+                .OrderBy(b => b.Start)
+                .ToListAsync();
+        }
+
+        public async Task<Booking?> GetBookingWithDetailsAsync(int bookingId)
+        {
+            return await _context.Bookings
+                .Include(b => b.Customer)
+                .Include(b => b.Treatment)
+                .Include(b => b.Hairdresser)
+                .FirstOrDefaultAsync(b => b.Id == bookingId);
+        }
     }
 }
