@@ -5,7 +5,7 @@ namespace Hairdresser.Repositories.Interfaces
 {
     public interface IHairdresserService
     {
-        Task<IEnumerable<ApplicationUser>> GetAllHairdressersAsync();
+        Task<IEnumerable<UserDto>> GetAllHairdressersAsync();
 
         Task<IEnumerable<BookingResponseDto>> GetWeekScheduleAsync(string hairdresserId, DateTime weekStart);
 

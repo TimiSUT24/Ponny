@@ -16,9 +16,18 @@ namespace Hairdresser.Services
             _bookingRepo = bookingRepo;
         }
 
-        public async Task<IEnumerable<ApplicationUser>> GetAllHairdressersAsync()
+        public async Task<IEnumerable<UserDto>> GetAllHairdressersAsync()
         {
-            return await _hairdresserRepo.GetAllAsync();
+            var users = await _hairdresserRepo.GetAllAsync();
+
+            return users.Select(u => new UserDto
+            {
+                Id = u.Id,
+                UserName = u.UserName,
+                Email = u.Email,
+                PhoneNumber = u.PhoneNumber,
+                Role = "Hairdresser"
+            });
         }
 
         public async Task<IEnumerable<BookingResponseDto>> GetWeekScheduleAsync(string hairdresserId, DateTime weekStart)

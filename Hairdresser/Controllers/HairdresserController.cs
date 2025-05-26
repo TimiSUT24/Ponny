@@ -20,7 +20,7 @@ namespace Hairdresser.Controllers
 
         [AllowAnonymous]
         [HttpGet(Name = "GetAllHairdressers")]
-        public async Task<IEnumerable<ApplicationUser>> GetAllHairdressersAsync()
+        public async Task<IEnumerable<UserDto>> GetAllHairdressersAsync()
         {
             return await _hairdresserService.GetAllHairdressersAsync();
         }
