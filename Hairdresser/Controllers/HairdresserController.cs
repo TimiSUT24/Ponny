@@ -143,7 +143,7 @@ namespace Hairdresser.Controllers
 
         [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HairdresserRespondDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HairdresserResponseDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetHairdresserById(string id)
