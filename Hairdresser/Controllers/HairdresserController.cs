@@ -36,7 +36,7 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Create([FromBody] RegisterUserDto userRequest)
         {
-            var hairdresser = await _userRepository.RigisterUserAsync(userRequest, UserRoleEnum.Hairdresser);
+            var hairdresser = await _userRepository.RegisterUserAsync(userRequest, UserRoleEnum.Hairdresser);
 
             if (hairdresser == null)
             {
@@ -102,7 +102,7 @@ namespace Hairdresser.Controllers
 
             return NoContent();
         }
-        
+
         // Get week schedule for hairdresser
         [Authorize(Roles = "Hairdresser")]
         [HttpGet("schedule")]

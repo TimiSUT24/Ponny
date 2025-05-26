@@ -66,7 +66,7 @@ namespace Hairdresser.Repositories
 							.FirstOrDefaultAsync();
 		}
 
-		public async Task<UserDTO?> RigisterUserAsync(RegisterUserDto registerUserDto, UserRoleEnum userRole)
+		public async Task<UserDTO?> RegisterUserAsync(RegisterUserDto registerUserDto, UserRoleEnum userRole)
 		{
 			ArgumentNullException.ThrowIfNull(registerUserDto, nameof(registerUserDto));
 
@@ -89,9 +89,9 @@ namespace Hairdresser.Repositories
 			return user.MapToUserDTO();
 		}
 
-        public Task<bool> AnyAsync(Expression<Func<ApplicationUser, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public Task<bool> AnyAsync(Expression<Func<ApplicationUser, bool>> predicate)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

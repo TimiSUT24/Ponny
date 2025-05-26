@@ -9,5 +9,5 @@ public interface IUserRepository : IGenericRepository<ApplicationUser>
 {
     Task<ApplicationUser?> GetByIdAsync(string id);
     Task<HairdresserRespondDTO?> GetHairdressersWithBookings(string userId);
-    Task<UserDTO?> RigisterUserAsync(RegisterUserDto registerUserDto, UserRoleEnum userRole);
+    Task<UserDTO?> RegisterUserAsync(RegisterUserDto registerUserDto, UserRoleEnum userRole);
 }
