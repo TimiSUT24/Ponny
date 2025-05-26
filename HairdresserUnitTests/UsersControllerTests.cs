@@ -130,5 +130,49 @@ namespace HairdresserUnitTests
             Assert.AreEqual("newname", fetched!.UserName);
             Assert.AreEqual("new@example.com", fetched.Email);
         }
+
+        [TestMethod]
+        public async Task Register_AddsUserRole_User()
+        {
+            // Arrange
+            var dto = new RegisterUserDto
+            {
+                UserName = "newuser",
+                Email = "newuser@example.com",
+                PhoneNumber = "1234567890",
+                Password = "Password123!",
+                ConfirmPassword = "Password123!"
+            };
+
+            var createdUser = new ApplicationUser
+            {
+                UserName = dto.UserName,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber
+            };
+
+            _userManagerMock.Setup(x => x.FindByNameAsync(dto.UserName))
+                .ReturnsAsync((ApplicationUser?)null);
+            _userManagerMock.Setup(x => x.FindByEmailAsync(dto.Email))
+                .ReturnsAsync((ApplicationUser?)null);
+            _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), dto.Password))
+                .Callback<ApplicationUser, string>((user, _) =>
+                {
+                    // Simulate that user gets a ID after registration
+                    user.Id = "generated-user-id";
+                })
+                .ReturnsAsync(IdentityResult.Success);
+
+            _userManagerMock.Setup(x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), "User"))
+                .ReturnsAsync(IdentityResult.Success)
+                .Verifiable("AddToRoleAsync should be called with 'User'");
+
+            // Act
+            var result = await _controller.Register(dto);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(CreatedAtActionResult));
+            _userManagerMock.Verify(x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), "User"), Times.Once);
+        }
     }
 }
