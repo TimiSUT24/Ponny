@@ -9,5 +9,7 @@ namespace Hairdresser.Repositories.Interfaces
         Task<IEnumerable<Booking>> GetWeekScheduleWithDetailsAsync(string hairdresserId, DateTime weekStart);
 
         Task<Booking?> GetBookingWithDetailsAsync(int bookingId);
+
+        Task<IEnumerable<Booking>> GetMonthlyScheduleWithDetailsAsync(string hairdresserId, int year, int month);
     }
 }
