@@ -140,3 +140,4 @@ appsettings.Development.json
 .devcontainer
 
 Properties/launchSettings.json
+/Hairdresser/appsettings.json
