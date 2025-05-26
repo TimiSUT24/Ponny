@@ -8,7 +8,7 @@ using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HairdresseerUnitTests
+namespace HairdresserUnitTests
 {
     [TestClass]
     public class TreatmentControllerTests
