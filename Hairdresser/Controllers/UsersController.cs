@@ -65,7 +65,7 @@ namespace Hairdresser.Controllers
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-                var role = roles.FirstOrDefault(); // Tar första rollen, eller null om ingen finns
+                var role = roles.FirstOrDefault(); // Takes the first role, or null if none exists.
 
                 userRespondDtos.Add(new UserRespondDto
                 {
