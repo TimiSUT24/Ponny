@@ -88,5 +88,10 @@ namespace Hairdresser.Repositories
 			await _userManager.AddToRoleAsync(user, userRole.ToString());
 			return user.MapToUserDTO();
 		}
-	}
+
+        public Task<bool> AnyAsync(Expression<Func<ApplicationUser, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

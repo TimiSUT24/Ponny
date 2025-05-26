@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Hairdresser.DTOs;
+using Hairdresser.DTOs.User;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
@@ -112,7 +113,7 @@ namespace Hairdresser.Services
                 Id = booking.Id,
                 Start = booking.Start,  
                 End = booking.End,
-                UserDto = new UserDto
+                UserDto = new UserDTO
                 {
                     Id = savedBooking.CustomerId,
                     UserName =  savedBooking.Customer.UserName,
@@ -219,9 +220,11 @@ namespace Hairdresser.Services
                 Id = booking.Id,
                 Start = booking.Start,
                 End = booking.End,
-                UserDto = new UserDto
+                UserDto = new UserDTO
                 {
                     Id = updatedBooking.CustomerId,
+                    FirstName = updatedBooking.Customer.FirstName,
+                    LastName = updatedBooking.Customer.LastName,
                     UserName = updatedBooking.Customer.UserName,
                     Email = updatedBooking.Customer.Email,
                     PhoneNumber = updatedBooking.Customer.PhoneNumber
