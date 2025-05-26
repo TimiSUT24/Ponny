@@ -68,7 +68,7 @@ public class HairdresserControllerTest
     }
 
     [TestMethod]
-    public async Task GetAll_ShouldReturnEmptyList_WhenNoHairdressers()
+    public async Task GetAll_ShalldReturnEmptyList_WhenNoHairdressers()
     {
         // Act
         var hairdressers = await GetAllHairdressersAsync();
