@@ -1,5 +1,6 @@
 ﻿using Hairdresser.Data;
 using Hairdresser.DTOs;
+using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,41 +14,19 @@ namespace Hairdresser.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
-        private readonly ApplicationDBContext _context;
+        private readonly IAdminService _adminService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public AdminController(ApplicationDBContext context, UserManager<ApplicationUser> userManager)
+        public AdminController(IAdminService adminService, UserManager<ApplicationUser> userManager)
         {
-            _context = context;
+            _adminService = adminService;
             _userManager = userManager;
         }
 
         [HttpGet("bookings-overview")]
         public async Task<IActionResult> GetAllBookingsOverview()
         {
-            var bookings = await _context.Bookings
-                .Include(b => b.Customer)
-                .Include(b => b.Treatment)
-                .Include(b => b.Hairdresser)
-                .OrderByDescending(b => b.Start)
-                .ToListAsync();
-
-            var bookingDtos = bookings.Select(b => new BookingResponseDto
-            {
-                Id = b.Id,
-                Start = b.Start,
-                End = b.End,
-                Treatment = b.Treatment,
-                UserDto = new UserDto
-                {
-                    Id = b.Customer.Id,
-                    UserName = b.Customer.UserName,
-                    Email = b.Customer.Email,
-                    PhoneNumber = b.Customer.PhoneNumber
-                },
-                Hairdresser = b.Hairdresser
-            });
-
+            var bookingDtos = await _adminService.GetAllBookingsOverviewAsync();
             return Ok(bookingDtos);
         }
 
