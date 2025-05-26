@@ -17,4 +17,15 @@ public static class BookingMapper
             Treatment = booking.Treatment.MapToTreatmentDto()
         };
     }
+    public static BookingDto MapToBookingDto(this Booking booking)
+    {
+        ArgumentNullException.ThrowIfNull(booking);
+
+        return new BookingDto
+        {
+            Id = booking.Id,
+            Start = booking.Start,
+            End = booking.End,
+        };
+    }
 }

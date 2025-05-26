@@ -1,4 +1,6 @@
 ﻿using Hairdresser.Data;
+using Hairdresser.DTOs;
+using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
@@ -49,17 +51,36 @@ namespace Hairdresser.Repositories
 		}
 
 		public async Task<bool> AnyAsync(Expression<Func<Booking, bool>> predicate)
-        {
-            return await _context.Bookings.AnyAsync(predicate);
-        }
+		{
+			return await _context.Bookings.AnyAsync(predicate);
+		}
 
-        public async Task<Booking?> GetByIdWithDetailsAsync(int id, string customerId)
+		public async Task<Booking?> GetByIdWithDetailsAsync(int id, string customerId)
+		{
+			return await _context.Bookings
+				.Include(b => b.Treatment)
+				.Include(b => b.Customer)
+				.Include(b => b.Hairdresser)
+				.FirstOrDefaultAsync(b => b.Id == id && b.CustomerId == customerId);
+		}
+
+        public async Task<HairdresserBookingRespondDTO?> GetBookingWithDetailsAsync(int id)
         {
             return await _context.Bookings
-                .Include(b => b.Treatment)
-                .Include(b => b.Customer)
-                .Include(b => b.Hairdresser)
-                .FirstOrDefaultAsync(b => b.Id == id && b.CustomerId == customerId);
+                    .Include(b => b.Customer)
+                    .Include(b => b.Treatment)
+                    .Select(booking => booking.MapToBookingResponseDto())
+                    .FirstOrDefaultAsync(booking => booking.Id == id);
+        }
+
+        public async Task<IEnumerable<BookingDto>> GetBookingsBetweenDatesAsync(DateTime start, DateTime end, string hairdresserId)
+        {
+            return await _context.Bookings
+				.Where(b => b.HairdresserId == hairdresserId && b.Start >= start && b.Start < end)
+				.Include(b => b.Customer)
+				.Include(b => b.Treatment)
+				.Select(b => b.MapToBookingDto())
+                .ToListAsync();
         }
     }
 }

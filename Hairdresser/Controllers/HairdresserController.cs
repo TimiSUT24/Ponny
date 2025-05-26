@@ -3,6 +3,7 @@ using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
 using Hairdresser.Enums;
 using Hairdresser.Mapping;
+using Hairdresser.Repositories;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +14,10 @@ namespace Hairdresser.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HairdresserController(ApplicationDBContext context, IUserRepository UserRepository, IGenericRepository<Booking> BookingRepository) : ControllerBase
+    public class HairdresserController(ApplicationDBContext context, IUserRepository UserRepository, BookingRepository BookingRepository) : ControllerBase
     {
         private readonly IUserRepository _userRepository = UserRepository;
-        private readonly IGenericRepository<Booking> _bookingRepository = BookingRepository;
+        private readonly BookingRepository _bookingRepository = BookingRepository;
         private readonly ApplicationDBContext _context = context;
 
 
@@ -66,7 +67,7 @@ namespace Hairdresser.Controllers
             hairdresser.LastName = userRequest.LastName;
             hairdresser.Email = userRequest.Email;
             hairdresser.PhoneNumber = userRequest.PhoneNumber;
-            hairdresser.UserName = userRequest.UserName;
+            hairdresser.UserName = userRequest.Email;
 
             await _userRepository.UpdateAsync(hairdresser);
             await _userRepository.SaveChangesAsync();
@@ -109,11 +110,7 @@ namespace Hairdresser.Controllers
         {
             var weekEnd = weekStart.AddDays(7);
 
-            var bookings = await _context.Bookings
-                .Where(b => b.HairdresserId == hairdresserId && b.Start >= weekStart && b.Start < weekEnd)
-                .Include(b => b.Customer)
-                .Include(b => b.Treatment)
-                .ToListAsync();
+            var bookings = await _bookingRepository.GetBookingsBetweenDatesAsync(weekStart, weekEnd, hairdresserId);
 
             return Ok(bookings);
         }
@@ -127,11 +124,7 @@ namespace Hairdresser.Controllers
         {
             try
             {
-                var booking = await _context.Bookings
-                    .Include(b => b.Customer)
-                    .Include(b => b.Treatment)
-                    .Select(booking => booking.MapToBookingResponseDto())
-                    .FirstOrDefaultAsync(booking => booking.Id == id);
+                var booking = await _bookingRepository.GetBookingWithDetailsAsync(id);
 
                 if (booking == null)
                     return NotFound();

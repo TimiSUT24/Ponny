@@ -1,9 +1,12 @@
-﻿using HairdresserClassLibrary.Models;
+﻿using Hairdresser.DTOs;
+using HairdresserClassLibrary.Models;
 
 namespace Hairdresser.Repositories.Interfaces
 {
     public interface IBookingRepository : IGenericRepository<Booking>
     {
-        Task<Booking> GetByIdWithDetailsAsync(int id,string customerId);
+        Task<Booking> GetByIdWithDetailsAsync(int id, string customerId);
+        Task<HairdresserBookingRespondDTO?> GetBookingWithDetailsAsync(int id);
+        Task<IEnumerable<BookingDto>> GetBookingsBetweenDatesAsync(DateTime start, DateTime end, string hairdresserId);
     }
 }
