@@ -39,6 +39,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.AddScoped<JWT_Service>();
 builder.Services.AddScoped<IHairdresserService, HairdresserService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IHairdresserRepository, HairdresserRepository>();
 
 //JWT Authentication
 builder.Services.AddAuthentication(options =>
