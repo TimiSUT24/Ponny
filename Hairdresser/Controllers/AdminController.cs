@@ -31,8 +31,11 @@ namespace Hairdresser.Controllers
         }
 
         [HttpPost("add-hairdresser")]
-        public async Task<IActionResult> CreateHairdresser([FromBody] UserDto newHairdresser)
+        public async Task<IActionResult> CreateHairdresser([FromBody] RegisterUserDto newHairdresser)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var user = new ApplicationUser
             {
                 UserName = newHairdresser.UserName,
@@ -40,7 +43,7 @@ namespace Hairdresser.Controllers
                 PhoneNumber = newHairdresser.PhoneNumber
             };
 
-            var result = await _userManager.CreateAsync(user, "DefaultPassword123!");
+            var result = await _userManager.CreateAsync(user, newHairdresser.Password);
 
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
