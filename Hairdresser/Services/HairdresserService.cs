@@ -1,23 +1,24 @@
 ﻿using Hairdresser.DTOs;
 using Hairdresser.Repositories.Interfaces;
+using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
 
 namespace Hairdresser.Services
 {
     public class HairdresserService : IHairdresserService
     {
-        private readonly IGenericRepository<ApplicationUser> _userRepo;
+        private readonly IHairdresserRepository _hairdresserRepo;
         private readonly IBookingRepository _bookingRepo;
 
-        public HairdresserService(IGenericRepository<ApplicationUser> userRepo, IBookingRepository bookingRepo)
+        public HairdresserService(IHairdresserRepository hairdresserRepo, IBookingRepository bookingRepo)
         {
-            _userRepo = userRepo;
+            _hairdresserRepo = hairdresserRepo;
             _bookingRepo = bookingRepo;
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetAllHairdressersAsync()
         {
-            return await _userRepo.GetAllAsync();
+            return await _hairdresserRepo.GetAllAsync();
         }
 
         public async Task<IEnumerable<BookingResponseDto>> GetWeekScheduleAsync(string hairdresserId, DateTime weekStart)
