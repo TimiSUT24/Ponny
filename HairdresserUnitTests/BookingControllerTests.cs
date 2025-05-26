@@ -161,7 +161,7 @@ namespace HairdresserUnitTests
 
             var controller = new BookingsController(mockBookingService.Object);
 
-            // Simulera inloggad användare (Claim-based)
+            // Simulate logged-in user (claim-based)
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
         new Claim(ClaimTypes.NameIdentifier, fakeUserId)
@@ -208,7 +208,7 @@ namespace HairdresserUnitTests
                 HttpContext = new DefaultHttpContext { User = user }
             };
 
-            // Mocka att bokningen krockar med en annan
+            // Mock that the booking conflicts with another one
             _mockBookingService!
                 .Setup(s => s.BookAppointment(customerId, bookingDTO))
                 .ThrowsAsync(new InvalidOperationException("Time conflict"));

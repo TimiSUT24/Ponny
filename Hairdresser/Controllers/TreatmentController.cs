@@ -50,7 +50,6 @@ namespace Hairdresser.Controllers
             await _repository.AddAsync(treatment);
             await _repository.SaveChangesAsync();
 
-            // Returnera en TreatmentDto som bekräftelse
             var result = new TreatmentDto
             {
                 Id = treatment.Id,
