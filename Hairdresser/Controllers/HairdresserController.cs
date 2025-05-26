@@ -47,7 +47,7 @@ namespace Hairdresser.Controllers
             return CreatedAtAction(nameof(GetHairdresserById), new { id = hairdresser.Id }, hairdresser);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hairdresser,Admin")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -56,7 +56,6 @@ namespace Hairdresser.Controllers
         public async Task<IActionResult> UpdateHairdresser(string id, [FromBody] UpdateUserDTO userRequest)
         {
             var hairdresser = await GetUserByRoleAsync(id, UserRoleEnum.Hairdresser);
-            // var hairdresser = await _repository.GetByIdAsync(id);
 
             if (hairdresser is null)
             {
@@ -67,11 +66,9 @@ namespace Hairdresser.Controllers
             hairdresser.LastName = userRequest.LastName;
             hairdresser.Email = userRequest.Email;
             hairdresser.PhoneNumber = userRequest.PhoneNumber;
-            hairdresser.UserName = userRequest.Email;
+            hairdresser.UserName = userRequest.UserName;
 
             await _userRepository.UpdateAsync(hairdresser);
-
-            await _userRepository.SaveChangesAsync();
             await _userRepository.SaveChangesAsync();
 
             return Ok(hairdresser.MapToUserDTO());
