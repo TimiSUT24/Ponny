@@ -82,7 +82,7 @@ namespace Hairdresser.Controllers
 
         // Change User Info
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] UserDTO updatedUser)
+        public async Task<IActionResult> Update(string id, [FromBody] UserDto updatedUser)
         {
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null)

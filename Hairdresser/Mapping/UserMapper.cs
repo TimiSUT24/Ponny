@@ -21,11 +21,11 @@ public static class UserMapper
             Bookings = userDto.HairdresserBookings.Select(booking => booking.MapToBookingResponseDto()).ToList()
         };
     }
-    public static UserDTO MapToUserDTO(this ApplicationUser user)
+    public static UserDto MapToUserDTO(this ApplicationUser user)
     {
         ArgumentNullException.ThrowIfNull(user);
 
-        return new UserDTO
+        return new UserDto
         {
             Id = user.Id,
             FirstName = user.FirstName,
