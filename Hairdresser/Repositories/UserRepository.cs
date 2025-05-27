@@ -54,7 +54,7 @@ namespace Hairdresser.Repositories
 			return await _context.Users.FindAsync(id);
 		}
 
-		public async Task<HairdresserResponseDTO?> GetHairdressersWithBookings(string userId)
+		public async Task<HairdresserResponseDto?> GetHairdressersWithBookings(string userId)
 		{
 			ArgumentNullException.ThrowIfNullOrWhiteSpace(userId, nameof(userId));
 

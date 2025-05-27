@@ -2,7 +2,7 @@
 
 namespace Hairdresser.Repositories.Interfaces
 {
-    public interface IHairdresserRepository
+    public interface IHairdresserRepository : IGenericRepository<ApplicationUser>
     {
         Task<IEnumerable<ApplicationUser>> GetAllAsync();
 

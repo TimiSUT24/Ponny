@@ -10,7 +10,7 @@ public class BookingResponseDto
     public DateTime Start { get; set; }
     public DateTime End { get; set; }
 
-    public Treatment Treatment { get; set; } = null!;
+    public TreatmentDto Treatment { get; set; } = null!;
     public UserDto UserDto { get; set; } = null!;
     public UserDto Hairdresser { get; set; } = null!;
 }

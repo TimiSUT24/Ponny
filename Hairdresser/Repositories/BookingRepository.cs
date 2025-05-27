@@ -69,6 +69,7 @@ namespace Hairdresser.Repositories
             return await _context.Bookings
                     .Include(b => b.Customer)
                     .Include(b => b.Treatment)
+					.Include(b => b.Hairdresser)
                     .Select(booking => booking.MapToBookingResponseDto())
                     .FirstOrDefaultAsync(booking => booking.Id == id);
         }

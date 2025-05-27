@@ -51,21 +51,12 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateHairdresser(string id, [FromBody] UpdateUserDto userRequest)
         {
-            var hairdresser = await GetUserByRoleAsync(id, UserRoleEnum.Hairdresser);
+            var hairdresser = await _hairdresserService.UpdateHairdresserAsync(id, UserRoleEnum.Hairdresser);
 
             if (hairdresser is null)
             {
                 return Unauthorized("Hairdresser is Unauthorized");
-            }
-
-            hairdresser.FirstName = userRequest.FirstName;
-            hairdresser.LastName = userRequest.LastName;
-            hairdresser.Email = userRequest.Email;
-            hairdresser.PhoneNumber = userRequest.PhoneNumber;
-            hairdresser.UserName = userRequest.Email;
-
-            await _userRepository.UpdateAsync(hairdresser);
-            await _userRepository.SaveChangesAsync();
+            }           
 
             return Ok(hairdresser.MapToUserDTO());
         }
@@ -79,15 +70,16 @@ namespace Hairdresser.Controllers
         {
             var booking = await _hairdresserService.GetBookingDetailsAsync(id);
             if (booking == null)
+            {
                 return NotFound();
-
+            }
             return Ok(booking);
         }
         
 
         [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HairdresserResponseDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HairdresserResponseDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetHairdresserById(string id)

@@ -13,6 +13,6 @@ namespace Hairdresser.Repositories.Interfaces
         Task<IEnumerable<BookingResponseDto>> GetMonthlyScheduleAsync(string hairdresserId, int year, int month);
 
         Task<BookingResponseDto?> GetBookingDetailsAsync(int bookingId);
-        Task<ApplicationUser?> UpdateHairdresserAsync(string id, UpdateUserDTO userRequest);
+        Task<ApplicationUser?> UpdateHairdresserAsync(string id, UpdateUserDto userRequest);
     }
 }

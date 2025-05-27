@@ -46,7 +46,10 @@ namespace Hairdresser.Services
         public async Task<BookingResponseDto?> GetBookingDetailsAsync(int bookingId)
         {
             var booking = await _bookingRepo.GetBookingWithDetailsAsync(bookingId);
-            if (booking == null) return null;
+            if (booking == null)
+            {
+                return null;
+            }          
 
             return new BookingResponseDto
             {
@@ -56,11 +59,10 @@ namespace Hairdresser.Services
                 Treatment = booking.Treatment,
                 UserDto = new UserDto
                 {
-                    UserName = booking.Customer,
+                    UserName = booking.Customer.UserName,
                     Email = booking.Customer?.Email,
                     PhoneNumber = booking.Customer?.PhoneNumber
-                },
-                Hairdresser = booking.Hairdresser
+                },               
             };
         }
 
@@ -70,7 +72,7 @@ namespace Hairdresser.Services
 
             if (hairdresser is null)
             {
-                return Unauthorized("Hairdresser is Unauthorized");
+                throw new UnauthorizedAccessException("Hairdresser is Unauthorized");
             }
 
             hairdresser.FirstName = userRequest.FirstName;
@@ -81,6 +83,8 @@ namespace Hairdresser.Services
 
             await _userRepo.UpdateAsync(hairdresser);
             await _userRepo.SaveChangesAsync();
+
+            return (hairdresser);// fix this 
         }
 
         private List<BookingResponseDto> ConvertToDtoList(IEnumerable<Booking> bookings)
@@ -90,7 +94,11 @@ namespace Hairdresser.Services
                 Id = b.Id,
                 Start = b.Start,
                 End = b.End,
-                Treatment = b.Treatment,
+                Treatment = new TreatmentDto //add more? 
+                {
+                    Name = b.Treatment.Name,
+                    Description = b.Treatment.Description,
+                },
                 UserDto = new UserDto
                 {
                     UserName = b.Customer?.UserName,
@@ -110,7 +118,7 @@ namespace Hairdresser.Services
         }
 
          private async Task<ApplicationUser?> GetUserByRoleAsync(string id, UserRoleEnum userRole)
-        {
+         {
             var roleId = await _context.Roles
                 .Where(r => r.Name == userRole.ToString())
                 .Select(r => r.Id)
@@ -130,6 +138,6 @@ namespace Hairdresser.Services
             }
 
             return await _userRepo.GetByIdAsync(userId);
-        }
+        }  // fix denna 
     }
 }
