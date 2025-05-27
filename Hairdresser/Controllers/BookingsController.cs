@@ -43,7 +43,7 @@ namespace Hairdresser.Controllers
             }
         }
         //Get booking for user
-        [ProducesResponseType(typeof(List<BookingResponseDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<BookingResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -81,7 +81,7 @@ namespace Hairdresser.Controllers
         }
 
         // Book an appointment
-        [ProducesResponseType(typeof(BookingResponseDTO), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(BookingResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

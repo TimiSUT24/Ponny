@@ -4,7 +4,7 @@ using HairdresserClassLibrary.Models;
 
 namespace Hairdresser.DTOs;
 
-public class BookingResponseDTO
+public class BookingResponseDto
 {
     public int Id { get; set; }
     public DateTime Start { get; set; }

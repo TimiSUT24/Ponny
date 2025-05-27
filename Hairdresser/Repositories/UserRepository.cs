@@ -66,7 +66,7 @@ namespace Hairdresser.Repositories
 							.FirstOrDefaultAsync();
 		}
 
-		public async Task<UserDTO?> RegisterUserAsync(RegisterUserDto registerUserDto, UserRoleEnum userRole)
+		public async Task<UserDto?> RegisterUserAsync(RegisterUserDto registerUserDto, UserRoleEnum userRole)
 		{
 			ArgumentNullException.ThrowIfNull(registerUserDto, nameof(registerUserDto));
 
@@ -92,6 +92,27 @@ namespace Hairdresser.Repositories
 		public Task<bool> AnyAsync(Expression<Func<ApplicationUser, bool>> predicate)
 		{
 			throw new NotImplementedException();
+		}
+
+		public async Task<IEnumerable<UserDto?>> GetALLHairdressersAsync()
+		{
+			var hairdresserRoleId = await _context.Roles
+				.Where(r => r.Name == "Hairdresser")
+				.Select(r => r.Id)
+				.FirstOrDefaultAsync();
+
+			return await (from user in _context.Users
+						  join userRole in _context.UserRoles on user.Id equals userRole.UserId
+						  where userRole.RoleId == hairdresserRoleId
+						  select user).Select(user => new UserDto
+						  {
+							  Id = user.Id,
+							  FirstName = user.FirstName,
+							  LastName = user.LastName,
+							  UserName = user.UserName,
+							  Email = user.Email,
+							  PhoneNumber = user.PhoneNumber
+						  }).ToListAsync();
 		}
 	}
 }

@@ -2,6 +2,7 @@ using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
 using Hairdresser.Enums;
 using Hairdresser.Mapping;
+using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -105,30 +106,6 @@ namespace Hairdresser.Controllers
             }
 
             return Ok(hairdresser);
-        }
-
-        // Move this method to a more appropriate place, like a service
-        private async Task<ApplicationUser?> GetUserByRoleAsync(string id, UserRoleEnum userRole)
-        {
-            var roleId = await _context.Roles
-                .Where(r => r.Name == userRole.ToString())
-                .Select(r => r.Id)
-                .FirstOrDefaultAsync();
-            if (roleId == null)
-            {
-                return null;
-            }
-            var userId = await _context.UserRoles
-                .Where(ur => ur.RoleId == roleId && ur.UserId == id)
-                .Select(ur => ur.UserId)
-                .FirstOrDefaultAsync();
-
-            if (userId is null)
-            {
-                return null;
-            }
-
-            return await _userRepository.GetByIdAsync(userId);
-        }
+        }       
     }
 }

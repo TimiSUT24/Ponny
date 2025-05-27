@@ -8,5 +8,5 @@ public class HairdresserBookingRespondDTO
     public DateTime Start { get; set; }
     public DateTime End { get; set; }
 
-    public TreatmentDTO Treatment { get; set; } = null!;
+    public TreatmentDto Treatment { get; set; } = null!;
 }

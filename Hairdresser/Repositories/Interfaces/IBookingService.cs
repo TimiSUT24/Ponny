@@ -7,11 +7,11 @@ namespace Hairdresser.Repositories.Interfaces
     {
         Task<List<DateTime>> GetAllAvailableTimes(string hairdresserId, int treatmentId, DateTime day);
 
-        Task<BookingResponseDTO> BookAppointment(string customerId, BookingRequestDto request);
+        Task<BookingResponseDto> BookAppointment(string customerId, BookingRequestDto request);
 
         Task<BookingRequestDto> CancelBooking(string customerId, int bookingId);
-        Task<BookingResponseDTO> GetBookingByIdAsync(int bookingId, string customerId);
+        Task<BookingResponseDto> GetBookingByIdAsync(int bookingId, string customerId);
 
-        Task<BookingResponseDTO> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto);
+        Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto);
     }
 }
