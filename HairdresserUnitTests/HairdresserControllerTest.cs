@@ -2,6 +2,7 @@ using Hairdresser.Controllers;
 using Hairdresser.Data;
 using Hairdresser.Repositories;
 using Hairdresser.Repositories.Interfaces;
+using Hairdresser.Services;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ public class HairdresserControllerTest
     private ApplicationDBContext? _context;
     private HairdresserController? _hairdresserController;
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
+    
 
     [TestInitialize]
     public void Setup()
@@ -33,8 +35,10 @@ public class HairdresserControllerTest
 
         _context = new ApplicationDBContext(options);
         var userRepository = new UserRepository(_context, userManager);
-        var bookingRepository = new Mock<IGenericRepository<Booking>>().Object;
-        _hairdresserController = new HairdresserController(_context, userRepository, bookingRepository);
+        var bookingRepository = new BookingRepository(_context);
+        
+        var hairdresser = new HairdresserService(userRepository, bookingRepository,userManager);
+        _hairdresserController = new HairdresserController(hairdresser);
     }
 
     [TestCleanup]
@@ -99,13 +103,13 @@ public class HairdresserControllerTest
     private async Task<IEnumerable<ApplicationUser>?> GetAllHairdressersAsync()
     {
 
-        var result = await _hairdresserController!.GetAll();
+        var result = await _hairdresserController!.GetAllHairdressersAsync();
 
-        if (result.Result is not OkObjectResult)
+        if (result is not OkObjectResult)
         {
             Assert.Fail("Expected OkObjectResult");
         }
-        var okResult = result.Result as OkObjectResult;
+        var okResult = result as OkObjectResult;
         if (okResult == null)
         {
             Assert.Fail("Expected OkObjectResult");

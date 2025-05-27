@@ -15,12 +15,11 @@ namespace Hairdresser.Controllers
     public class HairdresserController : ControllerBase
     {
         private readonly IHairdresserService _hairdresserService;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HairdresserController(IHairdresserService hairdresserService, UserManager<ApplicationUser> userManager)
+        public HairdresserController(IHairdresserService hairdresserService)
         {
             _hairdresserService = hairdresserService;
-            _userManager = userManager;
+           
         }
 
         [AllowAnonymous]
@@ -54,8 +53,8 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateHairdresser(string id, [FromBody] UpdateUserDto userRequest)
         {
-            var allHairdresser = await _userManager.GetUsersInRoleAsync(UserRoleEnum.Hairdresser.ToString());
-            var hairdresser = allHairdresser.Where(u => u.Id == id).FirstOrDefault();
+
+           var hairdresser =  await _hairdresserService.UpdateHairdresserAsync(id, userRequest);
 
             if (hairdresser is null)
             {
@@ -89,15 +88,23 @@ namespace Hairdresser.Controllers
         public async Task<IActionResult> GetHairdresserById(string id)
         {
 
-            var allHairdresser = await _userManager.GetUsersInRoleAsync(UserRoleEnum.Hairdresser.ToString());
-            var hairdresser = allHairdresser.Where(u => u.Id == id).FirstOrDefault();
-
-            if (hairdresser == null)
+            try
             {
-                return NotFound("Hairdresser not found");
+
+                var hairdresser = await _hairdresserService.GetHairdresserWithId(id);
+
+                if (hairdresser == null)
+                {
+                    return NotFound("Hairdresser not found");
+                }
+
+                return Ok(hairdresser);
+            }
+            catch
+            {
+                return NotFound();
             }
 
-            return Ok(hairdresser);
         }       
     }
 }

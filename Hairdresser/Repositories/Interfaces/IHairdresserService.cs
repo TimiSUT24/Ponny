@@ -14,5 +14,7 @@ namespace Hairdresser.Repositories.Interfaces
 
         Task<BookingResponseDto?> GetBookingDetailsAsync(int bookingId);
         Task<ApplicationUser?> UpdateHairdresserAsync(string id, UpdateUserDto userRequest);
+
+        Task<UserDto> GetHairdresserWithId(string id);
     }
 }

@@ -23,7 +23,10 @@ namespace Hairdresser.Services
                 Id = b.Id,
                 Start = b.Start,
                 End = b.End,
-                Treatment = b.Treatment,
+                Treatment = new TreatmentDto
+                {
+                    Name = b.Treatment.Name, //add more?
+                },
                 UserDto = new UserDto
                 {
                     Id = b.Customer?.Id,

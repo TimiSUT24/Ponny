@@ -1,3 +1,4 @@
+using Hairdresser.DTOs.User;
 using System;
 
 namespace Hairdresser.DTOs;

@@ -7,11 +7,11 @@ namespace Hairdresser.Mapping;
 
 public static class UserMapper
 {
-    public static HairdresserResponseDTO MapToHairdresserWithBookingsRespondDTO(this ApplicationUser userDto)
+    public static HairdresserResponseDto MapToHairdresserWithBookingsRespondDTO(this ApplicationUser userDto)
     {
         ArgumentNullException.ThrowIfNull(userDto);
 
-        return new HairdresserResponseDTO
+        return new HairdresserResponseDto
         {
             Id = userDto.Id,
             FirstName = userDto.FirstName,

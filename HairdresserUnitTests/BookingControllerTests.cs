@@ -231,7 +231,7 @@ namespace HairdresserUnitTests
                 Id = bookingId,
                 Start = rebookRequest.Start,
                 End = rebookRequest.Start.AddMinutes(45),
-                Treatment = new Treatment { Id = 2, Name = "Färgning" }
+                Treatment = new TreatmentDto { Id = 2, Name = "Färgning" }
             };
 
             _mockBookingService!
