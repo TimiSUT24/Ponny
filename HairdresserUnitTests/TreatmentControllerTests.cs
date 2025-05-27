@@ -1,6 +1,7 @@
 ﻿using Hairdresser.Controllers;
 using Hairdresser.DTOs;
 using Hairdresser.Repositories.Interfaces;
+using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,14 +14,14 @@ namespace HairdresserUnitTests
     [TestClass]
     public class TreatmentControllerTests
     {
-        private Mock<IGenericRepository<Treatment>> _mockRepo = null!;
+        private Mock<ITreatmentService> _mockService = null!;
         private TreatmentController _controller = null!;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockRepo = new Mock<IGenericRepository<Treatment>>();
-            _controller = new TreatmentController(_mockRepo.Object);
+            _mockService = new Mock<ITreatmentService>();
+            _controller = new TreatmentController(_mockService.Object);
         }
 
         [TestMethod]
@@ -33,7 +34,7 @@ namespace HairdresserUnitTests
                 new() { Id = 2, Name = "Color", Description = "Hair coloring", Duration = 60, Price = 800 }
             };
 
-            _mockRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(treatments);
+            _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(treatments);
 
             // Act
             var result = await _controller.GetAll();
@@ -41,7 +42,7 @@ namespace HairdresserUnitTests
             // Assert
             var okResult = result as OkObjectResult;
             Assert.IsNotNull(okResult);
-            var returnValue = okResult.Value as IEnumerable<TreatmentDto>;
+            var returnValue = okResult!.Value as IEnumerable<Treatment>;
             Assert.IsNotNull(returnValue);
             Assert.AreEqual(2, returnValue.Count());
         }
@@ -50,7 +51,7 @@ namespace HairdresserUnitTests
         public async Task Create_ValidTreatment_ReturnsCreated()
         {
             // Arrange
-            var dto = new TreatmentCreateUpdateDto
+            var dto = new Treatment
             {
                 Name = "Wash",
                 Description = "Shampoo and conditioning",
@@ -58,56 +59,70 @@ namespace HairdresserUnitTests
                 Price = 150
             };
 
+            _mockService
+                .Setup(s => s.CreateAsync(It.IsAny<Treatment>()))
+                .ReturnsAsync((Treatment treatment) => treatment);
+
             // Act
             var result = await _controller.Create(dto);
 
             // Assert
-            _mockRepo.Verify(r => r.AddAsync(It.IsAny<Treatment>()), Times.Once);
-            _mockRepo.Verify(r => r.SaveChangesAsync(), Times.Once);
+            _mockService.Verify(s => s.CreateAsync(It.IsAny<Treatment>()), Times.Once);
 
             var createdResult = result as CreatedAtActionResult;
             Assert.IsNotNull(createdResult);
-            var returnValue = createdResult.Value as TreatmentDto;
+            var returnValue = createdResult!.Value as Treatment;
             Assert.IsNotNull(returnValue);
-            Assert.AreEqual(dto.Name, returnValue.Name);
+            Assert.AreEqual(dto.Name, returnValue!.Name);
         }
 
         [TestMethod]
         public async Task Update_NonExistingId_ReturnsNotFound()
         {
             // Arrange
-            _mockRepo.Setup(r => r.GetByIdAsync(999)).ReturnsAsync((Treatment?)null);
-
-            var dto = new TreatmentCreateUpdateDto
+            var dto = new Treatment
             {
+                Id = 999,
                 Name = "Update",
                 Description = "Updated Desc",
                 Duration = 45,
                 Price = 500
             };
 
+            _mockService.Setup(s => s.UpdateAsync(dto)).ReturnsAsync(false);
+
             // Act
             var result = await _controller.Update(999, dto);
 
             // Assert
-            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
 
         [TestMethod]
         public async Task Delete_ValidId_DeletesTreatment()
         {
             // Arrange
-            var treatment = new Treatment { Id = 1, Name = "To be deleted" };
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(treatment);
+            _mockService.Setup(s => s.DeleteAsync(1)).ReturnsAsync(true);
 
             // Act
             var result = await _controller.Delete(1);
 
             // Assert
-            _mockRepo.Verify(r => r.DeleteAsync(treatment), Times.Once);
-            _mockRepo.Verify(r => r.SaveChangesAsync(), Times.Once);
+            _mockService.Verify(s => s.DeleteAsync(1), Times.Once);
+            Assert.IsInstanceOfType(result, typeof(NoContentResult));
+        }
 
-            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        [TestMethod]
+        public async Task Delete_InvalidId_ReturnsNotFound()
+        {
+            // Arrange
+            _mockService.Setup(s => s.DeleteAsync(99)).ReturnsAsync(false);
+
+            // Act
+            var result = await _controller.Delete(99);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
     }
 }
