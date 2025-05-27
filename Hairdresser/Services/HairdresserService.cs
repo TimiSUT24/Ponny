@@ -61,7 +61,7 @@ namespace Hairdresser.Services
                 Start = booking.Start,
                 End = booking.End,
                 Treatment = booking.Treatment,
-                UserDto = new UserDto
+                Costumer = new UserDto
                 {
                     UserName = booking.Customer.UserName,
                     Email = booking.Customer?.Email,
@@ -121,7 +121,7 @@ namespace Hairdresser.Services
                     Name = b.Treatment.Name,
                     Description = b.Treatment.Description,
                 },
-                UserDto = new UserDto
+                Costumer = new UserDto
                 {
                     UserName = b.Customer?.UserName,
                     Email = b.Customer?.Email,
