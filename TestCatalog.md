@@ -59,5 +59,19 @@ Unit tests for the `TreatmentController`, which manages creation, retrieval, upd
 | `Delete_ValidId_DeletesTreatment`    | Ensures a treatment with a valid ID is deleted and returns `204`.           |
 | `Delete_InvalidId_ReturnsNotFound`   | Validates that deleting a non-existent treatment ID returns `404 Not Found`.|
 
+---
+## TreatmentRepositoryTests
+
+Unit tests for the `TreatmentRepository`, which handles CRUD operations for treatments in the database.
+
+| **Test Method**                                               | **Purpose**                                                                 |
+|---------------------------------------------------------------|------------------------------------------------------------------------------|
+| `Add_ShoudAddTreatmentSuccessfully`                           | Verifies that a treatment is added and retrievable from the repository.     |
+| `Delete_ShoudDeleteTreatmentSuccessfully`                     | Ensures a treatment is deleted and no longer exists in the repository.      |
+| `GetAllAsync_ShouldReturnAllTreatments`                       | Checks that all added treatments are retrieved correctly.                    |
+| `GetByIdAsync_ShouldReturnCorrectTreatment`                   | Validates fetching treatment by ID returns correct entity or null.          |
+| `UpdateAsync_ShouldUpdateTreatmentSuccessfully`               | Confirms updates to a treatment's fields are saved and reflected properly.  |
+| `AddAsync_ShouldThrowException_WhenEntityIsNull`              | Ensures `ArgumentNullException` is thrown when null is passed to AddAsync.  |
+| `DeleteAsync_ShouldThrowException_WhenEntityIsNull`           | Ensures `ArgumentNullException` is thrown when null is passed to DeleteAsync. |
 
 
