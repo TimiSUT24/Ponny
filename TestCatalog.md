@@ -74,4 +74,16 @@ Unit tests for the `TreatmentRepository`, which handles CRUD operations for trea
 | `AddAsync_ShouldThrowException_WhenEntityIsNull`              | Ensures `ArgumentNullException` is thrown when null is passed to AddAsync.  |
 | `DeleteAsync_ShouldThrowException_WhenEntityIsNull`           | Ensures `ArgumentNullException` is thrown when null is passed to DeleteAsync. |
 
+---
+## UsersControllerTests
+
+Unit tests for the `UsersController`, focusing on user registration, retrieval, and updates.
+
+| **Test Method**                                 | **Purpose**                                                                 |
+|-------------------------------------------------|------------------------------------------------------------------------------|
+| `Register_CreatesUser_ReturnsCreatedAtAction`   | Ensures user registration succeeds and returns a `CreatedAtActionResult`.   |
+| `GetById_UserExists_ReturnsUser`                | Validates that a user can be retrieved by ID if they exist.                 |
+| `Update_UserExists_UpdatesInfo`                 | Confirms that updating an existing user's information works as expected.    |
+| `Register_AddsUserRole_User`                    | Checks that the registered user is assigned the `"User"` role.              |
+
 
