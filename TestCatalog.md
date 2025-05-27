@@ -25,4 +25,15 @@ Tests for the `BookingsController`, which handles booking, rebooking, and handli
 | `Book_InvalidTime_ReturnsConflict`                   | Verifies that invalid booking times result in a `409 Conflict` from the service.                |
 | `Rebook_ValidRequest_ReturnsOkWithUpdatedBooking`     | Tests that a valid rebooking request returns `200 OK` with updated booking information.         |
 
+---
+## BookingRepositoryTests
+
+Tests for the `BookingRepository`, which is responsible for managing data access related to `Booking` entities using Entity Framework Core.
+
+| **Test Method**                        | **Purpose**                                                                                      |
+|----------------------------------------|--------------------------------------------------------------------------------------------------|
+| `Add_ShouldAddBookingSuccessfully`     | Verifies that a new booking is added correctly to the database and can be retrieved afterward.   |
+| `Delete_ShouldDeleteBookingSuccessfully` | Ensures that a booking is successfully deleted and no longer exists in the database.             |
+
+
 
