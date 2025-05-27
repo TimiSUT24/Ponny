@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using HairdresserClassLibrary.Models;
 using Hairdresser.Data;
-using Hairdresser.DTOs;
 using Microsoft.AspNetCore.Identity;
+using Hairdresser.DTOs.User;
 
 namespace Hairdresser.Controllers
 {
@@ -25,14 +25,6 @@ namespace Hairdresser.Controllers
         [HttpPost("registerUser")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
-            // Kontrollera att användarnamnet inte redan finns
-            if (await _userManager.FindByNameAsync(dto.UserName) != null)
-                return BadRequest($"Användarnamnet '{dto.UserName}' är redan upptaget.");
-
-            // Kontrollera att e-posten inte redan finns
-            if (await _userManager.FindByEmailAsync(dto.Email) != null)
-                return BadRequest($"E-postadressen '{dto.Email}' är redan registrerad.");
-
             var newUser = new ApplicationUser
             {
                 UserName = dto.UserName,
@@ -68,14 +60,14 @@ namespace Hairdresser.Controllers
         {
             var users = await _userManager.Users.ToListAsync();
 
-            var userDtos = new List<UserDto>();
+            var userRespondDtos = new List<UserRespondDto>();
 
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-                var role = roles.FirstOrDefault(); // Tar första rollen, eller null om ingen finns
+                var role = roles.FirstOrDefault(); // Takes the first role, or null if none exists.
 
-                userDtos.Add(new UserDto
+                userRespondDtos.Add(new UserRespondDto
                 {
                     Id = user.Id,
                     UserName = user.UserName,
@@ -85,12 +77,12 @@ namespace Hairdresser.Controllers
                 });
             }
 
-            return Ok(userDtos);
+            return Ok(userRespondDtos);
         }
 
         // Change User Info
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] ApplicationUser updatedUser)
+        public async Task<IActionResult> Update(string id, [FromBody] UserDTO updatedUser)
         {
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null)

@@ -1,3 +1,4 @@
+using Hairdresser.Enums;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -59,14 +60,14 @@ public static class UserRolesSeed
                     PhoneNumberConfirmed = true,
                 }
         ];
-        var roles = new[] { "Admin", "Hairdresser", "User" };
+        var roles = Enum.GetValues<UserRoleEnum>();
 
         foreach (var role in roles)
         {
-            var roleExists = await roleManger.RoleExistsAsync(role);
+            var roleExists = await roleManger.RoleExistsAsync(role.ToString());
             if (!roleExists)
             {
-                await roleManger.CreateAsync(new IdentityRole(role));
+                await roleManger.CreateAsync(new IdentityRole(role.ToString()));
             }
         }
 
@@ -85,7 +86,7 @@ public static class UserRolesSeed
             var result = await userManager.CreateAsync(adminUser, adminPassword);
             if (result.Succeeded)
             {
-                await userManager.AddToRoleAsync(adminUser, "Admin");
+                await userManager.AddToRoleAsync(adminUser, UserRoleEnum.Admin.ToString());
             }
             else
             {

@@ -7,6 +7,7 @@ namespace HairdresserClassLibrary.Models
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
 
-        public ICollection<Booking> Bookings { get; set; } = [];
+        public ICollection<Booking> HairdresserBookings { get; set; } = [];
+        public ICollection<Booking> CustomerBookings { get; set; } = [];
     }
 }

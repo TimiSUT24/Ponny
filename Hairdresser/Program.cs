@@ -31,7 +31,10 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
             await TreatmentSeed.SeedTreatmentsAsync(context);
         }));
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+})
                 .AddEntityFrameworkStores<ApplicationDBContext>()
                 .AddDefaultTokenProviders()
                 .AddApiEndpoints();
@@ -70,10 +73,11 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IGenericRepository<Treatment>, TreatmentRepository>();
 builder.Services.AddScoped<IGenericRepository<Booking>, BookingRepository>();
 builder.Services.AddScoped<IGenericRepository<ApplicationUser>, UserRepository>();
-builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 //Services
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 var app = builder.Build();
 

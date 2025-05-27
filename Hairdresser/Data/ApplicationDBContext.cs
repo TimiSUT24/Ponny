@@ -22,21 +22,21 @@ namespace Hairdresser.Data
             // Booking ? Customer
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.Customer)
-                .WithMany()
+                .WithMany(u => u.CustomerBookings)
                 .HasForeignKey(b => b.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Booking ? Hairdresser
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.Hairdresser)
-                .WithMany()
+                .WithMany(u => u.HairdresserBookings)
                 .HasForeignKey(b => b.HairdresserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Booking ? Treatment
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.Treatment)
-                .WithMany(t => t.Bookings)
+                .WithMany(t => t.TreatmentBookings)
                 .HasForeignKey(b => b.TreatmentId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
