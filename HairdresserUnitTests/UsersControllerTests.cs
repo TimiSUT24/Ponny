@@ -12,38 +12,58 @@ namespace HairdresserUnitTests
     [TestClass]
     public class UsersControllerTests
     {
-        private UsersController GetControllerWithContext(out ApplicationDBContext context)
+        private ApplicationDBContext _context = null!;
+        private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
+        private UsersController _controller = null!;
+
+        [TestInitialize]
+        public void Setup()
         {
+            // 👇 Set up in-memory database
             var options = new DbContextOptionsBuilder<ApplicationDBContext>()
-                .UseInMemoryDatabase("TestDb")
+                .UseInMemoryDatabase(databaseName: "TestDb_Users")
                 .Options;
 
-            context = new ApplicationDBContext(options);
+            _context = new ApplicationDBContext(options);
 
-            var userStore = new Mock<IUserStore<ApplicationUser>>();
-            var userManager = new UserManager<ApplicationUser>(
-                userStore.Object, null!, null!, null!, null!, null!, null!, null!, null!
+            // 👇 Mock UserManager with email store
+            var store = new Mock<IUserStore<ApplicationUser>>();
+            store.As<IUserEmailStore<ApplicationUser>>(); // Required for FindByEmailAsync
+
+            _userManagerMock = new Mock<UserManager<ApplicationUser>>(
+                store.Object, null, null, null, null, null, null, null, null
             );
 
-            return new UsersController(context, userManager);
+            _controller = new UsersController(_context, _userManagerMock.Object);
         }
 
         [TestMethod]
         public async Task Register_CreatesUser_ReturnsCreatedAtAction()
         {
-            var controller = GetControllerWithContext(out var context);
+            // Arrange
             var dto = new RegisterUserDto
             {
                 UserName = "testuser",
                 Email = "test@example.com",
                 PhoneNumber = "1234567890",
-                Password = "Password123!",
+                Password = "Password123!"
             };
 
-            var result = await controller.Register(dto);
+            _userManagerMock.Setup(x => x.FindByNameAsync(dto.UserName))
+                .ReturnsAsync((ApplicationUser?)null);
+            _userManagerMock.Setup(x => x.FindByEmailAsync(dto.Email))
+                .ReturnsAsync((ApplicationUser?)null);
+            _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), dto.Password))
+                .ReturnsAsync(IdentityResult.Success);
+            _userManagerMock.Setup(x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), "User"))
+                .ReturnsAsync(IdentityResult.Success);
 
+            // Act
+            var result = await _controller.Register(dto);
+
+            // Assert
             var createdResult = result as CreatedAtActionResult;
-            Assert.IsNotNull(createdResult); 
+            Assert.IsNotNull(createdResult);
             var createdUser = createdResult.Value as ApplicationUser;
             Assert.IsNotNull(createdUser);
             Assert.AreEqual(dto.Email, createdUser.Email);
@@ -52,7 +72,7 @@ namespace HairdresserUnitTests
         [TestMethod]
         public async Task GetById_UserExists_ReturnsUser()
         {
-            var controller = GetControllerWithContext(out var context);
+            // Arrange
             var user = new ApplicationUser
             {
                 Id = "user-1",
@@ -60,21 +80,25 @@ namespace HairdresserUnitTests
                 Email = "user1@example.com",
                 PhoneNumber = "111222333"
             };
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
 
-            var result = await controller.GetById("user-1");
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
 
+            // Act
+            var result = await _controller.GetById("user-1");
+
+            // Assert
             var okResult = result as OkObjectResult;
             Assert.IsNotNull(okResult);
             var returnedUser = okResult.Value as ApplicationUser;
+            Assert.IsNotNull(returnedUser);
             Assert.AreEqual(user.Email, returnedUser.Email);
         }
 
         [TestMethod]
         public async Task Update_UserExists_UpdatesInfo()
         {
-            var controller = GetControllerWithContext(out var context);
+            // Arrange
             var user = new ApplicationUser
             {
                 Id = "user-2",
@@ -82,10 +106,11 @@ namespace HairdresserUnitTests
                 Email = "old@example.com",
                 PhoneNumber = "000000000"
             };
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
 
-            var updated = new ApplicationUser
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            var updatedUser = new ApplicationUser
             {
                 Id = "user-2",
                 UserName = "newname",
@@ -93,12 +118,59 @@ namespace HairdresserUnitTests
                 PhoneNumber = "999999999"
             };
 
-            var result = await controller.Update("user-2", updated);
+            // Act
+            var result = await _controller.Update("user-2", updatedUser);
 
+            // Assert
             Assert.IsInstanceOfType(result, typeof(NoContentResult));
-            var updatedUser = await context.Users.FindAsync("user-2");
-            Assert.AreEqual("newname", updatedUser.UserName);
-            Assert.AreEqual("new@example.com", updatedUser.Email);
+
+            var fetched = await _context.Users.FindAsync("user-2");
+            Assert.AreEqual("newname", fetched!.UserName);
+            Assert.AreEqual("new@example.com", fetched.Email);
+        }
+
+        [TestMethod]
+        public async Task Register_AddsUserRole_User()
+        {
+            // Arrange
+            var dto = new RegisterUserDto
+            {
+                UserName = "newuser",
+                Email = "newuser@example.com",
+                PhoneNumber = "1234567890",
+                Password = "Password123!",
+                ConfirmPassword = "Password123!"
+            };
+
+            var createdUser = new ApplicationUser
+            {
+                UserName = dto.UserName,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber
+            };
+
+            _userManagerMock.Setup(x => x.FindByNameAsync(dto.UserName))
+                .ReturnsAsync((ApplicationUser?)null);
+            _userManagerMock.Setup(x => x.FindByEmailAsync(dto.Email))
+                .ReturnsAsync((ApplicationUser?)null);
+            _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), dto.Password))
+                .Callback<ApplicationUser, string>((user, _) =>
+                {
+                    // Simulate that user gets a ID after registration
+                    user.Id = "generated-user-id";
+                })
+                .ReturnsAsync(IdentityResult.Success);
+
+            _userManagerMock.Setup(x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), "User"))
+                .ReturnsAsync(IdentityResult.Success)
+                .Verifiable("AddToRoleAsync should be called with 'User'");
+
+            // Act
+            var result = await _controller.Register(dto);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(CreatedAtActionResult));
+            _userManagerMock.Verify(x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), "User"), Times.Once);
         }
     }
 }

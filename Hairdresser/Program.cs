@@ -2,6 +2,7 @@ using Hairdresser.Data;
 using Hairdresser.Repositories;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
+using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -39,6 +40,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                 .AddApiEndpoints();
 
 builder.Services.AddScoped<JWT_Service>();
+builder.Services.AddScoped<IHairdresserService, HairdresserService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IHairdresserRepository, HairdresserRepository>();
+builder.Services.AddScoped<ITreatmentService, TreatmentService>();
 
 //JWT Authentication
 builder.Services.AddAuthentication(options =>

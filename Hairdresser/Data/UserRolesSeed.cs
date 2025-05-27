@@ -14,6 +14,9 @@ public static class UserRolesSeed
         var adminEmail = "admin@admin.com";
         var adminPassword = "Admin123!";
 
+        var hairdresserEmail = "hairdresser@hairdresser.com";
+        var hairdresserPassword = "Hairdresser123!";
+
         List<ApplicationUser> userSeeds = [
             new ApplicationUser()
                 {
@@ -88,6 +91,30 @@ public static class UserRolesSeed
             else
             {
                 throw new Exception("Failed to create the admin user: " + string.Join(", ", result.Errors));
+            }
+        }
+
+        var hairdresserExists = userManager.Users.Any(u => u.Email == hairdresserEmail);
+        if (!hairdresserExists)
+        {
+            var hairdresserUser = new ApplicationUser
+            {
+                UserName = "Hairdresser",
+                Email = hairdresserEmail,
+                EmailConfirmed = true,
+                PhoneNumber = "0709998877",
+                PhoneNumberConfirmed = true,
+            };
+
+            var result = await userManager.CreateAsync(hairdresserUser, hairdresserPassword);
+
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(hairdresserUser, "Hairdresser");
+            }
+            else
+            {
+                throw new Exception("Failed to create hairdresser user: " + string.Join(", ", result.Errors));
             }
         }
 

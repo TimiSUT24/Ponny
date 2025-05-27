@@ -1,0 +1,52 @@
+﻿using Hairdresser.Repositories.Interfaces;
+using HairdresserClassLibrary.Models;
+
+namespace Hairdresser.Services
+{
+    public class TreatmentService : ITreatmentService
+    {
+        private readonly IGenericRepository<Treatment> _treatmentRepo;
+
+        public TreatmentService(IGenericRepository<Treatment> treatmentRepo)
+        {
+            _treatmentRepo = treatmentRepo;
+        }
+
+        public async Task<IEnumerable<Treatment>> GetAllAsync()
+        {
+            return await _treatmentRepo.GetAllAsync();
+        }
+
+        public async Task<Treatment?> GetByIdAsync(int id)
+        {
+            return await _treatmentRepo.GetByIdAsync(id);
+        }
+
+        public async Task<Treatment> CreateAsync(Treatment treatment)
+        {
+            await _treatmentRepo.AddAsync(treatment);
+            await _treatmentRepo.SaveChangesAsync();
+            return treatment;
+        }
+
+        public async Task<bool> UpdateAsync(Treatment treatment)
+        {
+            var exists = await _treatmentRepo.AnyAsync(t => t.Id == treatment.Id);
+            if (!exists) return false;
+
+            await _treatmentRepo.UpdateAsync(treatment);
+            await _treatmentRepo.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var treatment = await _treatmentRepo.GetByIdAsync(id);
+            if (treatment == null) return false;
+
+            await _treatmentRepo.DeleteAsync(treatment);
+            await _treatmentRepo.SaveChangesAsync();
+            return true;
+        }
+    }
+}

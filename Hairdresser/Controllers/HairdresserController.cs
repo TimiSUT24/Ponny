@@ -1,51 +1,48 @@
-﻿using Hairdresser.Data;
 using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
 using Hairdresser.Enums;
 using Hairdresser.Mapping;
 using Hairdresser.Repositories;
 using Hairdresser.Repositories.Interfaces;
+using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hairdresser.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HairdresserController(ApplicationDBContext context, IUserRepository UserRepository, BookingRepository BookingRepository) : ControllerBase
+    public class HairdresserController : ControllerBase
     {
-        private readonly IUserRepository _userRepository = UserRepository;
-        private readonly BookingRepository _bookingRepository = BookingRepository;
-        private readonly ApplicationDBContext _context = context;
+        private readonly IHairdresserService _hairdresserService;
 
+        public HairdresserController(IHairdresserService hairdresserService)
+        {
+            _hairdresserService = hairdresserService;
+        }
 
         [AllowAnonymous]
         [HttpGet(Name = "GetAllHairdressers")]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAll()
+        public async Task<IEnumerable<UserDto>> GetAllHairdressersAsync()
         {
-            var hairdressers = (await _userRepository.GetAllAsync()).Select(user => user.MapToUserDTO());
-            return Ok(hairdressers);
+            return await _hairdresserService.GetAllHairdressersAsync();
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPost(Name = "AddNewHairdresser")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Create([FromBody] RegisterUserDto userRequest)
+        [Authorize(Roles = "Hairdresser")]
+        [HttpGet("schedule")]
+        public async Task<IActionResult> GetSchedule([FromQuery] string hairdresserId, [FromQuery] DateTime weekStart)
         {
-            var hairdresser = await _userRepository.RegisterUserAsync(userRequest, UserRoleEnum.Hairdresser);
+            var result = await _hairdresserService.GetWeekScheduleAsync(hairdresserId, weekStart);
+            return Ok(result);
+        }
 
-            if (hairdresser == null)
-            {
-                return BadRequest("Failed to create hairdresser");
-            }
-
-            await _userRepository.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetHairdresserById), new { id = hairdresser.Id }, hairdresser);
+        [Authorize(Roles = "Hairdresser")]
+        [HttpGet("monthly-schedule")]
+        public async Task<IActionResult> GetMonthlySchedule([FromQuery] string hairdresserId, [FromQuery] int year, [FromQuery] int month)
+        {
+            var result = await _hairdresserService.GetMonthlyScheduleAsync(hairdresserId, year, month);
+            return Ok(result);
         }
 
         [Authorize(Roles = "Hairdresser,Admin")]
@@ -76,70 +73,19 @@ namespace Hairdresser.Controllers
         }
 
         [Authorize(Roles = "Hairdresser,Admin")]
-        [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> DeleteHairdresser(string id)
-        {
-            var hairdresser = await _userRepository.GetByIdAsync(id);
-
-            if (hairdresser is null)
-            {
-                return NotFound("Hairdresser not found");
-            }
-
-            var userBookings = await _bookingRepository.FindAsync(booking => booking.HairdresserId == hairdresser.Id);
-
-            if (userBookings.Any())
-            {
-                return BadRequest("Cannot delete hairdresser with existing bookings");
-            }
-
-            await _userRepository.DeleteAsync(hairdresser);
-            await _userRepository.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        // Get week schedule for hairdresser
-        [Authorize(Roles = "Hairdresser")]
-        [HttpGet("schedule")]
-        public async Task<IActionResult> GetSchedule([FromQuery] string hairdresserId, [FromQuery] DateTime weekStart)
-        {
-            var weekEnd = weekStart.AddDays(7);
-
-            var bookings = await _bookingRepository.GetBookingsBetweenDatesAsync(weekStart, weekEnd, hairdresserId);
-
-            return Ok(bookings);
-        }
-
-        [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("booking/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BookingResponseDTO>> GetBookingDetails(int id)
+        public async Task<ActionResult<BookingResponseDto>> GetBookingDetails(int id)
         {
-            try
-            {
-                var booking = await _bookingRepository.GetBookingWithDetailsAsync(id);
+            var booking = await _hairdresserService.GetBookingDetailsAsync(id);
+            if (booking == null)
+                return NotFound();
 
-                if (booking == null)
-                    return NotFound();
-
-                return Ok(booking);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("Invalid booking ID");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
-            }
+            return Ok(booking);
         }
+        
 
         [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("{id}")]

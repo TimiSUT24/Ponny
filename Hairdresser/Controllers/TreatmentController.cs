@@ -1,69 +1,73 @@
 ﻿using Hairdresser.Repositories.Interfaces;
+using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
-using Microsoft.AspNetCore.Mvc;
-using Hairdresser.Data;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Hairdresser.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TreatmentController : Controller
+    public class TreatmentController : ControllerBase
     {
-        private readonly IGenericRepository<Treatment> _repository;
+        private readonly ITreatmentService _treatmentService;
 
-        public TreatmentController(IGenericRepository<Treatment> repository)
+        public TreatmentController(ITreatmentService treatmentService)
         {
-            _repository = repository;
+            _treatmentService = treatmentService;
         }
-        [AllowAnonymous]
-        [HttpGet(Name = "GetAllTreatments")]
+
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var treatments = await _repository.GetAllAsync();
+            var treatments = await _treatmentService.GetAllAsync();
             return Ok(treatments);
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPost(Name = "AddNewTreatment")]
-        public async Task<IActionResult> Create(string name, string description, int duration, double price  )
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var treatment = new Treatment
-            {
-                Name = name,
-                Description = description,
-                Price = price,
-                Duration = duration,
+            var treatment = await _treatmentService.GetByIdAsync(id);
+            if (treatment == null)
+                return NotFound();
 
-            };
-            await _repository.AddAsync(treatment);
-            await _repository.SaveChangesAsync();
-            return CreatedAtAction(nameof(Treatment), treatment);
+            return Ok(treatment);
         }
+
+        [HttpPost]
         [Authorize(Roles = "Admin")]
-        [HttpPut(Name = "UpdateTreatment")]
+        public async Task<IActionResult> Create([FromBody] Treatment treatment)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var created = await _treatmentService.CreateAsync(treatment);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] Treatment treatment)
         {
-            if(treatment.Id == id)
-            {
-                await _repository.UpdateAsync(treatment);
-                await _repository.SaveChangesAsync();
-            }
-           
-            return Ok("Treatment was updated");
+            if (id != treatment.Id)
+                return BadRequest("ID mismatch");
+
+            var success = await _treatmentService.UpdateAsync(treatment);
+            if (!success)
+                return NotFound();
+
+            return NoContent();
         }
 
+        [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        [HttpDelete(Name = "DeleteTreatment")]
-
         public async Task<IActionResult> Delete(int id)
         {
-            var treatment = await _repository.GetByIdAsync(id); 
+            var success = await _treatmentService.DeleteAsync(id);
+            if (!success)
+                return NotFound();
 
-            await _repository.DeleteAsync(treatment);
-            await _repository.SaveChangesAsync();
-            return Ok("Treatment was deleted"); 
+            return NoContent();
         }
     }
 }

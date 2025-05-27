@@ -82,5 +82,39 @@ namespace Hairdresser.Repositories
 				.Select(b => b.MapToBookingDto())
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Booking>> GetWeekScheduleWithDetailsAsync(string hairdresserId, DateTime weekStart)
+        {
+            var weekEnd = weekStart.AddDays(7);
+            return await _context.Bookings
+                .Where(b => b.HairdresserId == hairdresserId && b.Start >= weekStart && b.Start < weekEnd)
+                .Include(b => b.Customer)
+                .Include(b => b.Treatment)
+                .OrderBy(b => b.Start)
+                .ToListAsync();
+        }
+
+        public async Task<Booking?> GetBookingWithDetailsAsync(int bookingId)
+        {
+            return await _context.Bookings
+                .Include(b => b.Customer)
+                .Include(b => b.Treatment)
+                .Include(b => b.Hairdresser)
+                .FirstOrDefaultAsync(b => b.Id == bookingId);
+        }
+
+        public async Task<IEnumerable<Booking>> GetMonthlyScheduleWithDetailsAsync(string hairdresserId, int year, int month)
+        {
+            var monthStart = new DateTime(year, month, 1);
+            var monthEnd = monthStart.AddMonths(1);
+
+            return await _context.Bookings
+                .Where(b => b.HairdresserId == hairdresserId && b.Start >= monthStart && b.Start < monthEnd)
+                .Include(b => b.Customer)
+                .Include(b => b.Treatment)
+                .Include(b => b.Hairdresser)
+                .OrderBy(b => b.Start)
+                .ToListAsync();
+        }
     }
 }
