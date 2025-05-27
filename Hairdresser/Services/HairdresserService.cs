@@ -1,6 +1,7 @@
 ﻿using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
 using Hairdresser.Enums;
+using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
@@ -60,7 +61,7 @@ namespace Hairdresser.Services
                 Start = booking.Start,
                 End = booking.End,
                 Treatment = booking.Treatment,
-                UserDto = new UserDto
+                Costumer = new UserDto
                 {
                     UserName = booking.Customer.UserName,
                     Email = booking.Customer?.Email,
@@ -69,14 +70,14 @@ namespace Hairdresser.Services
             };
         }
 
-        public async Task<ApplicationUser?> UpdateHairdresserAsync(string id, UpdateUserDto userRequest)
+        public async Task<UserDto?> UpdateHairdresserAsync(string id, UpdateUserDto userRequest)
         {
             var allHairdresser = await _userManager.GetUsersInRoleAsync(UserRoleEnum.Hairdresser.ToString());
             var hairdresser = allHairdresser.Where(u => u.Id == id).FirstOrDefault();
 
             if (hairdresser is null)
             {
-                throw new UnauthorizedAccessException("Hairdresser is Unauthorized");
+                return null;
             }
 
             hairdresser.FirstName = userRequest.FirstName;
@@ -88,7 +89,7 @@ namespace Hairdresser.Services
             await _userRepo.UpdateAsync(hairdresser);
             await _userRepo.SaveChangesAsync();
 
-            return (hairdresser);// fix this 
+            return hairdresser.MapToUserDTO();
         }
 
         public async Task<UserDto> GetHairdresserWithId(string id)
@@ -120,7 +121,7 @@ namespace Hairdresser.Services
                     Name = b.Treatment.Name,
                     Description = b.Treatment.Description,
                 },
-                UserDto = new UserDto
+                Costumer = new UserDto
                 {
                     UserName = b.Customer?.UserName,
                     Email = b.Customer?.Email,

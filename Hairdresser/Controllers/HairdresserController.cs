@@ -1,4 +1,4 @@
-using Hairdresser.DTOs;
+﻿using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
 using Hairdresser.Enums;
 using Hairdresser.Mapping;
@@ -61,7 +61,7 @@ namespace Hairdresser.Controllers
                 return Unauthorized("Hairdresser is Unauthorized");
             }           
 
-            return Ok(hairdresser.MapToUserDTO());
+            return Ok(hairdresser);
         }
 
         [Authorize(Roles = "Hairdresser,Admin")]

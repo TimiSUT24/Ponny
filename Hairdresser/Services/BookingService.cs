@@ -113,7 +113,7 @@ namespace Hairdresser.Services
                 Id = booking.Id,
                 Start = booking.Start,
                 End = booking.End,
-                UserDto = new UserDto
+                Costumer = new UserDto
                 {
                     Id = savedBooking.CustomerId,
                     UserName = savedBooking.Customer.UserName,
@@ -220,7 +220,7 @@ namespace Hairdresser.Services
                 Id = booking.Id,
                 Start = booking.Start,
                 End = booking.End,
-                UserDto = new UserDto
+                Costumer = new UserDto
                 {
                     Id = updatedBooking.CustomerId,
                     FirstName = updatedBooking.Customer.FirstName,

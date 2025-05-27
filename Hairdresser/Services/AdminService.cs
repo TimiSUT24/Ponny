@@ -27,7 +27,7 @@ namespace Hairdresser.Services
                 {
                     Name = b.Treatment.Name, //add more?
                 },
-                UserDto = new UserDto
+                Costumer = new UserDto
                 {
                     Id = b.Customer?.Id,
                     UserName = b.Customer?.UserName,
