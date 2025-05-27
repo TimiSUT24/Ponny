@@ -40,6 +40,7 @@ builder.Services.AddScoped<JWT_Service>();
 builder.Services.AddScoped<IHairdresserService, HairdresserService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IHairdresserRepository, HairdresserRepository>();
+builder.Services.AddScoped<ITreatmentService, TreatmentService>();
 
 //JWT Authentication
 builder.Services.AddAuthentication(options =>
