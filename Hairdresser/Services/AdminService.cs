@@ -25,7 +25,10 @@ namespace Hairdresser.Services
                 End = b.End,
                 Treatment = new TreatmentDto
                 {
-                    Name = b.Treatment.Name, //add more?
+                    Id = b.Treatment.Id,
+                    Name = b.Treatment.Name, 
+                    Description = b.Treatment.Description,
+                    Price = b.Treatment.Price
                 },
                 Costumer = new UserDto
                 {
