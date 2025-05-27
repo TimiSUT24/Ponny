@@ -9,26 +9,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hairdresser.Services
 {
-	public class BookingService : IBookingService
-	{
-        private readonly IBookingRepository _bookingRepository;       
+    public class BookingService : IBookingService
+    {
+        private readonly IBookingRepository _bookingRepository;
         private readonly IGenericRepository<Treatment> _treatmentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public BookingService(IGenericRepository<Treatment> treatment, IBookingRepository bookingRepository, UserManager<ApplicationUser> usermanager)
-		{			
+        {
             _treatmentRepository = treatment;
             _bookingRepository = bookingRepository;
             _userManager = usermanager;
         }
 
-		public async Task<List<DateTime>> GetAllAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
-		{
+        public async Task<List<DateTime>> GetAllAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
+        {
             var hairdresser = await _userManager.FindByIdAsync(hairdresserId);
             if (hairdresser == null)
             {
                 throw new KeyNotFoundException("Hairdresser was not found");
-            }            
+            }
 
             var treatment = await _treatmentRepository.GetByIdAsync(treatmentId);
             if (treatment == null)
@@ -43,12 +43,12 @@ namespace Hairdresser.Services
 
             var startOfDay = day.Date.AddHours(9); // frisör jobbar från 09:00
             var endOfDay = day.Date.AddHours(17);  // till 17:00
-            var duration = TimeSpan.FromMinutes(treatment.Duration);           
-            
+            var duration = TimeSpan.FromMinutes(treatment.Duration);
+
             // Hämta bokade tider
             var bookings = await _bookingRepository
-                .FindAsync(b => b.HairdresserId == hairdresserId && b.Start.Date == day.Date); 
-           
+                .FindAsync(b => b.HairdresserId == hairdresserId && b.Start.Date == day.Date);
+
             var availableSlots = new List<DateTime>();
 
             for (var time = startOfDay; time + duration <= endOfDay; time += TimeSpan.FromMinutes(15))
@@ -60,20 +60,20 @@ namespace Hairdresser.Services
                 {
                     availableSlots.Add(time);
                 }
-                    
+
             }
 
             return availableSlots;
         }
 
-        public async Task<BookingResponseDto> BookAppointment(string customerId, BookingRequestDto request)
+        public async Task<BookingResponseDTO> BookAppointment(string customerId, BookingRequestDto request)
         {
-            
+
             var treatment = await _treatmentRepository.GetByIdAsync(request.TreatmentId);
             if (treatment == null)
             {
                 throw new KeyNotFoundException("Treatment was not found.");
-            }               
+            }
 
             var end = request.Start.AddMinutes(treatment.Duration);
 
@@ -87,7 +87,7 @@ namespace Hairdresser.Services
             {
                 throw new InvalidOperationException("Hairdresser is booked at this time.");
             }
-            
+
 
             var booking = new Booking
             {
@@ -96,9 +96,9 @@ namespace Hairdresser.Services
                 TreatmentId = request.TreatmentId,
                 Start = request.Start,
                 End = end
-            };           
+            };
 
-            if(booking.Start < DateTime.Now ||  booking.Start > DateTime.Now.AddMonths(4))
+            if (booking.Start < DateTime.Now || booking.Start > DateTime.Now.AddMonths(4))
             {
                 throw new ArgumentException("Can only book from today and up to 4 month in advance.");
             }
@@ -106,17 +106,17 @@ namespace Hairdresser.Services
             await _bookingRepository.AddAsync(booking);
             await _bookingRepository.SaveChangesAsync();
 
-            var savedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id,customerId);
+            var savedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            return new BookingResponseDto
+            return new BookingResponseDTO
             {
                 Id = booking.Id,
-                Start = booking.Start,  
+                Start = booking.Start,
                 End = booking.End,
                 UserDto = new UserDTO
                 {
                     Id = savedBooking.CustomerId,
-                    UserName =  savedBooking.Customer.UserName,
+                    UserName = savedBooking.Customer.UserName,
                     Email = savedBooking.Customer.Email,
                     PhoneNumber = savedBooking.Customer.PhoneNumber
                 },
@@ -132,28 +132,28 @@ namespace Hairdresser.Services
             {
                 throw new KeyNotFoundException("Booking was not found.");
             }
-                
+
 
             if (booking.CustomerId != customerId)
             {
                 throw new UnauthorizedAccessException("Can only cancel your own bookings.");
             }
-               
+
 
             await _bookingRepository.DeleteAsync(booking);
-            await _bookingRepository.SaveChangesAsync();          
+            await _bookingRepository.SaveChangesAsync();
 
             return new BookingRequestDto
-            {                
-              // Id = booking.Id,
-               Start = booking.Start,
-               TreatmentId = booking.TreatmentId
+            {
+                // Id = booking.Id,
+                Start = booking.Start,
+                TreatmentId = booking.TreatmentId
             };
         }
 
-        public async Task<BookingResponseDto> GetBookingByIdAsync(int bookingId, string customerId)
+        public async Task<BookingResponseDTO> GetBookingByIdAsync(int bookingId, string customerId)
         {
-            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId,customerId);
+            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId, customerId);
             if (booking == null)
             {
                 throw new KeyNotFoundException("Booking was not found.");
@@ -164,7 +164,7 @@ namespace Hairdresser.Services
                 throw new UnauthorizedAccessException("Can only see your own bookings.");
             }
 
-            return new BookingResponseDto
+            return new BookingResponseDTO
             {
                 Id = booking.Id,
                 //Customer = booking.Customer,
@@ -172,11 +172,11 @@ namespace Hairdresser.Services
 
         }
 
-        public async Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto)
+        public async Task<BookingResponseDTO> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto)
         {
             var booking = await _bookingRepository.GetByIdAsync(bookingId);
 
-            if(booking == null)
+            if (booking == null)
             {
                 throw new KeyNotFoundException("Booking was not found.");
             }
@@ -215,7 +215,7 @@ namespace Hairdresser.Services
 
             var updatedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            return new BookingResponseDto
+            return new BookingResponseDTO
             {
                 Id = booking.Id,
                 Start = booking.Start,
@@ -232,5 +232,5 @@ namespace Hairdresser.Services
             };
 
         }
-	}
+    }
 }

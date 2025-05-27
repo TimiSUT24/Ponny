@@ -1,16 +1,17 @@
 using System;
 using Hairdresser.DTOs.User;
 using HairdresserClassLibrary.Models;
+using Hairdresser.DTOs;
 
 namespace Hairdresser.Mapping;
 
 public static class UserMapper
 {
-    public static HairdresserRespondDTO MapToHairdresserWithBookingsRespondDTO(this ApplicationUser userDto)
+    public static HairdresserResponseDTO MapToHairdresserWithBookingsRespondDTO(this ApplicationUser userDto)
     {
         ArgumentNullException.ThrowIfNull(userDto);
 
-        return new HairdresserRespondDTO
+        return new HairdresserResponseDTO
         {
             Id = userDto.Id,
             FirstName = userDto.FirstName,

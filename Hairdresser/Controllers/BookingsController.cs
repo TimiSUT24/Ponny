@@ -12,19 +12,19 @@ namespace Hairdresser.Controllers
     [ApiController]
     [Route("api/[controller]")]
     public class BookingsController : ControllerBase
-    {         
+    {
         private readonly IBookingService _bookingService;
 
         public BookingsController(IBookingService bookingService)
-        {          
+        {
 
-            _bookingService = bookingService; 
+            _bookingService = bookingService;
         }
 
         // Get all available times for a hairdresser
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]        
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("Available-times")]
         public async Task<IActionResult> GetAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
         {
@@ -39,11 +39,11 @@ namespace Hairdresser.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); 
+                return BadRequest(ex.Message);
             }
         }
         //Get booking for user
-        [ProducesResponseType(typeof(List<BookingResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<BookingResponseDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -77,11 +77,11 @@ namespace Hairdresser.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }                                   
+            }
         }
 
         // Book an appointment
-        [ProducesResponseType(typeof(BookingResponseDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(BookingResponseDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -96,14 +96,14 @@ namespace Hairdresser.Controllers
                 if (userId == null)
                 {
                     return Unauthorized("User is not logged in.");
-                }                  
+                }
                 var booking = await _bookingService.BookAppointment(userId, request);
                 if (booking == null)
                 {
-                    return NotFound("Booking was not found"); 
+                    return NotFound("Booking was not found");
                 }
                 return CreatedAtAction(nameof(GetBookingById), booking);
-                
+
             }
             catch (KeyNotFoundException ex)
             {
@@ -131,32 +131,32 @@ namespace Hairdresser.Controllers
         [HttpDelete("Cancel Booking")]
         public async Task<IActionResult> CancelBooking(int bookingId)
         {
-           try
-           {
+            try
+            {
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (userId == null)
                 {
                     return Unauthorized("User is not logged in.");
                 }
                 var booking = await _bookingService.CancelBooking(userId, bookingId);
-                if(booking == null)
+                if (booking == null)
                 {
                     return NotFound("Booking was not cancelled");
                 }
                 return Ok(booking);
-           }
-           catch (KeyNotFoundException ex)
-           {
+            }
+            catch (KeyNotFoundException ex)
+            {
                 return NotFound(ex.Message);
-           }
-           catch (UnauthorizedAccessException ex)
-           {
+            }
+            catch (UnauthorizedAccessException ex)
+            {
                 return Forbid(ex.Message);
-           }
-           catch (Exception ex)
-           {
+            }
+            catch (Exception ex)
+            {
                 return BadRequest(ex.Message);
-           }
+            }
         }
 
         // Rebook a booking

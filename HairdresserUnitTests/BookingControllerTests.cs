@@ -54,7 +54,7 @@ namespace HairdresserUnitTests
 				HairdresserId = hairdresserId
 			};
 
-			var expectedResponse = new BookingResponseDto
+			var expectedResponse = new BookingResponseDTO
 			{
 				Id = 1,
 				Start = startTime,
@@ -86,7 +86,7 @@ namespace HairdresserUnitTests
 			var createdResult = result as CreatedAtActionResult;
 
 			Assert.IsNotNull(createdResult);
-			var response = createdResult!.Value as BookingResponseDto;
+			var response = createdResult!.Value as BookingResponseDTO;
 
 			Assert.IsNotNull(response);
 			Assert.AreEqual(expectedResponse.Id, response!.Id);
