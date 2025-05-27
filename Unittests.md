@@ -20,3 +20,13 @@ The focus is on validating repository logic and controller behavior through auto
    - BookingRepositoryTests.cs
    - TreatmentRepositoryTests.cs
 ```
+---
+## 5. Naming Conventions
+
+- **Test project**: `HairdresserUnitTests`
+- **Test methods**: `MethodName_Condition_ExpectedResult`
+
+```csharp
+[TestMethod]
+public void GetUser_ValidId_Returns200Ok()
+```
