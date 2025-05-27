@@ -46,6 +46,18 @@ Tests for the `HairdresserController`, which handles retrieving hairdresser-rela
 | `GetAll_ShouldReturnEmptyList_WhenNoHairdressers` | Ensures an empty list is returned when no hairdressers exist in the database.                |
 | `GetHairdresserById_ShudlReturnHairdresserIdWhenFound` | Checks that a specific hairdresser is returned correctly when found by ID.               |
 
+---
+## TreatmentControllerTests
+
+Unit tests for the `TreatmentController`, which manages creation, retrieval, update, and deletion of treatments.
+
+| **Test Method**                       | **Purpose**                                                                 |
+|--------------------------------------|------------------------------------------------------------------------------|
+| `GetAll_ReturnsAllTreatments`        | Verifies that the controller returns all treatments correctly.              |
+| `Create_ValidTreatment_ReturnsCreated` | Confirms that creating a valid treatment returns a `201 Created` result.    |
+| `Update_NonExistingId_ReturnsNotFound` | Checks that updating a treatment with a non-existent ID returns `404`.      |
+| `Delete_ValidId_DeletesTreatment`    | Ensures a treatment with a valid ID is deleted and returns `204`.           |
+| `Delete_InvalidId_ReturnsNotFound`   | Validates that deleting a non-existent treatment ID returns `404 Not Found`.|
 
 
 
