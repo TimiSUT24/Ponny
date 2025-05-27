@@ -1,106 +1,55 @@
-﻿using Hairdresser.Data;
-using Hairdresser.DTOs;
+﻿using Hairdresser.DTOs;
 using Hairdresser.Repositories.Interfaces;
+using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hairdresser.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HairdresserController(ApplicationDBContext context, IGenericRepository<ApplicationUser> repository) : ControllerBase
+    public class HairdresserController : ControllerBase
     {
-        private readonly IGenericRepository<ApplicationUser> _repository = repository;
-        private readonly ApplicationDBContext _context = context;
+        private readonly IHairdresserService _hairdresserService;
 
+        public HairdresserController(IHairdresserService hairdresserService)
+        {
+            _hairdresserService = hairdresserService;
+        }
 
         [AllowAnonymous]
         [HttpGet(Name = "GetAllHairdressers")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IEnumerable<UserDto>> GetAllHairdressersAsync()
         {
-            var hairdressers = await _repository.GetAllAsync();
-            return Ok(hairdressers);
+            return await _hairdresserService.GetAllHairdressersAsync();
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPost(Name = "AddNewHairdresser")]
-        public async Task<IActionResult> Create(string firstName, string lastName, string email, string phone)
-        {
-            var hairdresser = new ApplicationUser
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                Email = email,
-                PhoneNumber = phone,
-            };
-            await _repository.AddAsync(hairdresser);
-            await _repository.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetAll), hairdresser);
-        }
-
-        // Get week schedule for hairdresser
         [Authorize(Roles = "Hairdresser")]
         [HttpGet("schedule")]
         public async Task<IActionResult> GetSchedule([FromQuery] string hairdresserId, [FromQuery] DateTime weekStart)
         {
-            var weekEnd = weekStart.AddDays(7);
+            var result = await _hairdresserService.GetWeekScheduleAsync(hairdresserId, weekStart);
+            return Ok(result);
+        }
 
-            var bookings = await _context.Bookings
-                .Where(b => b.HairdresserId == hairdresserId && b.Start >= weekStart && b.Start < weekEnd)
-                .Include(b => b.Customer)
-                .Include(b => b.Treatment)
-                .ToListAsync();
-
-            return Ok(bookings);
+        [Authorize(Roles = "Hairdresser")]
+        [HttpGet("monthly-schedule")]
+        public async Task<IActionResult> GetMonthlySchedule([FromQuery] string hairdresserId, [FromQuery] int year, [FromQuery] int month)
+        {
+            var result = await _hairdresserService.GetMonthlyScheduleAsync(hairdresserId, year, month);
+            return Ok(result);
         }
 
         [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("booking/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<BookingResponseDto>> GetBookingDetails(int id)
         {
-            try
-            {
-                var booking = await _context.Bookings
-                    .Include(b => b.Customer)
-                    .Include(b => b.Treatment)
-                    .Select(b => new BookingResponseDto()
-                    {
-                        Id = b.Id,
-                        Start = b.Start,
-                        End = b.End,
-                        Treatment = new Treatment
-                        {
-                            Name = b.Treatment.Name,
-                            Price = b.Treatment.Price
-                        },
-                        Customer = new ApplicationUser
-                        {
-                            FirstName = b.Customer.FirstName,
-                            LastName = b.Customer.LastName,
-                            Email = b.Customer.Email,
-                            PhoneNumber = b.Customer.PhoneNumber
-                        },
-                    })
-                    .FirstOrDefaultAsync(booking => booking.Id == id);
+            var booking = await _hairdresserService.GetBookingDetailsAsync(id);
+            if (booking == null)
+                return NotFound();
 
-                if (booking == null)
-                    return NotFound();
-
-                return Ok(booking);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("Invalid booking ID");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
-            }
+            return Ok(booking);
         }
     }
 }
