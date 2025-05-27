@@ -56,7 +56,7 @@ namespace Hairdresser.Services
                 Treatment = booking.Treatment,
                 UserDto = new UserDto
                 {
-                    UserName = booking.Customer?.UserName,
+                    UserName = booking.Customer,
                     Email = booking.Customer?.Email,
                     PhoneNumber = booking.Customer?.PhoneNumber
                 },
@@ -64,7 +64,7 @@ namespace Hairdresser.Services
             };
         }
 
-        public async Task<ApplicationUser?> UpdateHairdresserAsync(string id, UpdateUserDTO userRequest)
+        public async Task<ApplicationUser?> UpdateHairdresserAsync(string id, UpdateUserDto userRequest)
         {
             var hairdresser = await GetUserByRoleAsync(id, UserRoleEnum.Hairdresser);
 

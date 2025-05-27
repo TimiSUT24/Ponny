@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Hairdresser.DTOs.User;
 
-public class UpdateUserDTO
+public class UpdateUserDto
 {
     [Required]
     public string FirstName { get; set; } = string.Empty;

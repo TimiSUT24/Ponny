@@ -49,7 +49,7 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> UpdateHairdresser(string id, [FromBody] UpdateUserDTO userRequest)
+        public async Task<IActionResult> UpdateHairdresser(string id, [FromBody] UpdateUserDto userRequest)
         {
             var hairdresser = await GetUserByRoleAsync(id, UserRoleEnum.Hairdresser);
 

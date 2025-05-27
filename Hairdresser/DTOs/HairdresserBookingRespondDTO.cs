@@ -2,7 +2,7 @@ using System;
 
 namespace Hairdresser.DTOs;
 
-public class HairdresserBookingRespondDTO
+public class HairdresserBookingRespondDto
 {
     public int Id { get; set; }
     public DateTime Start { get; set; }
