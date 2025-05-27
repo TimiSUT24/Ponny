@@ -5,6 +5,7 @@ using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hairdresser.Controllers
@@ -14,10 +15,12 @@ namespace Hairdresser.Controllers
     public class HairdresserController : ControllerBase
     {
         private readonly IHairdresserService _hairdresserService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HairdresserController(IHairdresserService hairdresserService)
+        public HairdresserController(IHairdresserService hairdresserService, UserManager<ApplicationUser> userManager)
         {
             _hairdresserService = hairdresserService;
+            _userManager = userManager;
         }
 
         [AllowAnonymous]
@@ -51,7 +54,8 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateHairdresser(string id, [FromBody] UpdateUserDto userRequest)
         {
-            var hairdresser = await _hairdresserService.UpdateHairdresserAsync(id, UserRoleEnum.Hairdresser);
+            var allHairdresser = await _userManager.GetUsersInRoleAsync(UserRoleEnum.Hairdresser.ToString());
+            var hairdresser = allHairdresser.Where(u => u.Id == id).FirstOrDefault();
 
             if (hairdresser is null)
             {
@@ -84,13 +88,9 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetHairdresserById(string id)
         {
-            var adminUser = await GetUserByRoleAsync(id, UserRoleEnum.Hairdresser);
-            if (adminUser == null)
-            {
-                return Unauthorized("Hairdresser is Unauthorized");
-            }
 
-            var hairdresser = await _userRepository.GetHairdressersWithBookings(adminUser.Id);
+            var allHairdresser = await _userManager.GetUsersInRoleAsync(UserRoleEnum.Hairdresser.ToString());
+            var hairdresser = allHairdresser.Where(u => u.Id == id).FirstOrDefault();
 
             if (hairdresser == null)
             {
