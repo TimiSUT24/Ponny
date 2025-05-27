@@ -6,4 +6,17 @@ The focus is on validating repository logic and controller behavior through auto
 ---
 ## 2. Scope
 - **Repository tests**: CRUD Operations
-- **Controller tests**: HTTP logic, Service logic, status codes and error handling
+- **Controller tests**: HTTP logic, Service logic, status codes and error handlin
+---
+## 4. Test Structure
+
+```
+/Projekt
+  /HairdresserUnitTests
+   - HairdresserControllerTests.cs
+   - BookingControllerTests.cs
+   - TreatmentControllerTests.cs
+   - UserControllerTests.cs
+   - BookingRepositoryTests.cs
+   - TreatmentRepositoryTests.cs
+```
