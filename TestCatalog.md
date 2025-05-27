@@ -35,5 +35,17 @@ Tests for the `BookingRepository`, which is responsible for managing data access
 | `Add_ShouldAddBookingSuccessfully`     | Verifies that a new booking is added correctly to the database and can be retrieved afterward.   |
 | `Delete_ShouldDeleteBookingSuccessfully` | Ensures that a booking is successfully deleted and no longer exists in the database.             |
 
+---
+## HairdresserControllerTest
+
+Tests for the `HairdresserController`, which handles retrieving hairdresser-related data from the database.
+
+| **Test Method**                             | **Purpose**                                                                                   |
+|---------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `GetAll_ShouldReturnAllHairdressers_Users`  | Verifies that all hairdressers are returned when present in the database.                    |
+| `GetAll_ShouldReturnEmptyList_WhenNoHairdressers` | Ensures an empty list is returned when no hairdressers exist in the database.                |
+| `GetHairdresserById_ShudlReturnHairdresserIdWhenFound` | Checks that a specific hairdresser is returned correctly when found by ID.               |
+
+
 
 
