@@ -2,14 +2,16 @@ using Hairdresser.Controllers;
 using Hairdresser.Data;
 using Hairdresser.Repositories;
 using Hairdresser.Repositories.Interfaces;
+using Hairdresser.Services;
 using HairdresserClassLibrary.Models;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Company.TestProject1;
+namespace HairdresserUnitTests;
 
 [TestClass]
 public class HairdresserControllerTest
@@ -17,6 +19,7 @@ public class HairdresserControllerTest
     private ApplicationDBContext? _context;
     private HairdresserController? _hairdresserController;
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
+
 
     [TestInitialize]
     public void Setup()
@@ -33,8 +36,10 @@ public class HairdresserControllerTest
 
         _context = new ApplicationDBContext(options);
         var userRepository = new UserRepository(_context, userManager);
-        var bookingRepository = new Mock<IGenericRepository<Booking>>().Object;
-        _hairdresserController = new HairdresserController(_context, userRepository, bookingRepository);
+        var bookingRepository = new BookingRepository(_context);
+
+        var hairdresser = new HairdresserService(userRepository, bookingRepository, userManager);
+        _hairdresserController = new HairdresserController(hairdresser);
     }
 
     [TestCleanup]
@@ -60,7 +65,7 @@ public class HairdresserControllerTest
         await _context.SaveChangesAsync();
 
         // Act
-        var hairdressers = await GetAllHairdressersAsync();
+        var hairdressers = await _hairdresserController!.GetAllHairdressersAsync();
 
         // Assert
         Assert.IsNotNull(hairdressers);
@@ -71,14 +76,14 @@ public class HairdresserControllerTest
     public async Task GetAll_ShalldReturnEmptyList_WhenNoHairdressers()
     {
         // Act
-        var hairdressers = await GetAllHairdressersAsync();
+        var hairdressers = await _hairdresserController!.GetAllHairdressersAsync();
         // Assert
         Assert.IsNotNull(hairdressers);
         Assert.AreEqual(0, hairdressers.Count());
     }
 
     [TestMethod]
-    public async Task GetHairdresserById_ShudlReturnHairdresserIdWhenFound()
+    public async Task GetHairdresserById_ShouldReturnHairdresserIdWhenFound()
     {
         // Arrange
         var hairdresser = new ApplicationUser { FirstName = "John", LastName = "Doe" };
@@ -89,28 +94,18 @@ public class HairdresserControllerTest
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _hairdresserController!.GetHairdresserById(hairdresser.Id) as OkObjectResult;
-        var hairdresserResult = result?.Value as ApplicationUser;
+        var actionResult = await _hairdresserController!.GetHairdresserById(hairdresser.Id);
+        var okResult = actionResult as OkObjectResult;
+
+        Assert.IsNull(actionResult as NotFoundResult);
+
+        Assert.IsNotNull(okResult, "Expected OkObjectResult but got null or different type.");
+
+        var hairdresserResult = okResult.Value as ApplicationUser;
+        Assert.IsNotNull(hairdresserResult, "Expected ApplicationUser but got null or different type.");
 
         // Assert
-        Assert.IsNotNull(hairdresserResult);
+        Assert.AreEqual(hairdresser.Id, hairdresserResult.Id);
     }
-
-    private async Task<IEnumerable<ApplicationUser>?> GetAllHairdressersAsync()
-    {
-
-        var result = await _hairdresserController!.GetAll();
-
-        if (result.Result is not OkObjectResult)
-        {
-            Assert.Fail("Expected OkObjectResult");
-        }
-        var okResult = result.Result as OkObjectResult;
-        if (okResult == null)
-        {
-            Assert.Fail("Expected OkObjectResult");
-        }
-        return okResult.Value as IEnumerable<ApplicationUser>;
-    }
-
 }
+

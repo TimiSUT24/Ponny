@@ -1,6 +1,6 @@
 namespace Hairdresser.DTOs.User;
 
-public record UserDTO
+public record UserDto
 {
     public string Id { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;

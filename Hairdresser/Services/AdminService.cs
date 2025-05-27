@@ -1,4 +1,5 @@
 ﻿using Hairdresser.DTOs;
+using Hairdresser.DTOs.User;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services.Interfaces;
 
@@ -22,16 +23,29 @@ namespace Hairdresser.Services
                 Id = b.Id,
                 Start = b.Start,
                 End = b.End,
-                Treatment = b.Treatment,
-                UserDto = new UserDto
+                Treatment = new TreatmentDto
+                {
+                    Id = b.Treatment.Id,
+                    Name = b.Treatment.Name, 
+                    Description = b.Treatment.Description,
+                    Price = b.Treatment.Price
+                },
+                Costumer = new UserDto
                 {
                     Id = b.Customer?.Id,
                     UserName = b.Customer?.UserName,
                     Email = b.Customer?.Email,
                     PhoneNumber = b.Customer?.PhoneNumber
                 },
-                Hairdresser = b.Hairdresser
+                Hairdresser = new UserDto
+                {
+                    Id = b.Hairdresser?.Id,
+                    UserName = b.Hairdresser?.UserName,
+                    Email = b.Hairdresser?.Email,
+                    PhoneNumber = b.Hairdresser?.PhoneNumber
+                }
             });
+            
 
             return detailedBookings;
         }

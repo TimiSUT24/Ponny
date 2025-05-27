@@ -110,7 +110,7 @@ namespace HairdresserUnitTests
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            var updatedUser = new ApplicationUser
+            var updatedUser = new UserDto
             {
                 Id = "user-2",
                 UserName = "newname",

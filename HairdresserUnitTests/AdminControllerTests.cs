@@ -1,5 +1,6 @@
 ﻿using Hairdresser.Controllers;
 using Hairdresser.DTOs;
+using Hairdresser.DTOs.User;
 using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Http;

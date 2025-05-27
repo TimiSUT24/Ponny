@@ -64,11 +64,12 @@ namespace Hairdresser.Repositories
 				.FirstOrDefaultAsync(b => b.Id == id && b.CustomerId == customerId);
 		}
 
-        public async Task<HairdresserBookingRespondDTO?> GetBookingWithDetailsAsync(int id)
+        public async Task<HairdresserBookingRespondDto?> GetBookingWithDetailsAsync(int id)
         {
             return await _context.Bookings
                     .Include(b => b.Customer)
                     .Include(b => b.Treatment)
+					.Include(b => b.Hairdresser)
                     .Select(booking => booking.MapToBookingResponseDto())
                     .FirstOrDefaultAsync(booking => booking.Id == id);
         }
@@ -92,17 +93,7 @@ namespace Hairdresser.Repositories
                 .Include(b => b.Treatment)
                 .OrderBy(b => b.Start)
                 .ToListAsync();
-        }
-
-        public async Task<Booking?> GetBookingWithDetailsAsync(int bookingId)
-        {
-            return await _context.Bookings
-                .Include(b => b.Customer)
-                .Include(b => b.Treatment)
-                .Include(b => b.Hairdresser)
-                .FirstOrDefaultAsync(b => b.Id == bookingId);
-        }
-
+        }     
         public async Task<IEnumerable<Booking>> GetMonthlyScheduleWithDetailsAsync(string hairdresserId, int year, int month)
         {
             var monthStart = new DateTime(year, month, 1);

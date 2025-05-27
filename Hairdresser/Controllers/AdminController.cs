@@ -1,11 +1,9 @@
-﻿using Hairdresser.Data;
-using Hairdresser.DTOs;
+﻿using Hairdresser.DTOs.User;
 using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hairdresser.Controllers
 {
@@ -50,7 +48,7 @@ namespace Hairdresser.Controllers
 
             await _userManager.AddToRoleAsync(user, "Hairdresser");
 
-            var response = new UserDto
+            var response = new UserRespondDto
             {
                 Id = user.Id,
                 UserName = user.UserName,

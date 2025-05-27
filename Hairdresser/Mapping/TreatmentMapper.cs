@@ -5,11 +5,11 @@ namespace Hairdresser.Mapping;
 
 public static class TreatmentMapper
 {
-    public static TreatmentDTO MapToTreatmentDto(this Treatment treatment)
+    public static TreatmentDto MapToTreatmentDto(this Treatment treatment)
     {
         ArgumentNullException.ThrowIfNull(treatment);
 
-        return new TreatmentDTO
+        return new TreatmentDto
         {
             Id = treatment.Id,
             Name = treatment.Name,

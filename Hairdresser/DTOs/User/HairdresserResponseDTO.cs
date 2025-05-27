@@ -1,6 +1,6 @@
 namespace Hairdresser.DTOs.User;
 
-public record HairdresserResponseDTO : UserDTO
+public record HairdresserResponseDto : UserDto
 {
-    public ICollection<HairdresserBookingRespondDTO> Bookings { get; set; } = [];
+    public ICollection<HairdresserBookingRespondDto> Bookings { get; set; } = [];
 }

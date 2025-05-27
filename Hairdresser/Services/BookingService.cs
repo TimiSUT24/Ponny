@@ -66,7 +66,7 @@ namespace Hairdresser.Services
             return availableSlots;
         }
 
-        public async Task<BookingResponseDTO> BookAppointment(string customerId, BookingRequestDto request)
+        public async Task<BookingResponseDto> BookAppointment(string customerId, BookingRequestDto request)
         {
 
             var treatment = await _treatmentRepository.GetByIdAsync(request.TreatmentId);
@@ -108,12 +108,12 @@ namespace Hairdresser.Services
 
             var savedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            return new BookingResponseDTO
+            return new BookingResponseDto
             {
                 Id = booking.Id,
                 Start = booking.Start,
                 End = booking.End,
-                UserDto = new UserDTO
+                Costumer = new UserDto
                 {
                     Id = savedBooking.CustomerId,
                     UserName = savedBooking.Customer.UserName,
@@ -151,7 +151,7 @@ namespace Hairdresser.Services
             };
         }
 
-        public async Task<BookingResponseDTO> GetBookingByIdAsync(int bookingId, string customerId)
+        public async Task<BookingResponseDto> GetBookingByIdAsync(int bookingId, string customerId)
         {
             var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId, customerId);
             if (booking == null)
@@ -164,7 +164,7 @@ namespace Hairdresser.Services
                 throw new UnauthorizedAccessException("Can only see your own bookings.");
             }
 
-            return new BookingResponseDTO
+            return new BookingResponseDto
             {
                 Id = booking.Id,
                 //Customer = booking.Customer,
@@ -172,7 +172,7 @@ namespace Hairdresser.Services
 
         }
 
-        public async Task<BookingResponseDTO> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto)
+        public async Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto)
         {
             var booking = await _bookingRepository.GetByIdAsync(bookingId);
 
@@ -215,12 +215,12 @@ namespace Hairdresser.Services
 
             var updatedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            return new BookingResponseDTO
+            return new BookingResponseDto
             {
                 Id = booking.Id,
                 Start = booking.Start,
                 End = booking.End,
-                UserDto = new UserDTO
+                Costumer = new UserDto
                 {
                     Id = updatedBooking.CustomerId,
                     FirstName = updatedBooking.Customer.FirstName,

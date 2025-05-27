@@ -1,26 +1,31 @@
 ﻿using Hairdresser.DTOs;
+using Hairdresser.DTOs.User;
+using Hairdresser.Enums;
+using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
-using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Hairdresser.Services
 {
     public class HairdresserService : IHairdresserService
     {
-        private readonly IHairdresserRepository _hairdresserRepo;
+        private readonly IUserRepository _userRepo;
         private readonly IBookingRepository _bookingRepo;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HairdresserService(IHairdresserRepository hairdresserRepo, IBookingRepository bookingRepo)
+        public HairdresserService(IUserRepository userRepository, IBookingRepository bookingRepo, UserManager<ApplicationUser> userManager)
         {
-            _hairdresserRepo = hairdresserRepo;
+            _userRepo = userRepository;
             _bookingRepo = bookingRepo;
+            _userManager = userManager;
         }
 
-        public async Task<IEnumerable<UserDto>> GetAllHairdressersAsync()
+        public async Task<IEnumerable<UserRespondDto>> GetAllHairdressersAsync()
         {
-            var users = await _hairdresserRepo.GetAllAsync();
+            var users = await _userRepo.GetAllAsync();
 
-            return users.Select(u => new UserDto
+            return users.Select(u => new UserRespondDto
             {
                 Id = u.Id,
                 UserName = u.UserName,
@@ -45,7 +50,10 @@ namespace Hairdresser.Services
         public async Task<BookingResponseDto?> GetBookingDetailsAsync(int bookingId)
         {
             var booking = await _bookingRepo.GetBookingWithDetailsAsync(bookingId);
-            if (booking == null) return null;
+            if (booking == null)
+            {
+                return null;
+            }          
 
             return new BookingResponseDto
             {
@@ -53,13 +61,51 @@ namespace Hairdresser.Services
                 Start = booking.Start,
                 End = booking.End,
                 Treatment = booking.Treatment,
-                UserDto = new UserDto
+                Costumer = new UserDto
                 {
-                    UserName = booking.Customer?.UserName,
+                    UserName = booking.Customer.UserName,
                     Email = booking.Customer?.Email,
                     PhoneNumber = booking.Customer?.PhoneNumber
-                },
-                Hairdresser = booking.Hairdresser
+                },               
+            };
+        }
+
+        public async Task<UserDto?> UpdateHairdresserAsync(string id, UpdateUserDto userRequest)
+        {
+            var allHairdresser = await _userManager.GetUsersInRoleAsync(UserRoleEnum.Hairdresser.ToString());
+            var hairdresser = allHairdresser.Where(u => u.Id == id).FirstOrDefault();
+
+            if (hairdresser is null)
+            {
+                return null;
+            }
+
+            hairdresser.FirstName = userRequest.FirstName;
+            hairdresser.LastName = userRequest.LastName;
+            hairdresser.Email = userRequest.Email;
+            hairdresser.PhoneNumber = userRequest.PhoneNumber;
+            hairdresser.UserName = userRequest.Email;
+
+            await _userRepo.UpdateAsync(hairdresser);
+            await _userRepo.SaveChangesAsync();
+
+            return hairdresser.MapToUserDTO();
+        }
+
+        public async Task<UserDto> GetHairdresserWithId(string id)
+        {
+            var allHairdresser = await _userManager.GetUsersInRoleAsync(UserRoleEnum.Hairdresser.ToString());
+            var hairdresser = allHairdresser.Where(u => u.Id == id).FirstOrDefault();
+
+            if (hairdresser == null)
+            {
+                throw new UnauthorizedAccessException("Unauthorized");
+            }
+
+            return new UserDto
+            {
+                UserName = hairdresser.UserName,
+                Email = hairdresser.Email,
             };
         }
 
@@ -70,15 +116,50 @@ namespace Hairdresser.Services
                 Id = b.Id,
                 Start = b.Start,
                 End = b.End,
-                Treatment = b.Treatment,
-                UserDto = new UserDto
+                Treatment = new TreatmentDto //add more? 
+                {
+                    Name = b.Treatment.Name,
+                    Description = b.Treatment.Description,
+                },
+                Costumer = new UserDto
                 {
                     UserName = b.Customer?.UserName,
                     Email = b.Customer?.Email,
                     PhoneNumber = b.Customer?.PhoneNumber
                 },
-                Hairdresser = b.Hairdresser
+                Hairdresser = new UserDto
+                {
+                    Id = b.Hairdresser?.Id,
+                    FirstName = b.Hairdresser?.FirstName,
+                    LastName = b.Hairdresser?.LastName,
+                    UserName = b.Hairdresser?.UserName,
+                    Email = b.Hairdresser?.Email,
+                    PhoneNumber = b.Hairdresser?.PhoneNumber
+                }
             }).ToList();
         }
+
+         /*private async Task<ApplicationUser?> GetUserByRoleAsync(string id, UserRoleEnum userRole)
+         {
+            var roleId = await _context.Roles
+                .Where(r => r.Name == userRole.ToString())
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+            if (roleId == null)
+            {
+                return null;
+            }
+            var userId = await _context.UserRoles
+                .Where(ur => ur.RoleId == roleId && ur.UserId == id)
+                .Select(ur => ur.UserId)
+                .FirstOrDefaultAsync();
+
+            if (userId is null)
+            {
+                return null;
+            }
+
+            return await _userRepo.GetByIdAsync(userId);
+        } */ // fix denna 
     }
 }

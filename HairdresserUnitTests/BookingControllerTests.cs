@@ -55,12 +55,12 @@ namespace HairdresserUnitTests
                 HairdresserId = hairdresserId
             };
 
-			var expectedResponse = new BookingResponseDTO
-			{
-				Id = 1,
-				Start = startTime,
-				End = startTime.AddMinutes(30)
-			};
+            var expectedResponse = new BookingResponseDto
+            {
+                Id = 1,
+                Start = startTime,
+                End = startTime.AddMinutes(30)
+            };
 
 
             // Setup service mock
@@ -86,8 +86,8 @@ namespace HairdresserUnitTests
             Assert.IsInstanceOfType(result, typeof(CreatedAtActionResult));
             var createdResult = result as CreatedAtActionResult;
 
-			Assert.IsNotNull(createdResult);
-			var response = createdResult!.Value as BookingResponseDTO;
+            Assert.IsNotNull(createdResult);
+            var response = createdResult!.Value as BookingResponseDto;
 
             Assert.IsNotNull(response);
             Assert.AreEqual(expectedResponse.Id, response!.Id);
@@ -231,7 +231,7 @@ namespace HairdresserUnitTests
                 Id = bookingId,
                 Start = rebookRequest.Start,
                 End = rebookRequest.Start.AddMinutes(45),
-                Treatment = new Treatment { Id = 2, Name = "Färgning" }
+                Treatment = new TreatmentDto { Id = 2, Name = "Färgning" }
             };
 
             _mockBookingService!
