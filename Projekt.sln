@@ -9,6 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HairdresserClassLibrary", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HairdresserUnitTests", "HairdresserUnitTests\HairdresserUnitTests.csproj", "{29541548-F395-4A1A-9269-AACCF2BBA0DD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{5C30512A-D03D-4050-9379-FD88F5E0A196}"
+	ProjectSection(SolutionItems) = preProject
+		Unittests.md = Unittests.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
