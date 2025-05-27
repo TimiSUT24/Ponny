@@ -11,3 +11,18 @@ Tests the `AdminController` endpoints for tasks like retrieving booking overview
 | `CreateHairdresser_InvalidModelState_ReturnsBadRequest`   | Confirms `400 BadRequest` is returned for invalid or incomplete model input.                  |
 | `CreateHairdresser_CreateFails_ReturnsBadRequestWithErrors` | Simulates identity creation failure and verifies error response is correctly handled.        |
 | `CreateHairdresser_AddToRole_CalledWithCorrectRole`       | Asserts that the new user is correctly added to the `"Hairdresser"` role.                    |
+
+---
+## BookingControllerTests
+
+Tests for the `BookingsController`, which handles booking, rebooking, and handling booking conflicts. These tests mock `IBookingService` and simulate booking scenarios for authenticated users.
+
+| **Test Method**                                       | **Purpose**                                                                                     |
+|-------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| `BookAppointment_ReturnsCreatedWithCorrectBookingData` | Ensures that a successful booking request returns `201 Created` with correct booking details.   |
+| `Book_NonExisting_Treatment_Returns404`              | Validates that trying to book with a non-existent treatment returns `404 Not Found`.            |
+| `Book_Occupied_Time_ReturnsConflict`                 | Simulates a conflict due to a time slot already being booked; expects a `409 Conflict` result.  |
+| `Book_InvalidTime_ReturnsConflict`                   | Verifies that invalid booking times result in a `409 Conflict` from the service.                |
+| `Rebook_ValidRequest_ReturnsOkWithUpdatedBooking`     | Tests that a valid rebooking request returns `200 OK` with updated booking information.         |
+
+
