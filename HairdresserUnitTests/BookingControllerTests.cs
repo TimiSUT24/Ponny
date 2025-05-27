@@ -211,5 +211,54 @@ namespace HairdresserUnitTests
             var conflict = result as ConflictObjectResult;
             Assert.AreEqual(StatusCodes.Status409Conflict, conflict?.StatusCode);
         }
+
+        [TestMethod]
+        public async Task Rebook_ValidRequest_ReturnsOkWithUpdatedBooking()
+        {
+            // Arrange
+            var userId = "customer-1";
+            var bookingId = 42;
+
+            var rebookRequest = new BookingRequestDto
+            {
+                HairdresserId = "hairdresser-1",
+                TreatmentId = 2,
+                Start = DateTime.Now.AddDays(3)
+            };
+
+            var expectedBooking = new BookingResponseDto
+            {
+                Id = bookingId,
+                Start = rebookRequest.Start,
+                End = rebookRequest.Start.AddMinutes(45),
+                Treatment = new Treatment { Id = 2, Name = "Färgning" }
+            };
+
+            _mockBookingService!
+                .Setup(s => s.RebookBooking(userId, bookingId, rebookRequest))
+                .ReturnsAsync(expectedBooking);
+
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+        new Claim(ClaimTypes.NameIdentifier, userId)
+    }, "mock"));
+
+            _controller!.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
+
+            // Act
+            var result = await _controller.Rebook(bookingId, rebookRequest);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            var returnedBooking = okResult!.Value as BookingResponseDto;
+            Assert.IsNotNull(returnedBooking);
+            Assert.AreEqual(expectedBooking.Id, returnedBooking!.Id);
+            Assert.AreEqual(expectedBooking.Start, returnedBooking.Start);
+        }
     }
 }
