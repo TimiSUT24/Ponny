@@ -21,7 +21,7 @@ The focus is on validating repository logic and controller behavior through auto
    - TreatmentRepositoryTests.cs
 ```
 ---
-## 5. Naming Conventions
+## 3. Naming Conventions
 
 - **Test project**: `HairdresserUnitTests`
 - **Test methods**: `MethodName_Condition_ExpectedResult`
@@ -30,3 +30,8 @@ The focus is on validating repository logic and controller behavior through auto
 [TestMethod]
 public void GetUser_ValidId_Returns200Ok()
 ```
+---
+## 4. Summary
+
+- Service layer is not tested separately.
+- Coverage is focused on repositories and controllers.
