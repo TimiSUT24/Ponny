@@ -64,7 +64,7 @@ namespace Hairdresser.Repositories
 				.FirstOrDefaultAsync(b => b.Id == id && b.CustomerId == customerId);
 		}
 
-        public async Task<HairdresserBookingRespondDTO?> GetBookingWithDetailsAsync(int id)
+        public async Task<HairdresserBookingRespondDto?> GetBookingWithDetailsAsync(int id)
         {
             return await _context.Bookings
                     .Include(b => b.Customer)

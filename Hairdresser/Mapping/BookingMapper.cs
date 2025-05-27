@@ -5,11 +5,11 @@ namespace Hairdresser.Mapping;
 
 public static class BookingMapper
 {
-    public static HairdresserBookingRespondDTO MapToBookingResponseDto(this Booking booking)
+    public static HairdresserBookingRespondDto MapToBookingResponseDto(this Booking booking)
     {
         ArgumentNullException.ThrowIfNull(booking);
 
-        return new HairdresserBookingRespondDTO
+        return new HairdresserBookingRespondDto
         {
             Id = booking.Id,
             Start = booking.Start,
