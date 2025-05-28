@@ -126,7 +126,7 @@ namespace Hairdresser.Services
 
         public async Task<BookingRequestDto> CancelBooking(string customerId, int bookingId)
         {
-            var booking = await _bookingRepository.GetByIdAsync(bookingId);
+            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId,customerId);
 
             if (booking == null)
             {
