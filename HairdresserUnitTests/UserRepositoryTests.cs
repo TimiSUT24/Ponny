@@ -39,5 +39,18 @@ namespace HairdresserUnitTests
 			_context = new ApplicationDBContext(options);
 			_userRepository = new UserRepository(_context, _userManagerMock.Object);
 		}
+
+		[TestMethod]
+		public async Task AddAsync_ShouldAddUser()
+		{
+			var user = new ApplicationUser { Id = "1", UserName = "testuser" };
+
+			await _userRepository.AddAsync(user);
+			await _userRepository.SaveChangesAsync();
+
+			var users = await _userRepository.GetAllAsync();
+			Assert.AreEqual(1, users.Count());
+			Assert.AreEqual("testuser", users.First().UserName);
+		}
 	}
 }
