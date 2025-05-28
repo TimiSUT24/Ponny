@@ -78,5 +78,19 @@ namespace HairdresserUnitTests
 			Assert.IsNotNull(result);
 			Assert.AreEqual("byid", result!.UserName);
 		}
+
+		[TestMethod]
+		public async Task FindAsync_ShouldReturnMatchingUsers()
+		{
+			await _context.Users.AddRangeAsync(
+				new ApplicationUser { Id = "1", UserName = "match1" },
+				new ApplicationUser { Id = "2", UserName = "match2" },
+				new ApplicationUser { Id = "3", UserName = "other" }
+			);
+			await _context.SaveChangesAsync();
+
+			var result = await _userRepository.FindAsync(u => u.UserName!.Contains("match"));
+			Assert.AreEqual(2, result.Count());
+		}
 	}
 }
