@@ -52,5 +52,19 @@ namespace HairdresserUnitTests
 			Assert.AreEqual(1, users.Count());
 			Assert.AreEqual("testuser", users.First().UserName);
 		}
+
+		[TestMethod]
+		public async Task DeleteAsync_ShouldRemoveUser()
+		{
+			var user = new ApplicationUser { Id = "1", UserName = "todelete" };
+			await _context!.Users.AddAsync(user);
+			await _context.SaveChangesAsync();
+
+			await _userRepository.DeleteAsync(user);
+			await _userRepository.SaveChangesAsync();
+
+			var users = await _userRepository.GetAllAsync();
+			Assert.AreEqual(0, users.Count());
+		}
 	}
 }
