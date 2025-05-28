@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
+using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
@@ -108,20 +109,8 @@ namespace Hairdresser.Services
 
             var savedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            return new BookingResponseDto
-            {
-                Id = booking.Id,
-                Start = booking.Start,
-                End = booking.End,
-                Costumer = new UserDto
-                {
-                    Id = savedBooking.CustomerId,
-                    UserName = savedBooking.Customer.UserName,
-                    Email = savedBooking.Customer.Email,
-                    PhoneNumber = savedBooking.Customer.PhoneNumber
-                },
-
-            };
+            var mapp = BookingMapper.MapToBookingReponse2Dto(savedBooking);
+            return mapp;            
         }
 
         public async Task<BookingRequestDto> CancelBooking(string customerId, int bookingId)
