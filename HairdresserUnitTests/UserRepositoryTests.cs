@@ -114,5 +114,27 @@ namespace HairdresserUnitTests
 
 			Assert.IsNull(result);
 		}
+
+		[TestMethod]
+		public async Task RegisterUserAsync_ShouldReturn_UserDto()
+		{
+			//this test checks if the user registration sucsedes when the user manager returns an Success
+			var dto = new RegisterUserDto
+			{
+				FirstName = "Success",
+				LastName = "Case",
+				UserName = "successcase",
+				Email = "success@example.com",
+				Password = "Password123!"
+			};
+
+			_userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), dto.Password))
+				.ReturnsAsync(IdentityResult.Success);
+
+			var result = await _userRepository.RegisterUserAsync(dto, UserRoleEnum.User);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(dto.FirstName, result!.FirstName);
+		}
 	}
 }
