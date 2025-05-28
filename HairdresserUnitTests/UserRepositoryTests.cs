@@ -94,7 +94,7 @@ namespace HairdresserUnitTests
 		}
 
 		[TestMethod]
-		public async Task RegisterUserAsync_ShouldReturnNull_WhenCreationFails()
+		public async Task RegisterUserAsync_InvalidPassword_ShouldNotCreate()
 		{
 			//this test checks if the user registration fails when the user manager returns an error
 			var dto = new RegisterUserDto
