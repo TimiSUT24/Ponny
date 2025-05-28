@@ -136,5 +136,16 @@ namespace HairdresserUnitTests
 			Assert.IsNotNull(result);
 			Assert.AreEqual(dto.FirstName, result!.FirstName);
 		}
+		[TestMethod]	
+		public async Task GetHairdressersWithBookings_ShouldReturn_Hairdressers()
+		{
+			_context.Users.AddRange(
+				new ApplicationUser { Id = "1", UserName = "hairdresser1"}
+			);
+			_context.Bookings.AddRange(
+				new Booking { Id = 1, HairdresserId = "1", TreatmentId = 1 },
+				new Booking { Id = 2, HairdresserId = "1", TreatmentId = 2 }
+			);
+		}
 	}
 }
