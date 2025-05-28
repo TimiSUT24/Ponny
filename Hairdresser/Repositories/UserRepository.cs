@@ -70,6 +70,11 @@ namespace Hairdresser.Repositories
 		{
 			ArgumentNullException.ThrowIfNull(registerUserDto, nameof(registerUserDto));
 
+			var existingUser = await _userManager.FindByNameAsync(registerUserDto.UserName);
+			if (existingUser != null)
+			{
+				return null; // Username already taken
+			}
 			var user = new ApplicationUser
 			{
 				FirstName = registerUserDto.FirstName,
