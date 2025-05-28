@@ -157,6 +157,47 @@ namespace HairdresserUnitTests
 			Assert.IsNotNull(result);
 			Assert.AreEqual(dto.FirstName, result!.FirstName);
 		}
+
+		[TestMethod]
+		public async Task RegisterUserAsync_DuplicateUsername_ShouldNotCreate()
+		{
+			// Arrange
+			var dto = new RegisterUserDto
+			{
+				FirstName = "firstname",
+				LastName = "lastname",
+				UserName = "username",
+				Email = "success@example.com",
+				Password = "Password123!"
+			};
+
+			var userCreated = false;
+
+			_userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), dto.Password))
+				.ReturnsAsync(() =>
+				{
+					userCreated = true;
+					return IdentityResult.Success;
+				});
+
+			_userManagerMock.Setup(x => x.FindByNameAsync(dto.UserName))
+				.ReturnsAsync(() => userCreated
+					? new ApplicationUser { UserName = dto.UserName }
+					: null);
+
+			// Act
+			var firstResult = await _userRepository.RegisterUserAsync(dto, UserRoleEnum.User);
+
+			dto.Email = "differentemail@example.com";
+			var secondResult = await _userRepository.RegisterUserAsync(dto, UserRoleEnum.User);
+
+			// Assert
+			Assert.IsNotNull(firstResult, "First registration should succeed.");
+			Assert.IsNull(secondResult, "Second registration with duplicate username should fail and return null.");
+		}
+
+
+
 		[TestMethod]	
 		public async Task GetHairdressersWithBookings_ShouldReturn_Hairdressers()
 		{
