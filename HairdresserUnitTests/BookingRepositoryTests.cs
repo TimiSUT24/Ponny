@@ -87,9 +87,9 @@ namespace HairdresserUnitTests
 
 			// Assert
 			Assert.IsNotNull(result);
-			Assert.AreEqual(result.Customer, result.Customer);
-			Assert.AreEqual(result.Hairdresser, result.Hairdresser);
-			Assert.AreEqual(result.Treatment, result.Treatment);
+			Assert.AreEqual(result.Customer, newBooking.Customer);
+			Assert.AreEqual(result.Hairdresser, newBooking.Hairdresser);
+			Assert.AreEqual(result.Treatment, newBooking.Treatment);
 		}
 
 
@@ -124,10 +124,7 @@ namespace HairdresserUnitTests
 
 			// Assert
 			// Make sure the booking is added successfully
-			Assert.IsNotNull(addedBooking);
-			Assert.AreEqual(addedBooking.Customer, addedBooking.Customer);
-			Assert.AreEqual(addedBooking.Hairdresser, addedBooking.Hairdresser);
-			Assert.AreEqual(addedBooking.Treatment, addedBooking.Treatment);
+			Assert.IsNotNull(addedBooking);			
 
 			//Make sure the booking is deleted successfully
 			Assert.IsNull(deletedBooking);

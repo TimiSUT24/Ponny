@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
+using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
@@ -62,7 +63,6 @@ namespace Hairdresser.Services
                 }
 
             }
-
             return availableSlots;
         }
 
@@ -108,25 +108,13 @@ namespace Hairdresser.Services
 
             var savedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            return new BookingResponseDto
-            {
-                Id = booking.Id,
-                Start = booking.Start,
-                End = booking.End,
-                Costumer = new UserDto
-                {
-                    Id = savedBooking.CustomerId,
-                    UserName = savedBooking.Customer.UserName,
-                    Email = savedBooking.Customer.Email,
-                    PhoneNumber = savedBooking.Customer.PhoneNumber
-                },
-
-            };
+            var mapp = BookingMapper.MapToBookingReponse2Dto(savedBooking);
+            return mapp;            
         }
 
-        public async Task<BookingRequestDto> CancelBooking(string customerId, int bookingId)
+        public async Task<BookingDto> CancelBooking(string customerId, int bookingId)
         {
-            var booking = await _bookingRepository.GetByIdAsync(bookingId);
+            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId,customerId);
 
             if (booking == null)
             {
@@ -139,15 +127,16 @@ namespace Hairdresser.Services
                 throw new UnauthorizedAccessException("Can only cancel your own bookings.");
             }
 
-
             await _bookingRepository.DeleteAsync(booking);
             await _bookingRepository.SaveChangesAsync();
 
-            return new BookingRequestDto
+            var message = "This booking was removed";
+            return new BookingDto
             {
-                // Id = booking.Id,
+                Id = booking.Id,
                 Start = booking.Start,
-                TreatmentId = booking.TreatmentId
+                End = booking.End,
+                Message = message
             };
         }
 
@@ -164,17 +153,13 @@ namespace Hairdresser.Services
                 throw new UnauthorizedAccessException("Can only see your own bookings.");
             }
 
-            return new BookingResponseDto
-            {
-                Id = booking.Id,
-                //Customer = booking.Customer,
-            };
-
+            var currentBooking = BookingMapper.MapToBookingReponse2Dto(booking);
+            return currentBooking; 
         }
 
         public async Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto)
         {
-            var booking = await _bookingRepository.GetByIdAsync(bookingId);
+            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId,customerId);
 
             if (booking == null)
             {
@@ -215,21 +200,9 @@ namespace Hairdresser.Services
 
             var updatedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            return new BookingResponseDto
-            {
-                Id = booking.Id,
-                Start = booking.Start,
-                End = booking.End,
-                Costumer = new UserDto
-                {
-                    Id = updatedBooking.CustomerId,
-                    FirstName = updatedBooking.Customer.FirstName,
-                    LastName = updatedBooking.Customer.LastName,
-                    UserName = updatedBooking.Customer.UserName,
-                    Email = updatedBooking.Customer.Email,
-                    PhoneNumber = updatedBooking.Customer.PhoneNumber
-                }
-            };
+            var returnUpdatedBooking = BookingMapper.MapToBookingReponse2Dto(updatedBooking);
+
+            return returnUpdatedBooking; 
 
         }
     }
