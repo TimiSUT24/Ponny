@@ -92,5 +92,27 @@ namespace HairdresserUnitTests
 			var result = await _userRepository.FindAsync(u => u.UserName!.Contains("match"));
 			Assert.AreEqual(2, result.Count());
 		}
+
+		[TestMethod]
+		public async Task RegisterUserAsync_ShouldReturnNull_WhenCreationFails()
+		{
+			//this test checks if the user registration fails when the user manager returns an error
+			var dto = new RegisterUserDto
+			{
+				FirstName = "Fail",
+				LastName = "Case",
+				UserName = "failcase",
+				Email = "fail@example.com",
+				PhoneNumber = "000000000",
+				Password = "fail"
+			};
+
+			_userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), dto.Password))
+				.ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Failure" }));
+
+			var result = await _userRepository.RegisterUserAsync(dto, UserRoleEnum.User);
+
+			Assert.IsNull(result);
+		}
 	}
 }
