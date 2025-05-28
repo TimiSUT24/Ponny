@@ -34,7 +34,7 @@ public class HairdresserServiceTest
         store.As<IUserEmailStore<ApplicationUser>>(); // Required for FindByEmailAsync
 
         _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-            null!, null!, null!, null!, null!, null!, null!, null!, null!
+            store.Object, null!, null!, null!, null!, null!, null!, null!, null!
         );
 
         _context = new ApplicationDBContext(options);
