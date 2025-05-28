@@ -9,7 +9,7 @@ namespace Hairdresser.Repositories.Interfaces
 
         Task<BookingResponseDto> BookAppointment(string customerId, BookingRequestDto request);
 
-        Task<BookingRequestDto> CancelBooking(string customerId, int bookingId);
+        Task<BookingDto> CancelBooking(string customerId, int bookingId);
         Task<BookingResponseDto> GetBookingByIdAsync(int bookingId, string customerId);
 
         Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto);

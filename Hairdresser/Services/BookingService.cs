@@ -63,7 +63,6 @@ namespace Hairdresser.Services
                 }
 
             }
-
             return availableSlots;
         }
 
@@ -113,7 +112,7 @@ namespace Hairdresser.Services
             return mapp;            
         }
 
-        public async Task<BookingRequestDto> CancelBooking(string customerId, int bookingId)
+        public async Task<BookingDto> CancelBooking(string customerId, int bookingId)
         {
             var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId,customerId);
 
@@ -128,15 +127,16 @@ namespace Hairdresser.Services
                 throw new UnauthorizedAccessException("Can only cancel your own bookings.");
             }
 
-
             await _bookingRepository.DeleteAsync(booking);
             await _bookingRepository.SaveChangesAsync();
 
-            return new BookingRequestDto
+            var message = "This booking was removed";
+            return new BookingDto
             {
-                // Id = booking.Id,
+                Id = booking.Id,
                 Start = booking.Start,
-                TreatmentId = booking.TreatmentId
+                End = booking.End,
+                Message = message
             };
         }
 

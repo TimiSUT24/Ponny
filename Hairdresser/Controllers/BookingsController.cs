@@ -31,6 +31,10 @@ namespace Hairdresser.Controllers
             try
             {
                 var availableTimes = await _bookingService.GetAllAvailableTimes(hairdresserId, treatmentId, day);
+                if(availableTimes == null)
+                {
+                    return NotFound();
+                }
                 return Ok(availableTimes);
             }
             catch (KeyNotFoundException ex)
