@@ -66,5 +66,17 @@ namespace HairdresserUnitTests
 			var users = await _userRepository.GetAllAsync();
 			Assert.AreEqual(0, users.Count());
 		}
+
+		[TestMethod]
+		public async Task GetByIdAsync_ShouldReturnUser()
+		{
+			var user = new ApplicationUser { Id = "123", UserName = "byid" };
+			await _context!.Users.AddAsync(user);
+			await _context.SaveChangesAsync();
+
+			var result = await _userRepository.GetByIdAsync("123");
+			Assert.IsNotNull(result);
+			Assert.AreEqual("byid", result!.UserName);
+		}
 	}
 }
