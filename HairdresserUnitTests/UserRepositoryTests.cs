@@ -124,7 +124,7 @@ namespace HairdresserUnitTests
 				FirstName = "Fail",
 				LastName = "Case",
 				UserName = "failcase",
-				Email = "fail@example.com",
+				Email = "fail",
 				PhoneNumber = "000000000",
 				Password = "faiKqh2fdf(266!!1l"
 			};
