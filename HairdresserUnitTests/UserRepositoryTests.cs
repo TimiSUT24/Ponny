@@ -116,6 +116,27 @@ namespace HairdresserUnitTests
 		}
 
 		[TestMethod]
+		public async Task RegisterUserAsync_InvalidEmail_ShouldNotCreate()
+		{
+			//this test checks if the user registration fails when the user manager returns an error
+			var dto = new RegisterUserDto
+			{
+				FirstName = "Fail",
+				LastName = "Case",
+				UserName = "failcase",
+				Email = "fail@example.com",
+				PhoneNumber = "000000000",
+				Password = "faiKqh2fdf(266!!1l"
+			};
+
+			_userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), dto.Password))
+				.ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Failure" }));
+
+			var result = await _userRepository.RegisterUserAsync(dto, UserRoleEnum.User);
+			Assert.IsNull(result);
+		}
+
+		[TestMethod]
 		public async Task RegisterUserAsync_ShouldReturn_UserDto()
 		{
 			//this test checks if the user registration sucsedes when the user manager returns an Success
