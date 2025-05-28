@@ -1,4 +1,5 @@
 using Hairdresser.Data;
+using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
 using Hairdresser.Repositories;
 using Hairdresser.Repositories.Interfaces;
@@ -58,5 +59,58 @@ public class HairdresserServiceTest
         // Assert
         Assert.IsNotNull(result);
         Assert.IsInstanceOfType<IEnumerable<UserRespondDto>>(result);
+    }
+
+    [TestMethod]
+    public async Task GetWeekScheduleAsync_ShouldReturnBookingsForWeek()
+    {
+        // Arrange
+        var weekStart = DateTime.Now.Date;
+
+        var hairdresser = new ApplicationUser
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            UserName = "hairdresser1",
+            Email = "John.doe@exampel.com",
+            PhoneNumber = "1234567890"
+        };
+        var costumer = new ApplicationUser
+        {
+            FirstName = "Jane",
+            LastName = "Doe",
+            UserName = "customer1",
+            Email = "Jane.doe@exampel.com",
+            PhoneNumber = "0987654321"
+        };
+        await _userRepository.AddAsync(costumer);
+        await _userRepository.AddAsync(hairdresser);
+        await _userRepository.SaveChangesAsync();
+
+        var booking1 = new Booking
+        {
+            Start = weekStart.AddDays(1).AddHours(10),
+            End = weekStart.AddDays(1).AddHours(11),
+            HairdresserId = costumer.Id,
+            CustomerId = hairdresser.Id
+        };
+        var booking2 = new Booking
+        {
+            Start = weekStart.AddDays(3).AddHours(14),
+            End = weekStart.AddDays(3).AddHours(15),
+            HairdresserId = costumer.Id,
+            CustomerId = hairdresser.Id
+        };
+
+        await _bookingRepository.AddAsync(booking1);
+        await _bookingRepository.AddAsync(booking2);
+        await _bookingRepository.SaveChangesAsync();
+
+        // Act
+        var result = await _service.GetWeekScheduleAsync(hairdresser.Id, weekStart);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.Any());
     }
 }
