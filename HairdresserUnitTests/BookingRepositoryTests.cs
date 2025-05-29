@@ -76,6 +76,7 @@ namespace HairdresserUnitTests
 
 
 		[TestMethod]
+        [TestCategory("Normally)]")]
 		public async Task Add_ShouldAddBookingSuccessfully()
 		{
 			// Arrange
@@ -108,7 +109,8 @@ namespace HairdresserUnitTests
 
 
 		[TestMethod]
-		public async Task Delete_ShouldDeleteBookingSuccessfully()
+        [TestCategory("Normally)]")]
+        public async Task Delete_ShouldDeleteBookingSuccessfully()
 		{
 			// Arrange
 			var treatment = _context!.Treatments.ToList()[0];
@@ -128,7 +130,8 @@ namespace HairdresserUnitTests
 		}
 
 		[TestMethod]
-		public async Task GetByIdAsync_ShouldReturnBookingByIdSuccessfully()
+        [TestCategory("Normally)]")]
+        public async Task GetByIdAsync_ShouldReturnBookingByIdSuccessfully()
         {
             // Arrange
             var bookingId = 1;
@@ -140,7 +143,8 @@ namespace HairdresserUnitTests
         }
 
 		[TestMethod]
-		public async Task GetAllAsync_ShouldReturnAllBookingsSuccessfully()
+        [TestCategory("Normally)]")]
+        public async Task GetAllAsync_ShouldReturnAllBookingsSuccessfully()
 		{
             // Act
             var result = await _bookingRepository!.GetAllAsync();
@@ -151,7 +155,8 @@ namespace HairdresserUnitTests
         }
 
 		[TestMethod]
-		public async Task FindAsync_ShouldReturnBookingsByPredicateSuccessfully()
+        [TestCategory("Normally)]")]
+        public async Task FindAsync_ShouldReturnBookingsByPredicateSuccessfully()
 		{
 			// Arrange
 			var bookingId = 1;
@@ -165,7 +170,8 @@ namespace HairdresserUnitTests
         }
 
 		[TestMethod]
-		public async Task UpdateAsync_ShouldUpdateBookingSuccessfully()
+        [TestCategory("Normally)]")]
+        public async Task UpdateAsync_ShouldUpdateBookingSuccessfully()
 		{
             // Arrange
             var bookingId = 1;
@@ -184,7 +190,8 @@ namespace HairdresserUnitTests
         }
 
 		[TestMethod]
-		public async Task SaveChangesAsync_ShouldSaveChangesSuccessfully()
+        [TestCategory("Normally)]")]
+        public async Task SaveChangesAsync_ShouldSaveChangesSuccessfully()
 		{
             // Arrange
             var bookingId = 1;
@@ -203,6 +210,7 @@ namespace HairdresserUnitTests
         }
 
 		[TestMethod]
+        [TestCategory("Normally)]")]
         public async Task GetByIdWithDetailsAsync_ShouldReturnBookingForTheRightCustomer()
 		{
 			//Arrange 
@@ -216,9 +224,21 @@ namespace HairdresserUnitTests
             Assert.AreEqual(customerId, result.CustomerId);
             Assert.AreEqual("Kund", result.Customer.UserName);
         }
+        [TestMethod]
+        [TestCategory("Normally)]")]
+        public async Task AnyAsync_ShouldReturnTrueIfAnyBookingExistForHairdresser()
+        {
+            var bookingId = 1;
+            // Act
+            var result = await _bookingRepository!.AnyAsync(b => b.HairdresserId == "2" && b.Id == bookingId);
+            // Assert
+            // Make sure if booking meets the condition 
+            Assert.IsTrue(result);
+        }
 
-		[TestMethod]
-		public async Task GetWeekScheduleWithDetailsAsync_ShouldReturnBookingsForTheRightHairdresser()
+        [TestMethod]
+        [TestCategory("Normally)]")]
+        public async Task GetWeekScheduleWithDetailsAsync_ShouldReturnBookingsForTheRightHairdresser()
 		{
 			//Arrange 			
             var treatment = _context!.Treatments.ToList()[0];
@@ -232,7 +252,7 @@ namespace HairdresserUnitTests
                 Customer = customer,
                 Hairdresser = hairdresser,
                 Treatment = treatment,
-                Start = DateTime.Now,
+                Start = DateTime.Now.AddHours(2),
                 End = DateTime.Now.AddHours(1),
             };
 
@@ -249,7 +269,8 @@ namespace HairdresserUnitTests
         }
 
 		[TestMethod]
-		public async Task GetMonthlyScheduleWithDetailsAsync_ShouldReturnBookingsForTheRightHairdresser()
+        [TestCategory("Normally)]")]
+        public async Task GetMonthlyScheduleWithDetailsAsync_ShouldReturnBookingsForTheRightHairdresser()
 		{
             //Arrange 
             var treatment = _context!.Treatments.ToList()[0];
