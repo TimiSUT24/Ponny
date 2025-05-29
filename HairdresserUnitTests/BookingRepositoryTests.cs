@@ -1,5 +1,7 @@
-﻿using Hairdresser.Data;
+﻿using Castle.Core.Resource;
+using Hairdresser.Data;
 using Hairdresser.Repositories;
+using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -28,7 +30,7 @@ namespace HairdresserUnitTests
 			_context = new ApplicationDBContext(options);
 			_bookingRepository = new BookingRepository(_context);
 
-			// Seed Application Users (Customer and Hairdresser)
+			// Seed Application Users (Customer and Hairdresser)			
 			var customer = new ApplicationUser { Id = "1", UserName = "Kund" };
             var customer2 = new ApplicationUser { Id = "4", UserName = "Kund2" };
             var hairdresser = new ApplicationUser { Id = "2", UserName = "Frisör" };
@@ -56,8 +58,8 @@ namespace HairdresserUnitTests
                 CustomerId = customer2.Id,
                 HairdresserId = hairdresser.Id,
                 TreatmentId = treatment.Id,
-                Start = DateTime.Now.AddHours(2),
-                End = DateTime.Now.AddHours(1),
+                Start = DateTime.Now.AddHours(3),
+                End = DateTime.Now.AddHours(4),
             });
 
             // Save all changes
@@ -232,8 +234,65 @@ namespace HairdresserUnitTests
             Assert.AreEqual("Kund", result.Customer.UserName);
         }
 
+		[TestMethod]
+		public async Task GetWeekScheduleWithDetailsAsync_ShouldReturnBookingsForTheRightHairdresser()
+		{
+			//Arrange 			
+            var treatment = _context!.Treatments.ToList()[0];
 
+            var customer = _context.Users.ToList()[0];
+            var hairdresser = _context.Users.ToList()[1];
+			var weekstart = DateTime.Now.AddHours(-3);
+            var newBooking = new Booking
+            {
+                Id = 3,
+                Customer = customer,
+                Hairdresser = hairdresser,
+                Treatment = treatment,
+                Start = DateTime.Now,
+                End = DateTime.Now.AddHours(1),
+            };
 
+            await _bookingRepository!.AddAsync(newBooking);
+            await _bookingRepository.SaveChangesAsync();
+
+            // Act
+            var result = await _bookingRepository!.GetWeekScheduleWithDetailsAsync(hairdresser.Id,weekstart);
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Any());
+            Assert.IsTrue(result.All(b => b.HairdresserId == hairdresser.Id));
+			Assert.AreEqual(2, result.Count());			
+        }
+
+		[TestMethod]
+		public async Task GetMonthlyScheduleWithDetailsAsync_ShouldReturnBookingsForTheRightHairdresser()
+		{
+            //Arrange 
+            var treatment = _context!.Treatments.ToList()[0];
+            var customer = _context.Users.ToList()[0];
+            var hairdresser = _context.Users.ToList()[1];
+            var year = DateTime.Now.Year;
+            var month = DateTime.Now.Month;
+            var newBooking = new Booking
+            {
+                Id = 3,
+                Customer = customer,
+                Hairdresser = hairdresser,
+                Treatment = treatment,
+                Start = DateTime.Now,
+                End = DateTime.Now.AddHours(1),
+            };
+            await _bookingRepository!.AddAsync(newBooking);
+            await _bookingRepository.SaveChangesAsync();
+            // Act
+            var result = await _bookingRepository!.GetMonthlyScheduleWithDetailsAsync(hairdresser.Id, year, month);
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Any());
+            Assert.IsTrue(result.All(b => b.HairdresserId == hairdresser.Id));
+            Assert.AreEqual(2, result.Count());
+        }
     }
 }
 ;
