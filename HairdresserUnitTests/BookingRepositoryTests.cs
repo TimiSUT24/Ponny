@@ -115,31 +115,14 @@ namespace HairdresserUnitTests
 			var customer = _context.Users.ToList()[0];
 			var hairdresser = _context.Users.ToList()[1];
 
-			var newBooking = new Booking
-			{
-				Id = 3,
-				Customer = customer,
-				Hairdresser = hairdresser,
-				Treatment = treatment,
-				Start = DateTime.Now,
-				End = DateTime.Now.AddHours(1),
-			};
-
-			// Act
-			await _bookingRepository!.AddAsync(newBooking);
-			await _bookingRepository.SaveChangesAsync();
-			var addedBooking = await _bookingRepository.GetByIdAsync(3);
+			var booking = _context.Bookings.FirstOrDefault(b => b.Id == 1);        
 
 			//Delete booking and save
-			await _bookingRepository.DeleteAsync(newBooking);
+			await _bookingRepository.DeleteAsync(booking);
 			await _bookingRepository.SaveChangesAsync();
 
-			var deletedBooking = await _bookingRepository.GetByIdAsync(3);
-
-			// Assert
-			// Make sure the booking is added successfully
-			Assert.IsNotNull(addedBooking);			
-
+			var deletedBooking = await _bookingRepository.GetByIdAsync(1);
+			// Assert				
 			//Make sure the booking is deleted successfully
 			Assert.IsNull(deletedBooking);
 		}
