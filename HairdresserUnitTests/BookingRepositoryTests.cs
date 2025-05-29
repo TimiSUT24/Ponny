@@ -80,11 +80,10 @@ namespace HairdresserUnitTests
 		public async Task Add_ShouldAddBookingSuccessfully()
 		{
 			// Arrange
-			var treatment = _context!.Treatments.ToList()[0];
-
-			var customer = _context.Users.ToList()[0];
-			var hairdresser = _context.Users.ToList()[1];
-
+            var treatment = _context.Treatments.FirstOrDefault(b => b.Id == 1);
+            var hairdresser = _context.Users.FirstOrDefault(b => b.Id == "2");
+            var customer = _context.Users.FirstOrDefault(b => b.Id == "1");
+            var bookingId = 3;
 			var newBooking = new Booking
 			{
 				Id = 3,
@@ -98,10 +97,12 @@ namespace HairdresserUnitTests
 			// Act
 			await _bookingRepository!.AddAsync(newBooking);
 			await _bookingRepository.SaveChangesAsync();
-			var result = await _bookingRepository.GetByIdAsync(3);
+			var result = await _bookingRepository.GetByIdAsync(bookingId);
 
 			// Assert
+            //Check if null
 			Assert.IsNotNull(result);
+            //Check if newBooking equals to result 
 			Assert.AreEqual(result.Customer, newBooking.Customer);
 			Assert.AreEqual(result.Hairdresser, newBooking.Hairdresser);
 			Assert.AreEqual(result.Treatment, newBooking.Treatment);
@@ -112,12 +113,8 @@ namespace HairdresserUnitTests
         [TestCategory("Normally)]")]
         public async Task Delete_ShouldDeleteBookingSuccessfully()
 		{
-			// Arrange
-			var treatment = _context!.Treatments.ToList()[0];
-			var customer = _context.Users.ToList()[0];
-			var hairdresser = _context.Users.ToList()[1];
-
-			var booking = _context.Bookings.FirstOrDefault(b => b.Id == 1);        
+			// Arrange		
+            var booking = _context.Bookings.FirstOrDefault(b => b.Id == 1);        
 
 			//Delete booking and save
 			await _bookingRepository.DeleteAsync(booking);
@@ -137,9 +134,12 @@ namespace HairdresserUnitTests
             var bookingId = 1;
             // Act
             var result = await _bookingRepository!.GetByIdAsync(bookingId);
+            var expected = 1;
             // Assert
+            //Make sure the result is not null
             Assert.IsNotNull(result);
-            Assert.AreEqual(bookingId, result.Id);
+            //Check if values are equal 
+            Assert.AreEqual(expected, result.Id);
         }
 
 		[TestMethod]
@@ -148,10 +148,15 @@ namespace HairdresserUnitTests
 		{
             // Act
             var result = await _bookingRepository!.GetAllAsync();
+            var expected = 2;
             // Assert
+            // Make sure the result is not null and contains bookings
             Assert.IsNotNull(result);
+            // Check if the result contains any bookings
             Assert.IsTrue(result.Any());
-            Assert.AreEqual(2, result.Count());
+            
+            //Check if the count of bookings is correct
+            Assert.AreEqual(expected, result.Count());
         }
 
 		[TestMethod]
@@ -163,9 +168,13 @@ namespace HairdresserUnitTests
             // Act
             var result = await _bookingRepository!.FindAsync(b => b.Id == bookingId);
             // Assert
+            // Make sure the result is not null and contains bookings
             Assert.IsNotNull(result);
+            // Check if the result contains any bookings
             Assert.IsTrue(result.Any());
+            // Check if the count of bookings is correct
             Assert.AreEqual(1, result.Count());
+            // Check if the booking ID matches the expected ID
             Assert.AreEqual(bookingId, result.First().Id);
         }
 
@@ -184,8 +193,11 @@ namespace HairdresserUnitTests
 			 await _bookingRepository!.UpdateAsync(bookingToUpdate);
 			var result = await _bookingRepository.GetByIdAsync(bookingId);
             // Assert
+            // Make sure the result is not null
             Assert.IsNotNull(result);
+            // Check if result matches the updated booking for Datetime 
             Assert.AreEqual(bookingToUpdate.Start, result.Start);
+            
             Assert.AreEqual(bookingToUpdate.End, result.End);
         }
 
@@ -204,7 +216,9 @@ namespace HairdresserUnitTests
             await _bookingRepository.SaveChangesAsync();
             var result = await _bookingRepository.GetByIdAsync(bookingId);
             // Assert
+            // Make sure the result is not null
             Assert.IsNotNull(result);
+            // Check if result matches the updated booking for Datetimes
             Assert.AreEqual(bookingToUpdate.Start, result.Start);
             Assert.AreEqual(bookingToUpdate.End, result.End);
         }
@@ -218,11 +232,15 @@ namespace HairdresserUnitTests
 			var customerId = "1"; // The ID of the customer who made the booking
             // Act
             var result = await _bookingRepository!.GetByIdWithDetailsAsync(bookingId, customerId);
-			//Assert
-			Assert.IsNotNull(result);
+            var expected = "Kund";
+            //Assert
+            // Make sure the result is not null
+            Assert.IsNotNull(result);
+            // Check if the booking ID and customer ID match the expected values
             Assert.AreEqual(bookingId, result.Id);
             Assert.AreEqual(customerId, result.CustomerId);
-            Assert.AreEqual("Kund", result.Customer.UserName);
+            //Check if the customer's username matches the expected value
+            Assert.AreEqual(expected, result.Customer.UserName);
         }
         [TestMethod]
         [TestCategory("Normally)]")]
@@ -240,12 +258,11 @@ namespace HairdresserUnitTests
         [TestCategory("Normally)]")]
         public async Task GetWeekScheduleWithDetailsAsync_ShouldReturnBookingsForTheRightHairdresser()
 		{
-			//Arrange 			
-            var treatment = _context!.Treatments.ToList()[0];
-
-            var customer = _context.Users.ToList()[0];
-            var hairdresser = _context.Users.ToList()[1];
-			var weekstart = DateTime.Now.AddHours(-3);
+			//Arrange 			         
+            var treatment = _context.Treatments.FirstOrDefault(b => b.Id == 1);
+            var hairdresser = _context.Users.FirstOrDefault(b => b.Id == "2");
+            var customer = _context.Users.FirstOrDefault(b => b.Id == "1");
+            var weekstart = DateTime.Now.AddHours(-3);
             var newBooking = new Booking
             {
                 Id = 3,
@@ -262,10 +279,14 @@ namespace HairdresserUnitTests
             // Act
             var result = await _bookingRepository!.GetWeekScheduleWithDetailsAsync(hairdresser.Id,weekstart);
             //Assert
+            // Make sure the result is not null and contains bookings
             Assert.IsNotNull(result);
+            // Check if the result contains any bookings
             Assert.IsTrue(result.Any());
+            // Check if the bookings belong to the right hairdresser
             Assert.IsTrue(result.All(b => b.HairdresserId == hairdresser.Id));
-			Assert.AreEqual(2, result.Count());			
+            // Check if the count of bookings is correct
+            Assert.AreEqual(2, result.Count());			
         }
 
 		[TestMethod]
@@ -273,9 +294,10 @@ namespace HairdresserUnitTests
         public async Task GetMonthlyScheduleWithDetailsAsync_ShouldReturnBookingsForTheRightHairdresser()
 		{
             //Arrange 
-            var treatment = _context!.Treatments.ToList()[0];
-            var customer = _context.Users.ToList()[0];
-            var hairdresser = _context.Users.ToList()[1];
+            var treatment = _context.Treatments.FirstOrDefault(b => b.Id == 1);
+            var hairdresser = _context.Users.FirstOrDefault(b => b.Id == "2");
+            var customer = _context.Users.FirstOrDefault(b => b.Id == "1");
+
             var year = DateTime.Now.Year;
             var month = DateTime.Now.Month;
             var newBooking = new Booking
@@ -291,11 +313,16 @@ namespace HairdresserUnitTests
             await _bookingRepository.SaveChangesAsync();
             // Act
             var result = await _bookingRepository!.GetMonthlyScheduleWithDetailsAsync(hairdresser.Id, year, month);
+            var expected = 2;
             //Assert
+            // Make sure the result is not null and contains bookings
             Assert.IsNotNull(result);
+            // Check if the result contains any bookings
             Assert.IsTrue(result.Any());
+            // Check if the bookings belong to the right hairdresser
             Assert.IsTrue(result.All(b => b.HairdresserId == hairdresser.Id));
-            Assert.AreEqual(2, result.Count());
+            // Check if the count of bookings is correct
+            Assert.AreEqual(expected, result.Count());
         }
     }
 }
