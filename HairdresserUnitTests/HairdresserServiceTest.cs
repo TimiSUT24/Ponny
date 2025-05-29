@@ -5,6 +5,8 @@ using Hairdresser.Repositories;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
 using HairdresserClassLibrary.Models;
+using HairdresserUnitTests.utils;
+using HairdresserUnitTests.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -27,22 +29,15 @@ public class HairdresserServiceTest
     public void Setup()
     {
         // Set up in-memory database
-        var options = new DbContextOptionsBuilder<ApplicationDBContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
+        _context = Database.Connect();
+        _userManagerMock = MockUser.InitializeUserManager();
 
-        var store = new Mock<IUserStore<ApplicationUser>>();
-        store.As<IUserEmailStore<ApplicationUser>>(); // Required for FindByEmailAsync
-
-        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-            store.Object, null!, null!, null!, null!, null!, null!, null!, null!
-        );
-
-        _context = new ApplicationDBContext(options);
         _userRepository = new UserRepository(_context, _userManagerMock.Object);
         _bookingRepository = new BookingRepository(_context);
         _service = new HairdresserService(_userRepository, _bookingRepository, _userManagerMock.Object);
     }
+
+
 
     [TestMethod]
     public async Task GetAllHairdressersAsync_ShouldReturnHairdressers()
