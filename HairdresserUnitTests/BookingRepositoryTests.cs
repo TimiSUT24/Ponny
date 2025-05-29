@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -142,7 +143,7 @@ namespace HairdresserUnitTests
 		}
 
 		[TestMethod]
-		public async Task Get_ShouldReturnBookingByIdSuccessfully()
+		public async Task GetByIdAsync_ShouldReturnBookingByIdSuccessfully()
         {
             // Arrange
             var bookingId = 1;
@@ -167,6 +168,7 @@ namespace HairdresserUnitTests
 		[TestMethod]
 		public async Task FindAsync_ShouldReturnBookingsByPredicateSuccessfully()
 		{
+			// Arrange
 			var bookingId = 1;
             // Act
             var result = await _bookingRepository!.FindAsync(b => b.Id == bookingId);
@@ -177,7 +179,60 @@ namespace HairdresserUnitTests
             Assert.AreEqual(bookingId, result.First().Id);
         }
 
-		
+		[TestMethod]
+		public async Task UpdateAsync_ShouldUpdateBookingSuccessfully()
+		{
+            // Arrange
+            var bookingId = 1;
+            
+            var bookingToUpdate = await _bookingRepository!.GetByIdAsync(bookingId);
+            bookingToUpdate.Start = DateTime.Now.AddHours(2);
+            bookingToUpdate.End = DateTime.Now.AddHours(3);
+
+            // Act
+			 await _bookingRepository!.UpdateAsync(bookingToUpdate);
+			var result = await _bookingRepository.GetByIdAsync(bookingId);
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(bookingToUpdate.Start, result.Start);
+            Assert.AreEqual(bookingToUpdate.End, result.End);
+        }
+
+		[TestMethod]
+		public async Task SaveChangesAsync_ShouldSaveChangesSuccessfully()
+		{
+            // Arrange
+            var bookingId = 1;
+           
+            var bookingToUpdate = await _bookingRepository!.GetByIdAsync(bookingId);
+            bookingToUpdate.Start = DateTime.Now.AddHours(2);
+            bookingToUpdate.End = DateTime.Now.AddHours(3);
+            // Act
+            await _bookingRepository.UpdateAsync(bookingToUpdate);
+            await _bookingRepository.SaveChangesAsync();
+            var result = await _bookingRepository.GetByIdAsync(bookingId);
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(bookingToUpdate.Start, result.Start);
+            Assert.AreEqual(bookingToUpdate.End, result.End);
+        }
+
+		[TestMethod]
+        public async Task GetByIdWithDetailsAsync_ShouldReturnBookingForTheRightCustomer()
+		{
+			//Arrange 
+			var bookingId = 1;
+			var customerId = "1"; // The ID of the customer who made the booking
+            // Act
+            var result = await _bookingRepository!.GetByIdWithDetailsAsync(bookingId, customerId);
+			//Assert
+			Assert.IsNotNull(result);
+            Assert.AreEqual(bookingId, result.Id);
+            Assert.AreEqual(customerId, result.CustomerId);
+            Assert.AreEqual("Kund", result.Customer.UserName);
+        }
+
+
 
     }
 }
