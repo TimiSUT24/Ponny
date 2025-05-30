@@ -77,6 +77,59 @@ public class HairdresserServiceTest
 
         // Assert
         Assert.AreEqual(expected, result.Count());
-        
+
+    }
+
+    [TestMethod]
+    public async Task GetWeekScheduleAsync_GetEmptyHairdresserId_ReturnsEmptyList()
+    {
+        // Arrange
+        var user = new ApplicationUser { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
+        var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
+
+        var Bookings = new List<Booking>
+        {
+            new Booking { Id = 1, Start = DateTime.Now, End = DateTime.Now.AddHours(1), Customer = user, Hairdresser = user, Treatment = treatment },
+            new Booking { Id = 2, Start = DateTime.Now.AddDays(1), End = DateTime.Now.AddDays(1).AddHours(1), Customer = user, Hairdresser = user, Treatment = treatment }
+        };
+        _bookingRepository
+            .Setup(repo => repo.GetWeekScheduleWithDetailsAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(Bookings);
+
+        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
+
+        // Act
+        var result = await _serviceMock.GetWeekScheduleAsync("", DateTime.Now);
+        var expected = 0;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expected, result.Count());
+    }
+    [TestMethod]
+    public async Task GetWeekScheduleAsync_GetDateInPast_ReturnsEmptyList()
+    {
+        // Arrange
+        var user = new ApplicationUser { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
+        var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
+
+        var Bookings = new List<Booking>
+        {
+            new Booking { Id = 1, Start = DateTime.Now, End = DateTime.Now.AddHours(1), Customer = user, Hairdresser = user, Treatment = treatment },
+            new Booking { Id = 2, Start = DateTime.Now.AddDays(1), End = DateTime.Now.AddDays(1).AddHours(1), Customer = user, Hairdresser = user, Treatment = treatment }
+        };
+        _bookingRepository
+            .Setup(repo => repo.GetWeekScheduleWithDetailsAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(Bookings);
+
+        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
+
+        // Act
+        var result = await _serviceMock.GetWeekScheduleAsync("hairdresser1", DateTime.Now.AddDays(-1));
+        var expected = 0;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expected, result.Count());
     }
 }
