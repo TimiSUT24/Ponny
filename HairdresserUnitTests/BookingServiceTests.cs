@@ -1,3 +1,4 @@
+using Hairdresser.Mapping.Interfaces;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
 using HairdresserClassLibrary.Models;
@@ -13,6 +14,7 @@ public class BookingServiceTests
     private Mock<IBookingRepository> _bookingRepositoryMock;
     private Mock<IGenericRepository<Treatment>> _treatmentRepositoryMock;
     private Mock<UserManager<ApplicationUser>> _userManagerMock;
+    private Mock<IBookingMapper> _bookingMapperMock;
     private BookingService _bookingService;
 
     [TestInitialize]
@@ -20,12 +22,14 @@ public class BookingServiceTests
     {
         _bookingRepositoryMock = new Mock<IBookingRepository>();
         _treatmentRepositoryMock = new Mock<IGenericRepository<Treatment>>();
+        _bookingMapperMock = new Mock<IBookingMapper>();
         _userManagerMock = MockUserManager();
 
         _bookingService = new BookingService(
             _treatmentRepositoryMock.Object,
             _bookingRepositoryMock.Object,
-            _userManagerMock.Object
+            _userManagerMock.Object,
+            _bookingMapperMock.Object
         );
 
         //Default data setup 
@@ -43,7 +47,18 @@ public class BookingServiceTests
         var defaultCustomerId = "C1";
         var defaultCustomer = new ApplicationUser { Id = defaultCustomerId, UserName = "Customer1", Email = "Customer1@gmail.com", PasswordHash = "Customer123!" };
         _userManagerMock.Setup(c => c.FindByIdAsync(defaultCustomerId))
-            .ReturnsAsync(defaultCustomer); 
+            .ReturnsAsync(defaultCustomer);
+
+        _bookingRepositoryMock.Setup(b => b.GetByIdWithDetailsAsync(1, "C1"))
+            .ReturnsAsync(new Booking
+            {
+                Id = 1,
+                CustomerId = defaultCustomerId,
+                HairdresserId = defaultHairdresserId,
+                TreatmentId = defaultTreatmentId,
+                Start = DateTime.Now.AddDays(1),
+                End = DateTime.Now.AddDays(1).AddHours(1)
+            });
     }
 
     private Mock<UserManager<ApplicationUser>> MockUserManager()
@@ -116,6 +131,19 @@ public class BookingServiceTests
             () => _bookingService.GetAllAvailableTimes("H1", 1, invalidDay));
         // Assert that the exception message is correct
         Assert.AreEqual("Can only book from today and up to 4 month in advance.", result.Message);
+    }
+
+    [TestMethod]
+    [TestCategory("Normally")]
+    public async Task GetBookingByIdAsync_ShouldReturnRightCustomerBookingWithDetails()
+    {
+
+        var result = await _bookingService.GetBookingByIdAsync(1, "C1");
+        
+        // Check if result is not null
+        Assert.IsNotNull(result.Id);  
+
+
     }
 
 }

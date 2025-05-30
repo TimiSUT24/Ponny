@@ -2,6 +2,7 @@
 using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
 using Hairdresser.Mapping;
+using Hairdresser.Mapping.Interfaces;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
@@ -15,12 +16,14 @@ namespace Hairdresser.Services
         private readonly IBookingRepository _bookingRepository;
         private readonly IGenericRepository<Treatment> _treatmentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IBookingMapper _bookingMapper;
 
-        public BookingService(IGenericRepository<Treatment> treatment, IBookingRepository bookingRepository, UserManager<ApplicationUser> usermanager)
+        public BookingService(IGenericRepository<Treatment> treatment, IBookingRepository bookingRepository, UserManager<ApplicationUser> usermanager, IBookingMapper bookingMapper)
         {
             _treatmentRepository = treatment;
             _bookingRepository = bookingRepository;
             _userManager = usermanager;
+            _bookingMapper = bookingMapper;
         }
 
         public async Task<List<DateTime>> GetAllAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
@@ -108,7 +111,7 @@ namespace Hairdresser.Services
 
             var savedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            var mapp = BookingMapper.MapToBookingReponse2Dto(savedBooking);
+            var mapp = _bookingMapper.MapToBookingReponse2Dto(savedBooking);
             return mapp;            
         }
 
@@ -153,8 +156,8 @@ namespace Hairdresser.Services
                 throw new UnauthorizedAccessException("Can only see your own bookings.");
             }
 
-            var currentBooking = BookingMapper.MapToBookingReponse2Dto(booking);
-            return currentBooking; 
+            var currentBooking = _bookingMapper.MapToBookingReponse2Dto(booking);
+            return currentBooking;
         }
 
         public async Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto)
@@ -200,7 +203,7 @@ namespace Hairdresser.Services
 
             var updatedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            var returnUpdatedBooking = BookingMapper.MapToBookingReponse2Dto(updatedBooking);
+            var returnUpdatedBooking = _bookingMapper.MapToBookingReponse2Dto(updatedBooking);
 
             return returnUpdatedBooking; 
 
