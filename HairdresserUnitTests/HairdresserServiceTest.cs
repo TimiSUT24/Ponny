@@ -1,4 +1,5 @@
 using Hairdresser.Data;
+using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
@@ -221,5 +222,42 @@ public class HairdresserServiceTest
         // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(expected, result.Count());
+    }
+    [TestMethod]
+    public async Task GetBookingDetailsAsync_ShouldReturnBookingDetails()
+    {
+        // Arrange
+        var user = new UserDto { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
+        var treatment = new TreatmentDto { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
+        var Bookings = new HairdresserBookingRespondDto { Id = 1, Start = DateTime.Now, End = DateTime.Now.AddHours(1), Customer = user, Treatment = treatment };
+        _bookingRepository
+            .Setup(rep => rep.GetBookingWithDetailsAsync(It.IsAny<int>()))
+            .ReturnsAsync(Bookings);
+        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
+
+        // Act
+        var result = await _serviceMock.GetBookingDetailsAsync(1);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(Bookings.Id, result.Id);
+    }
+
+    [TestMethod]
+    [DataRow(0)]
+    [DataRow(-1)]
+    public async Task GetBookingDetailsAsync_BookingNotFound_ReturnsNull(int BookingId)
+    {
+        // Arrange
+        _bookingRepository
+            .Setup(rep => rep.GetBookingWithDetailsAsync(It.IsAny<int>()))
+            .ReturnsAsync(null as HairdresserBookingRespondDto);
+        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
+
+        // Act
+        var result = await _serviceMock.GetBookingDetailsAsync(BookingId);
+
+        // Assert
+        Assert.IsNull(result);
     }
 }
