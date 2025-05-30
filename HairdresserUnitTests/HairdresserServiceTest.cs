@@ -1,15 +1,11 @@
 using Hairdresser.Data;
-using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
-using Hairdresser.Repositories;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
 using HairdresserClassLibrary.Models;
 using HairdresserUnitTests.utils;
 using HairdresserUnitTests.Utils;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
 namespace HairdresserUnitTests;
@@ -17,24 +13,18 @@ namespace HairdresserUnitTests;
 [TestClass]
 public class HairdresserServiceTest
 {
-    private ApplicationDBContext? _context;
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
-    private UserRepository _userRepository = null!;
-    private IBookingRepository _bookingRepository = null!;
-    private IHairdresserService _service = null!;
+    private Mock<IUserRepository> _userRepository = null!;
+    private Mock<IBookingRepository> _bookingRepository = null!;
 
 
 
     [TestInitialize]
     public void Setup()
     {
-        // Set up in-memory database
-        _context = Database.Connect();
         _userManagerMock = MockUser.InitializeUserManager();
-
-        _userRepository = new UserRepository(_context, _userManagerMock.Object);
-        _bookingRepository = new BookingRepository(_context);
-        _service = new HairdresserService(_userRepository, _bookingRepository, _userManagerMock.Object);
+        _userRepository = new Mock<IUserRepository>();
+        _bookingRepository = new Mock<IBookingRepository>();
     }
 
 
@@ -43,69 +33,50 @@ public class HairdresserServiceTest
     public async Task GetAllHairdressersAsync_ShouldReturnHairdressers()
     {
         // Arrange
-        var hairdresser1 = new ApplicationUser { Id = "1", UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
-        var hairdresser2 = new ApplicationUser { Id = "2", UserName = "hairdresser2", Email = "Jan.Doe@exampel.com", PhoneNumber = "0987654321" };
+        var users = new List<ApplicationUser>
+        {
+            new ApplicationUser { Id = "1", UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" },
+            new ApplicationUser { Id = "2", UserName = "hairdresser2", Email = "Jan.Doe@exampel.com", PhoneNumber = "0987654321" }
+        };
 
-        await _userRepository.AddAsync(hairdresser1);
-        await _userRepository.AddAsync(hairdresser2);
-        await _userRepository.SaveChangesAsync();
+        _userRepository.Setup(repo => repo.GetAllAsync())
+            .ReturnsAsync(users);
+
+        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
+
         // Act
-        var result = await _service.GetAllHairdressersAsync();
+        var result = await _serviceMock.GetAllHairdressersAsync();
+        var expected = 2;
+
         // Assert
         Assert.IsNotNull(result);
-        Assert.IsInstanceOfType<IEnumerable<UserRespondDto>>(result);
+        Assert.AreEqual(expected, result.Count());
     }
 
     [TestMethod]
     public async Task GetWeekScheduleAsync_ShouldReturnBookingsForWeek()
     {
         // Arrange
-        var weekStart = DateTime.Now.Date;
+        var user = new ApplicationUser { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
+        var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
 
-        var hairdresser = new ApplicationUser
+        var Bookings = new List<Booking>
         {
-            FirstName = "John",
-            LastName = "Doe",
-            UserName = "hairdresser1",
-            Email = "John.doe@exampel.com",
-            PhoneNumber = "1234567890"
+            new Booking { Id = 1, Start = DateTime.Now, End = DateTime.Now.AddHours(1), Customer = user, Hairdresser = user, Treatment = treatment },
+            new Booking { Id = 2, Start = DateTime.Now.AddDays(1), End = DateTime.Now.AddDays(1).AddHours(1), Customer = user, Hairdresser = user, Treatment = treatment }
         };
-        var costumer = new ApplicationUser
-        {
-            FirstName = "Jane",
-            LastName = "Doe",
-            UserName = "customer1",
-            Email = "Jane.doe@exampel.com",
-            PhoneNumber = "0987654321"
-        };
-        await _userRepository.AddAsync(costumer);
-        await _userRepository.AddAsync(hairdresser);
-        await _userRepository.SaveChangesAsync();
+        _bookingRepository
+            .Setup(repo => repo.GetWeekScheduleWithDetailsAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(Bookings);
 
-        var booking1 = new Booking
-        {
-            Start = weekStart.AddDays(1).AddHours(10),
-            End = weekStart.AddDays(1).AddHours(11),
-            HairdresserId = costumer.Id,
-            CustomerId = hairdresser.Id
-        };
-        var booking2 = new Booking
-        {
-            Start = weekStart.AddDays(3).AddHours(14),
-            End = weekStart.AddDays(3).AddHours(15),
-            HairdresserId = costumer.Id,
-            CustomerId = hairdresser.Id
-        };
-
-        await _bookingRepository.AddAsync(booking1);
-        await _bookingRepository.AddAsync(booking2);
-        await _bookingRepository.SaveChangesAsync();
+        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act
-        var result = await _service.GetWeekScheduleAsync(hairdresser.Id, weekStart);
+        var result = await _serviceMock.GetWeekScheduleAsync("hairdresser1", DateTime.Now);
+        var expected = 2;
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsTrue(result.Any());
+        Assert.AreEqual(expected, result.Count());
+        
     }
 }
