@@ -104,5 +104,18 @@ public class BookingServiceTests
         // Assert that the exception message is correct
         Assert.AreEqual("Treatment was not found", result.Message);
     }
-   
+
+    [TestMethod]
+    [TestCategory("Edge-Case ")]
+    public async Task GetAllAvailableTimes_ShouldThrowArgumentException_WhenDayIsInvalid()
+    {
+        // Simulate an invalid day
+        var invalidDay = DateTime.Now.AddDays(-2).Date; // Past date
+        // Call the method and expect an exception
+        var result = await Assert.ThrowsExceptionAsync<ArgumentException>(
+            () => _bookingService.GetAllAvailableTimes("H1", 1, invalidDay));
+        // Assert that the exception message is correct
+        Assert.AreEqual("Can only book from today and up to 4 month in advance.", result.Message);
+    }
+
 }
