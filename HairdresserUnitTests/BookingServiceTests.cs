@@ -54,18 +54,55 @@ public class BookingServiceTests
     }
 
     [TestMethod]
+    [TestCategory("Normally")]
     public async Task GetAllAvailableTimes_ShouldReturnCorrectTimeSlots()
     {
         //Make sure there are no bookings for the day so it can return all available slots
-        var day = new DateTime(2025, 06, 01); 
+        var day = DateTime.Now.AddDays(1).Date;    
         _bookingRepositoryMock.Setup(b => b.FindAsync(It.IsAny<Expression<Func<Booking, bool>>>()))
             .ReturnsAsync(new List<Booking>());
 
         // Test the method 
         var result = await _bookingService.GetAllAvailableTimes("H1", 1, day);
 
-        // Make sure the result is a list of DateTime
+       // Check if result is not null
         Assert.IsNotNull(result);
+        // Make sure the result is a list of DateTime
         Assert.IsInstanceOfType(result, typeof(List<DateTime>));
     }
+
+    [TestMethod]
+    [TestCategory("Edge-Case ")]
+    public async Task GetAllAvailableTimes_ShouldThrowKeyNotFoundException_WhenHairdresserIsNotFound()
+    {
+        
+        var day = DateTime.Now.AddDays(1).Date; 
+        _userManagerMock.Setup(h => h.FindByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync((ApplicationUser)null); // Simulate hairdresser not found
+
+        // Call the method and expect an exception
+        var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException>(
+            () => _bookingService.GetAllAvailableTimes("H1", 1, day));
+
+        // Assert that the exception message is correct
+        Assert.AreEqual("Hairdresser was not found", result.Message);         
+    }
+
+    [TestMethod]
+    [TestCategory("Edge-Case ")]
+    public async Task GetAllAvailableTimes_ShouldThrowKeyNowFoundException_WhenTreatmentIsNotFound()
+    {
+       
+        var day = DateTime.Now.AddDays(1).Date;
+        _treatmentRepositoryMock.Setup(t => t.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((Treatment)null); // Simulate treatment not found
+
+        // Call the method and expect an exception
+        var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException>(
+            () => _bookingService.GetAllAvailableTimes("H1", 1, day));
+
+        // Assert that the exception message is correct
+        Assert.AreEqual("Treatment was not found", result.Message);
+    }
+   
 }
