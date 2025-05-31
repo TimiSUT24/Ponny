@@ -78,6 +78,12 @@ namespace Hairdresser.Services
                 throw new KeyNotFoundException("Treatment was not found.");
             }
 
+            var hairdresser = await _userManager.FindByIdAsync(request.HairdresserId);
+            if (hairdresser == null)
+            {
+                throw new KeyNotFoundException("Hairdresser was not found");
+            }
+
             var end = request.Start.AddMinutes(treatment.Duration);
 
             // check if hairdresser is booked 

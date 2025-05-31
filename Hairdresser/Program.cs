@@ -1,4 +1,6 @@
 using Hairdresser.Data;
+using Hairdresser.Mapping;
+using Hairdresser.Mapping.Interfaces;
 using Hairdresser.Repositories;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
@@ -77,6 +79,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 //Services
 builder.Services.AddScoped<IBookingService, BookingService>();
+//Mappers
+builder.Services.AddScoped<IBookingMapper, BookingMapper>();
 
 var app = builder.Build();
 
