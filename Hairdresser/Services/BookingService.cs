@@ -133,7 +133,7 @@ namespace Hairdresser.Services
 
             if (booking.CustomerId != customerId)
             {
-                throw new UnauthorizedAccessException("Can only cancel your own bookings.");
+                throw new UnauthorizedAccessException("Not a valid customer");
             }
 
             await _bookingRepository.DeleteAsync(booking);
@@ -159,7 +159,7 @@ namespace Hairdresser.Services
 
             if (booking.CustomerId != customerId)
             {
-                throw new UnauthorizedAccessException("Can only see your own bookings.");
+                throw new UnauthorizedAccessException("Not a valid customer");
             }
 
             var currentBooking = _bookingMapper.MapToBookingReponse2Dto(booking);
@@ -177,7 +177,7 @@ namespace Hairdresser.Services
 
             if (booking.CustomerId != customerId)
             {
-                throw new UnauthorizedAccessException("Can only update your own bookings.");
+                throw new UnauthorizedAccessException("Not a valid customer");
             }
 
             var treatment = await _treatmentRepository.GetByIdAsync(booking.TreatmentId);

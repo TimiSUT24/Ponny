@@ -241,7 +241,7 @@ public class BookingServiceTests
     }
 
     [TestMethod]
-    [TestCategory("Edge-Case ")]
+    [TestCategory("Edge-Case")]
     public async Task BookAppointment_ShouldThrowKeyNotFoundException_WhenTreatmentNotFound()
     {       
         // Requested booking details
@@ -261,7 +261,7 @@ public class BookingServiceTests
     }
 
     [TestMethod]
-    [TestCategory("Edge-Case ")]
+    [TestCategory("Edge-Case")]
     public async Task BookAppointment_ShouldThorKeyNotFoundexception_WhenHairdresserNotFound()
     {
         // Requested booking details
@@ -277,4 +277,38 @@ public class BookingServiceTests
         // Assert that the exception message is correct
         Assert.AreEqual("Hairdresser was not found", result.Message);
     }
+    [TestMethod]
+    [TestCategory("Noramally")]
+    public async Task CancelBooking_ShouldReturnBookingDto_WhenCancellationIsSuccessful()
+    {
+        // Setup the expected booking details
+        var expectedBooking = new Booking
+        {
+            Id = 1,
+            CustomerId = "C1",
+            HairdresserId = "H1",
+            TreatmentId = 1,
+            Start = DateTime.Now.AddDays(1),
+            End = DateTime.Now.AddDays(1).AddHours(1)
+        };
+        _bookingRepositoryMock.Setup(b => b.GetByIdWithDetailsAsync(expectedBooking.Id, expectedBooking.CustomerId))
+            .ReturnsAsync(expectedBooking);
+        // Act
+        var result = await _bookingService.CancelBooking("C1", 1);
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expectedBooking.Id, result.Id);
+    }
+
+    [TestMethod]
+    [TestCategory("Edge-Case")]
+    public async Task CancelBooking_ShouldReturnKeyNotFound_WhenBookingIsNotFoundForThatCustomer()
+    {
+        // Call the method and expect an exception
+        var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException>(
+            () => _bookingService.CancelBooking("C1", 14333));
+        // Assert that the exception message is correct
+        Assert.AreEqual("Booking was not found.", result.Message);
+    }
+
 }
