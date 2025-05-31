@@ -18,7 +18,7 @@ public static class UserMapper
             LastName = userDto.LastName,
             Email = userDto.Email ?? string.Empty,
             PhoneNumber = userDto.PhoneNumber ?? string.Empty,
-            Bookings = userDto.HairdresserBookings.Select(booking => booking.MapToBookingResponseDto()).ToList()
+            //Bookings = userDto.HairdresserBookings.Select(booking => booking.MapToBookingResponseDto()).ToList()
         };
     }
     public static UserDto MapToUserDTO(this ApplicationUser user)

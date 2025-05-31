@@ -1,3 +1,5 @@
+using Hairdresser.DTOs;
+using Hairdresser.DTOs.User;
 using Hairdresser.Mapping.Interfaces;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
@@ -40,7 +42,7 @@ public class BookingServiceTests
             .ReturnsAsync(defaultHairdresser);
 
         var defaultTreatmentId = 1;
-        var defaultTreatment = new Treatment {Id = defaultTreatmentId, Name = "Haircut", Duration = 60, Price = 300.0 };
+        var defaultTreatment = new Treatment {Id = defaultTreatmentId, Name = "Haircut", Description = "CutHair", Duration = 60, Price = 300.0 };
         _treatmentRepositoryMock.Setup(t => t.GetByIdAsync(defaultTreatmentId))
             .ReturnsAsync(defaultTreatment);
 
@@ -49,16 +51,50 @@ public class BookingServiceTests
         _userManagerMock.Setup(c => c.FindByIdAsync(defaultCustomerId))
             .ReturnsAsync(defaultCustomer);
 
-        _bookingRepositoryMock.Setup(b => b.GetByIdWithDetailsAsync(1, "C1"))
-            .ReturnsAsync(new Booking
+        //Default booking setup
+        var defaultBookingId = 1;
+        var defaultBooking = new Booking
+        {
+            Id = defaultBookingId,
+            CustomerId = defaultCustomerId,
+            HairdresserId = defaultHairdresserId,
+            TreatmentId = defaultTreatmentId,
+            Start = DateTime.Now.AddDays(1),
+            End = DateTime.Now.AddDays(1).AddHours(1),
+            Customer = defaultCustomer,
+            Treatment = defaultTreatment,
+            Hairdresser = defaultHairdresser
+        };
+        _bookingRepositoryMock.Setup(b => b.GetByIdWithDetailsAsync(defaultBookingId, defaultCustomerId))
+            .ReturnsAsync(defaultBooking);
+
+        var expectedDto = new BookingResponseDto
+        {
+            Id = defaultBooking.Id,
+            Start = defaultBooking.Start,
+            End = defaultBooking.End,
+            Costumer = new UserDto
             {
-                Id = 1,
-                CustomerId = defaultCustomerId,
-                HairdresserId = defaultHairdresserId,
-                TreatmentId = defaultTreatmentId,
-                Start = DateTime.Now.AddDays(1),
-                End = DateTime.Now.AddDays(1).AddHours(1)
-            });
+                Id = defaultBooking.CustomerId,
+                UserName = defaultBooking.Customer.UserName,
+                Email = defaultBooking.Customer.Email,             
+            },
+            Treatment = new TreatmentDto
+            {
+                Name = defaultBooking.Treatment.Name,
+                Description = defaultBooking.Treatment.Description,
+                Duration = defaultBooking.Treatment.Duration,
+                Price = defaultBooking.Treatment.Price
+            },
+            Hairdresser = new UserDto
+            {
+                UserName = defaultBooking.Hairdresser.UserName,
+            }
+        };
+
+        _bookingMapperMock
+            .Setup(m => m.MapToBookingReponse2Dto(It.IsAny<Booking>()))
+            .Returns(expectedDto);
     }
 
     private Mock<UserManager<ApplicationUser>> MockUserManager()
@@ -137,13 +173,39 @@ public class BookingServiceTests
     [TestCategory("Normally")]
     public async Task GetBookingByIdAsync_ShouldReturnRightCustomerBookingWithDetails()
     {
-
+        // Setup the expected booking details
+        var expectedBooking = new Booking
+        {
+            Id = 1,
+            CustomerId = "C1",
+            HairdresserId = "H1",
+            TreatmentId = 1,
+        };
+        // Test the method 
         var result = await _bookingService.GetBookingByIdAsync(1, "C1");
         
+
         // Check if result is not null
-        Assert.IsNotNull(result.Id);  
+        Assert.IsNotNull(result);
+        // Check if the booking ID and customer ID are correct
+        Assert.AreEqual(expectedBooking.Id, result.Id);
+        Assert.AreEqual(expectedBooking.CustomerId, result.Costumer.Id);
 
+    }
 
+    [TestMethod]
+    [TestCategory("Edge-Case ")]
+    public async Task GetBookingByIdAsync_ShouldThrowKeyNotFoundException_WhenBookingIsNotFound()
+    {
+        // Setup the booking repository to return null for a non-existing booking
+        _bookingRepositoryMock.Setup(b => b.GetByIdWithDetailsAsync(It.IsAny<int>(), It.IsAny<string>()))
+            .ReturnsAsync((Booking)null);
+        // Call the method and expect an exception
+        var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException>(
+            () => _bookingService.GetBookingByIdAsync(1, "C1"));
+        // Assert that the exception message is correct
+        Assert.AreEqual("Booking was not found.", result.Message);
+        
     }
 
 }

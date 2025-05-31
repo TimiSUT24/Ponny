@@ -60,7 +60,11 @@ namespace Hairdresser.Services
                 Id = booking.Id,
                 Start = booking.Start,
                 End = booking.End,
-                Treatment = booking.Treatment,
+                Treatment = new TreatmentDto
+                {
+                    Name = booking.Treatment.Name,
+                    Description = booking.Treatment.Description,
+                },
                 Costumer = new UserDto
                 {
                     UserName = booking.Customer.UserName,
