@@ -311,4 +311,39 @@ public class BookingServiceTests
         Assert.AreEqual("Booking was not found.", result.Message);
     }
 
+    [TestMethod]
+    [TestCategory("Normally")]
+    public async Task RebookBooking_ShouldReturnBookingResponseDto_WhenRebookingIsSuccessful()
+    {
+        // old start time for the booking which represents the setup booking 
+        var oldStart = DateTime.Now.AddDays(1);
+        // Setup the expected booking details
+        var expectedBooking = new BookingRequestDto
+        {
+           HairdresserId = "H1",
+           TreatmentId = 1,
+           Start = DateTime.Now.AddDays(2), // Rebooking to a new date
+        };       
+        _bookingMapperMock.Setup(Setup => Setup.MapToBookingReponse2Dto(It.IsAny<Booking>()))
+            .Returns(new BookingResponseDto
+            {
+                Id = 1,
+                Start = expectedBooking.Start,
+                End = expectedBooking.Start.AddMinutes(60),
+                Costumer = new UserDto { Id = "C1", UserName = "Customer1" },
+                Treatment = new TreatmentDto { Name = "Haircut", Description = "CutHair", Duration = 60, Price = 300.0 },
+                Hairdresser = new UserDto { UserName = "Hair" }
+            });
+        // Act
+        var result = await _bookingService.RebookBooking("C1", 1, expectedBooking);
+
+        //Check if updated booking is not null 
+        Assert.IsNotNull(result);
+        // Check if the booking ID and start time are correct
+        Assert.AreEqual(1, result.Id);
+        Assert.AreEqual(expectedBooking.Start, result.Start);
+        Assert.AreNotEqual(oldStart, result.Start); // Ensure the start time has changed
+
+    }
+
 }

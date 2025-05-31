@@ -97,7 +97,10 @@ namespace Hairdresser.Services
                 throw new InvalidOperationException("Hairdresser is booked at this time.");
             }
 
-
+            if (request.Start < DateTime.Now || request.Start > DateTime.Now.AddMonths(4))
+            {
+                throw new ArgumentException("Can only book from today and up to 4 month in advance.");
+            }
             var booking = new Booking
             {
                 CustomerId = customerId,
@@ -106,11 +109,6 @@ namespace Hairdresser.Services
                 Start = request.Start,
                 End = end
             };
-
-            if (booking.Start < DateTime.Now || booking.Start > DateTime.Now.AddMonths(4))
-            {
-                throw new ArgumentException("Can only book from today and up to 4 month in advance.");
-            }
 
             await _bookingRepository.AddAsync(booking);
             await _bookingRepository.SaveChangesAsync();
@@ -180,7 +178,13 @@ namespace Hairdresser.Services
                 throw new UnauthorizedAccessException("Not a valid customer");
             }
 
-            var treatment = await _treatmentRepository.GetByIdAsync(booking.TreatmentId);
+            var hairdresser = await _userManager.FindByIdAsync(bookingRequestDto.HairdresserId);
+            if (hairdresser == null)
+            {
+                throw new KeyNotFoundException("Hairdresser was not found");
+            }
+
+            var treatment = await _treatmentRepository.GetByIdAsync(bookingRequestDto.TreatmentId);
             if (treatment == null)
             {
                 throw new KeyNotFoundException("Treatment was not found.");
@@ -196,6 +200,11 @@ namespace Hairdresser.Services
             if (!isAvailable)
             {
                 throw new InvalidOperationException("Hairdresser is booked at this time.");
+            }
+
+            if (bookingRequestDto.Start < DateTime.Now || bookingRequestDto.Start > DateTime.Now.AddMonths(4))
+            {
+                throw new ArgumentException("Can only book from today and up to 4 month in advance.");
             }
             booking.Id = bookingId;
             booking.CustomerId = customerId;
