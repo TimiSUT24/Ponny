@@ -114,10 +114,10 @@ public class BookingServiceTests
         _bookingRepositoryMock.Setup(b => b.FindAsync(It.IsAny<Expression<Func<Booking, bool>>>()))
             .ReturnsAsync(new List<Booking>());
 
-        // Test the method 
-        var result = await _bookingService.GetAllAvailableTimes("H1", 1, day);
+        // Test if the method returns all available time slots for the given hairdresser and treatment on the specified day
+        var result = await _bookingService.GetAllAvailableTimes("H1", 1, day);//HairdresserId, TreatmentId, Date
 
-       // Check if result is not null
+        // Check if result is not null
         Assert.IsNotNull(result);
         // Make sure the result is a list of DateTime
         Assert.IsInstanceOfType(result, typeof(List<DateTime>));
@@ -132,9 +132,9 @@ public class BookingServiceTests
         _userManagerMock.Setup(h => h.FindByIdAsync(It.IsAny<string>()))
             .ReturnsAsync((ApplicationUser)null); // Simulate hairdresser not found
 
-        // Call the method and expect an exception
+        // Call the method with a hairdresser that doesnt exist and expect an KeyNotFoundException
         var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException>(
-            () => _bookingService.GetAllAvailableTimes("H1", 1, day));
+            () => _bookingService.GetAllAvailableTimes("H1", 1, day));//HairdresserId, TreatmentId, Date
 
         // Assert that the exception message is correct
         Assert.AreEqual("Hairdresser was not found", result.Message);         
@@ -149,9 +149,9 @@ public class BookingServiceTests
         _treatmentRepositoryMock.Setup(t => t.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync((Treatment)null); // Simulate treatment not found
 
-        // Call the method and expect an exception
+        // Call the method with a treatment that doesnt exist and expect a KeyNotFoundException
         var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException>(
-            () => _bookingService.GetAllAvailableTimes("H1", 1, day));
+            () => _bookingService.GetAllAvailableTimes("H1", 1, day));//HairdresserId, TreatmentId, Date
 
         // Assert that the exception message is correct
         Assert.AreEqual("Treatment was not found", result.Message);
@@ -163,9 +163,9 @@ public class BookingServiceTests
     {
         // Simulate an invalid day
         var invalidDay = DateTime.Now.AddDays(-2).Date; // Past date
-        // Call the method and expect an exception
+        // Call the method with an invalid date and expect an ArgumentException
         var result = await Assert.ThrowsExceptionAsync<ArgumentException>(
-            () => _bookingService.GetAllAvailableTimes("H1", 1, invalidDay));
+            () => _bookingService.GetAllAvailableTimes("H1", 1, invalidDay));//HairdresserId, TreatmentId, Date
         // Assert that the exception message is correct
         Assert.AreEqual("Can only book from today and up to 4 month in advance.", result.Message);
     }
@@ -182,9 +182,9 @@ public class BookingServiceTests
             HairdresserId = "H1",
             TreatmentId = 1,
         };
-        // Test the method 
-        var result = await _bookingService.GetBookingByIdAsync(1, "C1");
-        
+        // Test the method and expect it to return the booking with details for the specified customer
+        var result = await _bookingService.GetBookingByIdAsync(1, "C1");// BookingId, CustomerId
+
 
         // Check if result is not null
         Assert.IsNotNull(result);
@@ -201,9 +201,9 @@ public class BookingServiceTests
         // Setup the booking repository to return null for a non-existing booking
         _bookingRepositoryMock.Setup(b => b.GetByIdWithDetailsAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync((Booking)null);
-        // Call the method and expect an exception
+        // Call the method with a booking that doesnt exist and expect an KeyNotFoundException
         var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException>(
-            () => _bookingService.GetBookingByIdAsync(1, "C1"));
+            () => _bookingService.GetBookingByIdAsync(1, "C1"));//BookingId, CustomerId
         // Assert that the exception message is correct
         Assert.AreEqual("Booking was not found.", result.Message);
         
@@ -229,11 +229,13 @@ public class BookingServiceTests
             Treatment = new TreatmentDto { Name = "Haircut", Description = "CutHair", Duration = 60, Price = 300.0 },
             Hairdresser = new UserDto { UserName = "Hair" }
         };
+        // Override the Default BookingResponseDto with expectedResponse
         _bookingMapperMock.Setup(m => m.MapToBookingReponse2Dto(It.IsAny<Booking>()))
             .Returns(expectedResponse);
-        // Act
-        var result = await _bookingService.BookAppointment("C1", request);
+        // Call method and expect it to return the expected response
+        var result = await _bookingService.BookAppointment("C1", request);// CustomerID, BookingRequestDto
         // Assert
+        // Check if the result is not null and matches the expected response
         Assert.IsNotNull(result);
         Assert.AreEqual(expectedResponse.Id, result.Id);
         Assert.AreEqual(expectedResponse.Start, result.Start);
@@ -252,9 +254,9 @@ public class BookingServiceTests
             Start = DateTime.Now.AddDays(1),
         };
 
-        // Call the method and expect an exception
+        // Call the method with a treatment that doesnt exist and expect an KeyNotFoundException
         var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException>(
-            () => _bookingService.BookAppointment("C1", request));
+            () => _bookingService.BookAppointment("C1", request));// CustomerID, BookingRequestDto
 
         // Assert that the exception message is correct
         Assert.AreEqual("Treatment was not found.", result.Message);
@@ -262,7 +264,7 @@ public class BookingServiceTests
 
     [TestMethod]
     [TestCategory("Edge-Case")]
-    public async Task BookAppointment_ShouldThorKeyNotFoundexception_WhenHairdresserNotFound()
+    public async Task BookAppointment_ShouldThrowKeyNotFoundException_WhenHairdresserNotFound()
     {
         // Requested booking details
         var request = new BookingRequestDto
@@ -271,14 +273,14 @@ public class BookingServiceTests
             TreatmentId = 1,
             Start = DateTime.Now.AddDays(1),
         };
-        // Call the method and expect an exception
+        // Call the method with a hairdresser that doesnt exist and expect an KeyNotFoundException
         var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException>(
-            () => _bookingService.BookAppointment("C1", request));
+            () => _bookingService.BookAppointment("C1", request));// CustomerID, BookingRequestDto
         // Assert that the exception message is correct
         Assert.AreEqual("Hairdresser was not found", result.Message);
     }
     [TestMethod]
-    [TestCategory("Noramally")]
+    [TestCategory("Normally")]
     public async Task CancelBooking_ShouldReturnBookingDto_WhenCancellationIsSuccessful()
     {
         // Setup the expected booking details
@@ -291,10 +293,11 @@ public class BookingServiceTests
             Start = DateTime.Now.AddDays(1),
             End = DateTime.Now.AddDays(1).AddHours(1)
         };
+        // Override the Default Booking with expectedBooking
         _bookingRepositoryMock.Setup(b => b.GetByIdWithDetailsAsync(expectedBooking.Id, expectedBooking.CustomerId))
             .ReturnsAsync(expectedBooking);
-        // Act
-        var result = await _bookingService.CancelBooking("C1", 1);
+        // Call Method and expect it to return the expected booking details
+        var result = await _bookingService.CancelBooking("C1", 1);//CustomerId, BookingId 
         // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(expectedBooking.Id, result.Id);
@@ -304,9 +307,9 @@ public class BookingServiceTests
     [TestCategory("Edge-Case")]
     public async Task CancelBooking_ShouldReturnKeyNotFound_WhenBookingIsNotFoundForThatCustomer()
     {
-        // Call the method and expect an exception
+        // Call the method with an booking that doesnt exist and expect an KeyNotFoundException
         var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException>(
-            () => _bookingService.CancelBooking("C1", 14333));
+            () => _bookingService.CancelBooking("C1", 14333)); //CustomerId, BookingId 
         // Assert that the exception message is correct
         Assert.AreEqual("Booking was not found.", result.Message);
     }
@@ -317,33 +320,74 @@ public class BookingServiceTests
     {
         // old start time for the booking which represents the setup booking 
         var oldStart = DateTime.Now.AddDays(1);
-        // Setup the expected booking details
-        var expectedBooking = new BookingRequestDto
+        // Setup the bookingRequestDto booking details
+        var requestDto = new BookingRequestDto
         {
            HairdresserId = "H1",
            TreatmentId = 1,
            Start = DateTime.Now.AddDays(2), // Rebooking to a new date
         };       
+        // Override the Default BookingResponseDto 
         _bookingMapperMock.Setup(Setup => Setup.MapToBookingReponse2Dto(It.IsAny<Booking>()))
             .Returns(new BookingResponseDto
             {
                 Id = 1,
-                Start = expectedBooking.Start,
-                End = expectedBooking.Start.AddMinutes(60),
+                Start = requestDto.Start,
+                End = requestDto.Start.AddMinutes(60),
                 Costumer = new UserDto { Id = "C1", UserName = "Customer1" },
                 Treatment = new TreatmentDto { Name = "Haircut", Description = "CutHair", Duration = 60, Price = 300.0 },
                 Hairdresser = new UserDto { UserName = "Hair" }
             });
-        // Act
-        var result = await _bookingService.RebookBooking("C1", 1, expectedBooking);
+        // Call method and expect it to return the updated booking details
+        var result = await _bookingService.RebookBooking("C1", 1, requestDto); //CustomerId, BookingID, bookingRequestDto
 
         //Check if updated booking is not null 
         Assert.IsNotNull(result);
         // Check if the booking ID and start time are correct
         Assert.AreEqual(1, result.Id);
-        Assert.AreEqual(expectedBooking.Start, result.Start);
+        Assert.AreEqual(requestDto.Start, result.Start);
         Assert.AreNotEqual(oldStart, result.Start); // Ensure the start time has changed
 
+    }
+
+    [TestMethod]
+    [TestCategory("Edge-Case")]
+    public async Task RebookBooking_ShouldThrowKeyNotFoundException_WhenBookingIsNotFound()
+    {
+        // Non existing bookingId 
+        var bookingId = 4124;
+        // Booking request details
+        var bookingRequestDto = new BookingRequestDto
+        {
+            HairdresserId = "H1",
+            TreatmentId = 1,
+            Start = DateTime.Now.AddDays(2)
+        };
+        // The RebookBooking method should throw a KeyNotFoundException when the booking is not found
+        var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException> (
+            () => _bookingService.RebookBooking("C1", bookingId, bookingRequestDto)); //CustomerId, BookingID, bookingRequestDto
+
+        // Assert that the exception message is correct
+        Assert.AreEqual("Booking was not found.", result.Message);
+    }
+
+    [TestMethod]
+    [TestCategory("Edge-Case")]
+    public async Task RebookBooking_ShouldThrowArgumentException_WhenRebookingIsBookedInThePast()
+    {
+        // Booking request details with a past date
+        var bookingRequestDto = new BookingRequestDto
+        {
+            HairdresserId = "H1",
+            TreatmentId = 1,
+            Start = DateTime.Now.AddDays(-3) // Past date
+        };
+        // The RebookBooking method should throw an ArgumentException when the booking is in the past
+        var result = await Assert.ThrowsExceptionAsync<ArgumentException>(
+            () => _bookingService.RebookBooking("C1", 1, bookingRequestDto)); //CustomerId, BookingID, bookingRequestDto
+
+        // Assert that the exception message is correct
+        Assert.AreEqual("Can only book from today and up to 4 month in advance.", result.Message);
     }
 
 }
