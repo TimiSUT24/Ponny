@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using Hairdresser.Data;
 using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
@@ -259,5 +261,95 @@ public class HairdresserServiceTest
 
         // Assert
         Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public async Task UpdateHairdresserAsync_ShouldUpdateHairdresser()
+    {
+        // Arrange
+        var GetUsersInRoleAsyncReternValue = new List<ApplicationUser>
+        {
+            new ApplicationUser { Id = "1", FirstName = "John", LastName = "Doe", Email = "John.Doe@exampel.com", PhoneNumber = "1234567890", UserName = "JohnDoe" },
+        };
+        var updateUserDto = new UpdateUserDto { FirstName = "Updated", LastName = "Doe", Email = "John.Doe@exampel.com", PhoneNumber = "1234567890", UserName = "JohnDoe" };
+
+        _userManagerMock
+            .Setup(repo => repo.GetUsersInRoleAsync(It.IsAny<string>()))
+            .ReturnsAsync(GetUsersInRoleAsyncReternValue);
+        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
+
+        //Act
+        var result = await _serviceMock.UpdateHairdresserAsync("1", updateUserDto);
+        var expected = new UserDto
+        {
+            Id = "1",
+            FirstName = "Updated",
+            LastName = "Doe",
+            Email = "John.Doe@exampel.com",
+            PhoneNumber = "1234567890",
+            UserName = "JohnDoe"
+        };
+
+        //Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expected.Id, result.Id);
+        Assert.AreEqual(expected.FirstName, result.FirstName);
+        Assert.AreEqual(expected.LastName, result.LastName);
+        Assert.AreEqual(expected.Email, result.Email);
+        Assert.AreEqual(expected.PhoneNumber, result.PhoneNumber);
+        Assert.AreEqual(expected.UserName, result.UserName);
+    }
+
+
+    [TestMethod]
+    public async Task UpdateHairdresserAsync_HairdresserNotFound_ReturnsNull()
+    {
+        // Arrange
+        var GetUsersInRoleAsyncReturnValue = new List<ApplicationUser>(); // No users
+        var updateUserDto = new UpdateUserDto
+        {
+            FirstName = "Updated",
+            LastName = "Doe",
+            Email = "updated.doe@example.com",
+            PhoneNumber = "1234567890",
+            UserName = "UpdatedDoe"
+        };
+
+        _userManagerMock
+            .Setup(repo => repo.GetUsersInRoleAsync(It.IsAny<string>()))
+            .ReturnsAsync(GetUsersInRoleAsyncReturnValue);
+
+        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
+
+        // Act
+        var result = await _serviceMock.UpdateHairdresserAsync("1", updateUserDto);
+
+        // Assert
+        Assert.IsNull(result);
+        _userRepository.Verify(repo => repo.UpdateAsync(It.IsAny<ApplicationUser>()), Times.Never);
+        _userRepository.Verify(repo => repo.SaveChangesAsync(), Times.Never);
+    }
+    [TestMethod]
+    [DataRow("")]
+    [DataRow(" ")]
+    [DataRow("  ")]
+    [DataRow(null)]
+    public async Task UpdateHairdresserAsync_EmptyId_ReturnsNull(string hairdresserId)
+    {
+        // Arrange
+        var GetUsersInRoleAsyncReturnValue = new List<ApplicationUser>();
+
+        _userManagerMock
+            .Setup(repo => repo.GetUsersInRoleAsync(It.IsAny<string>()))
+            .ReturnsAsync(GetUsersInRoleAsyncReturnValue);
+        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
+
+        // Act
+        var result = await _serviceMock.UpdateHairdresserAsync(hairdresserId, new UpdateUserDto());
+
+        // Assert
+        Assert.IsNull(result);
+        _userRepository.Verify(repo => repo.UpdateAsync(It.IsAny<ApplicationUser>()), Times.Never);
+        _userRepository.Verify(repo => repo.SaveChangesAsync(), Times.Never);
     }
 }
