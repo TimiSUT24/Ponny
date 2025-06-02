@@ -1,4 +1,4 @@
-using Hairdresser.DTOs;
+using HairdresserClassLibrary.DTOs;
 using HairdresserClassLibrary.Models;
 
 namespace Hairdresser.Mapping;

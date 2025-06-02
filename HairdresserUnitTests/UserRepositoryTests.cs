@@ -1,16 +1,11 @@
 ﻿using Hairdresser.Data;
-using Hairdresser.DTOs.User;
 using Hairdresser.Enums;
 using Hairdresser.Repositories;
+using HairdresserClassLibrary.DTOs.User;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HairdresserUnitTests
 {

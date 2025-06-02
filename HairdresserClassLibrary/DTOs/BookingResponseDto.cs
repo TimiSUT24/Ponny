@@ -1,8 +1,6 @@
-using System;
-using Hairdresser.DTOs.User;
-using HairdresserClassLibrary.Models;
+using HairdresserClassLibrary.DTOs.User;
 
-namespace Hairdresser.DTOs;
+namespace HairdresserClassLibrary.DTOs;
 
 public class BookingResponseDto
 {

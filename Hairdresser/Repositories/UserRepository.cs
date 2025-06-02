@@ -1,8 +1,8 @@
 ﻿using Hairdresser.Data;
-using Hairdresser.DTOs.User;
 using Hairdresser.Enums;
 using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
+using HairdresserClassLibrary.DTOs.User;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

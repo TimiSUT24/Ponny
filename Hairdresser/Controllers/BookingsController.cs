@@ -2,10 +2,10 @@
 using Hairdresser.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Hairdresser.DTOs;
 using Hairdresser.Repositories.Interfaces;
 using System.Security.Claims;
 using Hairdresser.Services.Interfaces;
+using HairdresserClassLibrary.DTOs;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Hairdresser.Controllers
@@ -32,7 +32,7 @@ namespace Hairdresser.Controllers
             try
             {
                 var availableTimes = await _bookingService.GetAllAvailableTimes(hairdresserId, treatmentId, day);
-                if(availableTimes == null)
+                if (availableTimes == null)
                 {
                     return NotFound();
                 }
