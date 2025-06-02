@@ -3,6 +3,7 @@ using Hairdresser.DTOs.User;
 using Hairdresser.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using HairdresserClassLibrary.DTOs.User;
 
 namespace Hairdresser.Controllers
 {
@@ -15,7 +16,7 @@ namespace Hairdresser.Controllers
         public HairdresserController(IHairdresserService hairdresserService)
         {
             _hairdresserService = hairdresserService;
-           
+
         }
 
         [AllowAnonymous]
@@ -50,12 +51,12 @@ namespace Hairdresser.Controllers
         public async Task<IActionResult> UpdateHairdresser(string id, [FromBody] UpdateUserDto userRequest)
         {
 
-           var hairdresser =  await _hairdresserService.UpdateHairdresserAsync(id, userRequest);
+            var hairdresser = await _hairdresserService.UpdateHairdresserAsync(id, userRequest);
 
             if (hairdresser is null)
             {
                 return Unauthorized("Hairdresser is Unauthorized");
-            }           
+            }
 
             return Ok(hairdresser);
         }
@@ -74,7 +75,7 @@ namespace Hairdresser.Controllers
             }
             return Ok(booking);
         }
-        
+
 
         [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("{id}")]
@@ -101,6 +102,6 @@ namespace Hairdresser.Controllers
                 return NotFound();
             }
 
-        }       
+        }
     }
 }
