@@ -16,14 +16,12 @@ namespace Hairdresser.Services
         private readonly IBookingRepository _bookingRepository;
         private readonly IGenericRepository<Treatment> _treatmentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IBookingMapper _bookingMapper;
 
         public BookingService(IGenericRepository<Treatment> treatment, IBookingRepository bookingRepository, UserManager<ApplicationUser> usermanager, IBookingMapper bookingMapper)
         {
             _treatmentRepository = treatment;
             _bookingRepository = bookingRepository;
             _userManager = usermanager;
-            _bookingMapper = bookingMapper;
         }
 
         public async Task<List<DateTime>> GetAllAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
@@ -115,34 +113,33 @@ namespace Hairdresser.Services
 
             var savedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            var mapp = _bookingMapper.MapToBookingReponse2Dto(savedBooking);
-            return mapp;            
+            return savedBooking;            
         }
 
         public async Task<BookingDto> CancelBooking(string customerId, int bookingId)
         {
-            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId,customerId);
+            var bookingById = await _bookingRepository.GetByIdWithDetailsAsync(bookingId, customerId);
 
-            if (booking == null)
+            if (bookingById == null)
             {
                 throw new KeyNotFoundException("Booking was not found.");
             }
 
 
-            if (booking.CustomerId != customerId)
+            if (bookingById.Costumer.Id != customerId)
             {
                 throw new UnauthorizedAccessException("Not a valid customer");
             }
 
-            await _bookingRepository.DeleteAsync(booking);
+            await _bookingRepository.DeleteAsync(bookingById.MapToBookingFromBookingResponseDto());
             await _bookingRepository.SaveChangesAsync();
 
             var message = "This booking was removed";
             return new BookingDto
             {
-                Id = booking.Id,
-                Start = booking.Start,
-                End = booking.End,
+                Id = bookingById.Id,
+                Start = bookingById.Start,
+                End = bookingById.End,
                 Message = message
             };
         }
@@ -155,13 +152,12 @@ namespace Hairdresser.Services
                 throw new KeyNotFoundException("Booking was not found.");
             }
 
-            if (booking.CustomerId != customerId)
+            if (booking.Costumer.Id != customerId)
             {
                 throw new UnauthorizedAccessException("Not a valid customer");
             }
 
-            var currentBooking = _bookingMapper.MapToBookingReponse2Dto(booking);
-            return currentBooking;
+            return booking;
         }
 
         public async Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto)
@@ -173,7 +169,7 @@ namespace Hairdresser.Services
                 throw new KeyNotFoundException("Booking was not found.");
             }
 
-            if (booking.CustomerId != customerId)
+            if (booking.Costumer.Id != customerId)
             {
                 throw new UnauthorizedAccessException("Not a valid customer");
             }
@@ -207,20 +203,18 @@ namespace Hairdresser.Services
                 throw new ArgumentException("Can only book from today and up to 4 month in advance.");
             }
             booking.Id = bookingId;
-            booking.CustomerId = customerId;
-            booking.HairdresserId = bookingRequestDto.HairdresserId;
-            booking.TreatmentId = bookingRequestDto.TreatmentId;
+            booking.Costumer.Id = customerId;
+            booking.Hairdresser.Id = bookingRequestDto.HairdresserId;
+            booking.Treatment.Id = bookingRequestDto.TreatmentId;
             booking.Start = bookingRequestDto.Start;
             booking.End = end;
 
-            await _bookingRepository.UpdateAsync(booking);
+            await _bookingRepository.UpdateAsync(booking.MapToBookingFromBookingResponseDto());
             await _bookingRepository.SaveChangesAsync();
 
             var updatedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            var returnUpdatedBooking = _bookingMapper.MapToBookingReponse2Dto(updatedBooking);
-
-            return returnUpdatedBooking; 
+            return updatedBooking; 
 
         }
     }

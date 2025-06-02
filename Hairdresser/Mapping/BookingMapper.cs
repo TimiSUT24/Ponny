@@ -1,13 +1,12 @@
 using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
-using Hairdresser.Mapping.Interfaces;
 using HairdresserClassLibrary.Models;
 
 namespace Hairdresser.Mapping;
 
-public class BookingMapper : IBookingMapper
+public static class BookingMapper
 {
-    public HairdresserBookingRespondDto MapToBookingResponseDto(Booking booking)
+    public static HairdresserBookingRespondDto MapToBookingResponseDto(this Booking booking)
     {
         ArgumentNullException.ThrowIfNull(booking);
 
@@ -19,7 +18,7 @@ public class BookingMapper : IBookingMapper
             Treatment = booking.Treatment.MapToTreatmentDto()
         };
     }
-    public BookingDto MapToBookingDto(Booking booking)
+    public static BookingDto MapToBookingDto(this Booking booking)
     {
         ArgumentNullException.ThrowIfNull(booking);
 
@@ -31,7 +30,7 @@ public class BookingMapper : IBookingMapper
         };
     }
 
-    public BookingResponseDto MapToBookingReponse2Dto(Booking booking)
+    public static BookingResponseDto MapToBookingReponse2Dto(this Booking booking)
     {
         ArgumentNullException.ThrowIfNull(booking);
 
@@ -40,25 +39,44 @@ public class BookingMapper : IBookingMapper
             Id = booking.Id,
             Start = booking.Start,
             End = booking.End,
-            Costumer = new UserDto
+            Costumer = booking.Customer.MapToUserDTO(),
+            Treatment = booking.Treatment.MapToTreatmentDto(),
+            Hairdresser = booking.Hairdresser.MapToUserDTO()
+        };
+    }
+    public static Booking MapToBookingFromBookingResponseDto(this BookingResponseDto bookingResponseDto)
+    {
+        ArgumentNullException.ThrowIfNull(bookingResponseDto);
+
+        return new Booking
+        {
+            Id = bookingResponseDto.Id,
+            Start = bookingResponseDto.Start,
+            End = bookingResponseDto.End,
+            Customer = new ApplicationUser
             {
-                Id = booking.CustomerId,
-                UserName = booking.Customer.UserName,
-                Email = booking.Customer.Email,
-                PhoneNumber = booking.Customer.PhoneNumber
+                Id = bookingResponseDto.Costumer.Id,
+                FirstName = bookingResponseDto.Costumer.FirstName,
+                LastName = bookingResponseDto.Costumer.LastName,
+                UserName = bookingResponseDto.Costumer.UserName,
+                Email = bookingResponseDto.Costumer.Email,
+                PhoneNumber = bookingResponseDto.Costumer.PhoneNumber
+
             },
-            Treatment = new TreatmentDto
+            Hairdresser = new ApplicationUser
             {
-                Name = booking.Treatment.Name,
-                Description = booking.Treatment.Description,
-                Duration = booking.Treatment.Duration,
-                Price = booking.Treatment.Price,       
+                Id = bookingResponseDto.Hairdresser.Id,
+                FirstName = bookingResponseDto.Hairdresser.FirstName,
+                LastName = bookingResponseDto.Hairdresser.LastName,
+                UserName = bookingResponseDto.Hairdresser.UserName,
+                Email = bookingResponseDto.Hairdresser.Email,
+                PhoneNumber = bookingResponseDto.Hairdresser.PhoneNumber
             },
-            Hairdresser = new UserDto
+            Treatment = new Treatment
             {
-                UserName = booking.Hairdresser.UserName,
-                Email = booking.Hairdresser.Email,
-                PhoneNumber = booking.Hairdresser.PhoneNumber
+                Id = bookingResponseDto.Treatment.Id,
+                Name = bookingResponseDto.Treatment.Name,
+                Duration = bookingResponseDto.Treatment.Duration
             }
         };
     }
