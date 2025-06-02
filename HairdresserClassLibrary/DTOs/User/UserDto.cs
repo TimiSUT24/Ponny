@@ -1,4 +1,4 @@
-namespace Hairdresser.DTOs.User;
+namespace HairdresserClassLibrary.DTOs.User;
 
 public record UserDto
 {

@@ -1,7 +1,5 @@
-using Hairdresser.DTOs.User;
-using System;
-
-namespace Hairdresser.DTOs;
+using HairdresserClassLibrary.DTOs.User;
+namespace HairdresserClassLibrary.DTOs;
 
 public class HairdresserBookingRespondDto
 {
@@ -10,5 +8,5 @@ public class HairdresserBookingRespondDto
     public DateTime End { get; set; }
 
     public TreatmentDto Treatment { get; set; } = null!;
-    public UserDto Customer { get; set; } = null!; 
+    public UserDto Customer { get; set; } = null!;
 }

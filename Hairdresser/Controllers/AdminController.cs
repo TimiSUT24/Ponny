@@ -1,5 +1,6 @@
 ﻿using Hairdresser.DTOs.User;
 using Hairdresser.Repositories.Interfaces;
+using HairdresserClassLibrary.DTOs.User;
 using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;

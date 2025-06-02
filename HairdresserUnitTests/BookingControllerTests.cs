@@ -2,6 +2,7 @@
 using Hairdresser.Data;
 using Hairdresser.DTOs;
 using Hairdresser.Repositories.Interfaces;
+using HairdresserClassLibrary.DTOs;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

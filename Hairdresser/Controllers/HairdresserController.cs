@@ -1,9 +1,8 @@
-﻿using Hairdresser.DTOs;
-using Hairdresser.DTOs.User;
-using Hairdresser.Services.Interfaces;
+﻿using Hairdresser.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using HairdresserClassLibrary.DTOs.User;
+using HairdresserClassLibrary.DTOs;
 
 namespace Hairdresser.Controllers
 {

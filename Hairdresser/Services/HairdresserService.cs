@@ -1,11 +1,12 @@
 ﻿using Hairdresser.DTOs;
-using Hairdresser.DTOs.User;
 using Hairdresser.Enums;
 using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
+using HairdresserClassLibrary.DTOs.User;
 using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
+using HairdresserClassLibrary.DTOs;
 
 namespace Hairdresser.Services
 {
@@ -54,7 +55,7 @@ namespace Hairdresser.Services
             if (booking == null)
             {
                 return null;
-            }          
+            }
 
             return new BookingResponseDto
             {
@@ -67,7 +68,7 @@ namespace Hairdresser.Services
                     UserName = booking.Customer.UserName,
                     Email = booking.Customer?.Email,
                     PhoneNumber = booking.Customer?.PhoneNumber
-                },               
+                },
             };
         }
 
@@ -140,27 +141,27 @@ namespace Hairdresser.Services
             }).ToList();
         }
 
-         /*private async Task<ApplicationUser?> GetUserByRoleAsync(string id, UserRoleEnum userRole)
-         {
-            var roleId = await _context.Roles
-                .Where(r => r.Name == userRole.ToString())
-                .Select(r => r.Id)
-                .FirstOrDefaultAsync();
-            if (roleId == null)
-            {
-                return null;
-            }
-            var userId = await _context.UserRoles
-                .Where(ur => ur.RoleId == roleId && ur.UserId == id)
-                .Select(ur => ur.UserId)
-                .FirstOrDefaultAsync();
+        /*private async Task<ApplicationUser?> GetUserByRoleAsync(string id, UserRoleEnum userRole)
+        {
+           var roleId = await _context.Roles
+               .Where(r => r.Name == userRole.ToString())
+               .Select(r => r.Id)
+               .FirstOrDefaultAsync();
+           if (roleId == null)
+           {
+               return null;
+           }
+           var userId = await _context.UserRoles
+               .Where(ur => ur.RoleId == roleId && ur.UserId == id)
+               .Select(ur => ur.UserId)
+               .FirstOrDefaultAsync();
 
-            if (userId is null)
-            {
-                return null;
-            }
+           if (userId is null)
+           {
+               return null;
+           }
 
-            return await _userRepo.GetByIdAsync(userId);
-        } */ // fix denna 
+           return await _userRepo.GetByIdAsync(userId);
+       } */ // fix denna 
     }
 }

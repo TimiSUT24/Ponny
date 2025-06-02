@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Hairdresser.DTOs.User;
+namespace HairdresserClassLibrary.DTOs.User;
 
 public class UpdateUserDto
 {

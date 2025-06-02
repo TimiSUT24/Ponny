@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using HairdresserClassLibrary.Models;
 using Hairdresser.Data;
 using Microsoft.AspNetCore.Identity;
-using Hairdresser.DTOs.User;
+using HairdresserClassLibrary.DTOs.User;
 
 namespace Hairdresser.Controllers
 {

@@ -1,5 +1,5 @@
-﻿using Hairdresser.DTOs.User;
-using Hairdresser.Services;
+﻿using Hairdresser.Services;
+using HairdresserClassLibrary.DTOs.User;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -38,7 +38,7 @@ namespace Hairdresser.Controllers
 
             return Ok(new
             {
-                Token = token            
+                Token = token
             });
         }
     }

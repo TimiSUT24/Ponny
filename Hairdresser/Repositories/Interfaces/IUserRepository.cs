@@ -1,5 +1,4 @@
 using System;
-using Hairdresser.DTOs.User;
 using Hairdresser.Enums;
 using HairdresserClassLibrary.DTOs.User;
 using HairdresserClassLibrary.Models;

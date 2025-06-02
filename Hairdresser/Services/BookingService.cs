@@ -1,9 +1,9 @@
 ﻿using Azure.Core;
-using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
 using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services.Interfaces;
+using HairdresserClassLibrary.DTOs;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -110,12 +110,12 @@ namespace Hairdresser.Services
             var savedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
             var mapp = BookingMapper.MapToBookingReponse2Dto(savedBooking);
-            return mapp;            
+            return mapp;
         }
 
         public async Task<BookingDto> CancelBooking(string customerId, int bookingId)
         {
-            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId,customerId);
+            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId, customerId);
 
             if (booking == null)
             {
@@ -155,12 +155,12 @@ namespace Hairdresser.Services
             }
 
             var currentBooking = BookingMapper.MapToBookingReponse2Dto(booking);
-            return currentBooking; 
+            return currentBooking;
         }
 
         public async Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto)
         {
-            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId,customerId);
+            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId, customerId);
 
             if (booking == null)
             {
@@ -203,7 +203,7 @@ namespace Hairdresser.Services
 
             var returnUpdatedBooking = BookingMapper.MapToBookingReponse2Dto(updatedBooking);
 
-            return returnUpdatedBooking; 
+            return returnUpdatedBooking;
 
         }
     }

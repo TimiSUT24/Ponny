@@ -2,6 +2,7 @@
 using Hairdresser.DTOs.User;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services.Interfaces;
+using HairdresserClassLibrary.DTOs;
 
 namespace Hairdresser.Services
 {
@@ -26,7 +27,7 @@ namespace Hairdresser.Services
                 Treatment = new TreatmentDto
                 {
                     Id = b.Treatment.Id,
-                    Name = b.Treatment.Name, 
+                    Name = b.Treatment.Name,
                     Description = b.Treatment.Description,
                     Price = b.Treatment.Price
                 },
@@ -45,7 +46,7 @@ namespace Hairdresser.Services
                     PhoneNumber = b.Hairdresser?.PhoneNumber
                 }
             });
-            
+
 
             return detailedBookings;
         }

@@ -1,4 +1,4 @@
-﻿using Hairdresser.DTOs;
+﻿using HairdresserClassLibrary.DTOs;
 
 namespace Hairdresser.Services.Interfaces
 {

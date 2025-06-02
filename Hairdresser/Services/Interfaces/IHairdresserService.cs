@@ -1,5 +1,5 @@
-﻿using Hairdresser.DTOs;
-using Hairdresser.DTOs.User;
+﻿using HairdresserClassLibrary.DTOs;
+using HairdresserClassLibrary.DTOs.User;
 
 namespace Hairdresser.Services.Interfaces
 {
