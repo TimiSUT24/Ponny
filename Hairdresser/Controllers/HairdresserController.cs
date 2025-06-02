@@ -1,11 +1,7 @@
 ﻿using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
-using Hairdresser.Enums;
-using Hairdresser.Mapping;
-using Hairdresser.Repositories.Interfaces;
-using HairdresserClassLibrary.Models;
+using Hairdresser.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hairdresser.Controllers

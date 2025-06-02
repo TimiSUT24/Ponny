@@ -3,6 +3,7 @@ using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
 using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
+using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

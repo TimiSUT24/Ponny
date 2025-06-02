@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Hairdresser.DTOs;
 using Hairdresser.Repositories.Interfaces;
 using System.Security.Claims;
+using Hairdresser.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Hairdresser.Controllers

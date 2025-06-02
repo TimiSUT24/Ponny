@@ -1,7 +1,6 @@
 ﻿using Hairdresser.DTOs;
-using HairdresserClassLibrary.Models;
 
-namespace Hairdresser.Repositories.Interfaces
+namespace Hairdresser.Services.Interfaces
 {
     public interface IBookingService
     {
