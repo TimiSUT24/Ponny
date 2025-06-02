@@ -42,11 +42,11 @@ namespace Hairdresser.Services
                 throw new ArgumentException("Can only book from today and up to 4 month in advance.");
             }
 
-            var startOfDay = day.Date.AddHours(9); // frisör jobbar från 09:00
-            var endOfDay = day.Date.AddHours(17);  // till 17:00
+            var startOfDay = day.Date.AddHours(9); // Hairdresser works from 09:00
+            var endOfDay = day.Date.AddHours(17);  // until 17:00
             var duration = TimeSpan.FromMinutes(treatment.Duration);
 
-            // Hämta bokade tider
+            // Retrive occupied bookings 
             var bookings = await _bookingRepository
                 .FindAsync(b => b.HairdresserId == hairdresserId && b.Start.Date == day.Date);
 
