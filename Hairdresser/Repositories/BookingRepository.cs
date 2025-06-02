@@ -55,15 +55,13 @@ namespace Hairdresser.Repositories
 			return await _context.Bookings.AnyAsync(predicate);
 		}
 
-		public async Task<BookingResponseDto?> GetByIdWithDetailsAsync(int id, string customerId)
+		public async Task<Booking?> GetByIdWithDetailsAsync(int id, string customerId)
 		{
 			return await _context.Bookings
 				.Include(b => b.Treatment)
 				.Include(b => b.Customer)
 				.Include(b => b.Hairdresser)
-				.Where(b => b.Id == id && b.CustomerId == customerId)
-				.Select(b => b.MapToBookingReponse2Dto())
-				.FirstOrDefaultAsync();
+				.FirstOrDefaultAsync(b => b.Id == id && b.CustomerId == customerId);
 		}
 
         public async Task<Booking?> GetBookingWithDetailsAsync(int id)
