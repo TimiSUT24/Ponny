@@ -60,14 +60,14 @@ namespace Hairdresser.Controllers
         {
             var users = await _userManager.Users.ToListAsync();
 
-            var userRespondDtos = new List<UserRespondDto>();
+            var userRespondDtos = new List<UserResponseDto>();
 
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 var role = roles.FirstOrDefault(); // Takes the first role, or null if none exists.
 
-                userRespondDtos.Add(new UserRespondDto
+                userRespondDtos.Add(new UserResponseDto
                 {
                     Id = user.Id,
                     UserName = user.UserName,

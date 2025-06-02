@@ -22,11 +22,11 @@ namespace Hairdresser.Services
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<UserRespondDto>> GetAllHairdressersAsync()
+        public async Task<IEnumerable<UserResponseDto>> GetAllHairdressersAsync()
         {
             var users = await _userRepo.GetAllAsync();
 
-            return users.Select(u => new UserRespondDto
+            return users.Select(u => new UserResponseDto
             {
                 Id = u.Id,
                 UserName = u.UserName,

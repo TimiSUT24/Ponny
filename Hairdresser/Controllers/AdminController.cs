@@ -48,7 +48,7 @@ namespace Hairdresser.Controllers
 
             await _userManager.AddToRoleAsync(user, "Hairdresser");
 
-            var response = new UserRespondDto
+            var response = new UserResponseDto
             {
                 Id = user.Id,
                 UserName = user.UserName,
