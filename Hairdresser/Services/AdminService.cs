@@ -1,8 +1,7 @@
-﻿using Hairdresser.DTOs;
-using Hairdresser.DTOs.User;
-using Hairdresser.Repositories.Interfaces;
+﻿using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.DTOs;
+using HairdresserClassLibrary.DTOs.User;
 
 namespace Hairdresser.Services
 {

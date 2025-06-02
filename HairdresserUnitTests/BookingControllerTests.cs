@@ -1,11 +1,7 @@
 ﻿using Hairdresser.Controllers;
 using Hairdresser.Data;
-using Hairdresser.DTOs;
-using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.DTOs;
-using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;

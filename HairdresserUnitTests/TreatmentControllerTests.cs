@@ -1,6 +1,4 @@
 ﻿using Hairdresser.Controllers;
-using Hairdresser.DTOs;
-using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

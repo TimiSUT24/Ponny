@@ -1,5 +1,4 @@
-﻿using Hairdresser.DTOs;
-using Hairdresser.Enums;
+﻿using Hairdresser.Enums;
 using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using HairdresserClassLibrary.DTOs.User;

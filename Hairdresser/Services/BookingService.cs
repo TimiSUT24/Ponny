@@ -1,13 +1,9 @@
-﻿using Azure.Core;
-using Hairdresser.DTOs.User;
-using Hairdresser.Mapping;
+﻿using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.DTOs;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hairdresser.Services
 {
