@@ -1,8 +1,7 @@
 ﻿using Hairdresser.DTOs;
 using Hairdresser.DTOs.User;
-using HairdresserClassLibrary.Models;
 
-namespace Hairdresser.Repositories.Interfaces
+namespace Hairdresser.Services.Interfaces
 {
     public interface IHairdresserService
     {

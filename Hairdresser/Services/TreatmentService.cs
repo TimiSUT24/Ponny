@@ -1,4 +1,5 @@
 ﻿using Hairdresser.Repositories.Interfaces;
+using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.Models;
 
 namespace Hairdresser.Services

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Security.Claims;
+using Hairdresser.Services.Interfaces;
 
 namespace HairdresserUnitTests
 {
