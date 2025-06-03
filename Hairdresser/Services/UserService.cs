@@ -161,28 +161,4 @@ public class UserService(IUserRepository userRepository, IBookingRepository book
 
         return detailedBookings;
     }
-
-    /*private async Task<ApplicationUser?> GetUserByRoleAsync(string id, UserRoleEnum userRole)
-    {
-       var roleId = await _context.Roles
-           .Where(r => r.Name == userRole.ToString())
-           .Select(r => r.Id)
-           .FirstOrDefaultAsync();
-       if (roleId == null)
-       {
-           return null;
-       }
-       var userId = await _context.UserRoles
-           .Where(ur => ur.RoleId == roleId && ur.UserId == id)
-           .Select(ur => ur.UserId)
-           .FirstOrDefaultAsync();
-
-       if (userId is null)
-       {
-           return null;
-       }
-
-       return await _userRepo.GetByIdAsync(userId);
-   } */ // fix denna 
-
 }
