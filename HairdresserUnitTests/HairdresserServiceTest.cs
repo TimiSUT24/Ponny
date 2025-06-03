@@ -19,6 +19,7 @@ public class HairdresserServiceTest
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
     private Mock<IUserRepository> _userRepository = null!;
     private Mock<IBookingRepository> _bookingRepository = null!;
+    private HairdresserService _serviceMock = null!;
 
 
 
@@ -28,6 +29,7 @@ public class HairdresserServiceTest
         _userManagerMock = MockUser.InitializeUserManager();
         _userRepository = new Mock<IUserRepository>();
         _bookingRepository = new Mock<IBookingRepository>();
+        _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
     }
 
 
@@ -44,8 +46,6 @@ public class HairdresserServiceTest
 
         _userRepository.Setup(repo => repo.GetAllAsync())
             .ReturnsAsync(users);
-
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act - Call the method to get all hairdressers
 
@@ -72,8 +72,6 @@ public class HairdresserServiceTest
         _bookingRepository
             .Setup(repo => repo.GetWeekScheduleWithDetailsAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
             .ReturnsAsync(Bookings);
-
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act - Call the method to get the week schedule for a specific hairdresser
         var result = await _serviceMock.GetWeekScheduleAsync("hairdresser1", DateTime.Now);
@@ -105,8 +103,6 @@ public class HairdresserServiceTest
             .Setup(repo => repo.GetWeekScheduleWithDetailsAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
             .ReturnsAsync(Bookings);
 
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
-
         // Act - Call the method to get the week schedule for a specific hairdresser
         var result = await _serviceMock.GetWeekScheduleAsync(hairdresserId, DateTime.Now);
         var expected = 0;
@@ -131,7 +127,6 @@ public class HairdresserServiceTest
             .Setup(repo => repo.GetWeekScheduleWithDetailsAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
             .ReturnsAsync(Bookings);
 
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act - Call the method to get the week schedule for a specific hairdresser with a date in the past
         var result = await _serviceMock.GetWeekScheduleAsync("hairdresser1", DateTime.Now.AddDays(-1));
@@ -157,7 +152,6 @@ public class HairdresserServiceTest
             .Setup(repo => repo.GetMonthlyScheduleWithDetailsAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(Bookings);
 
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act - Call the method to get the monthly schedule for a specific hairdresser
         var result = await _serviceMock.GetMonthlyScheduleAsync("hairdresser1", 2025, 1);
@@ -188,7 +182,6 @@ public class HairdresserServiceTest
             .Setup(repo => repo.GetMonthlyScheduleWithDetailsAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(Bookings);
 
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act - Call the method to get the monthly schedule for a specific hairdresser
         var result = await _serviceMock.GetMonthlyScheduleAsync(hairdresserId, 2025, 1);
@@ -218,7 +211,6 @@ public class HairdresserServiceTest
             .Setup(repo => repo.GetMonthlyScheduleWithDetailsAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(Bookings);
 
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act - Call the method to get the monthly schedule for a specific hairdresser with an invalid date filter
         var result = await _serviceMock.GetMonthlyScheduleAsync("hairdresser1", year, month);
@@ -238,7 +230,6 @@ public class HairdresserServiceTest
         _bookingRepository
             .Setup(rep => rep.GetBookingWithDetailsAsync(It.IsAny<int>()))
             .ReturnsAsync(Bookings);
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act - Call the method to get booking details
         var result = await _serviceMock.GetBookingDetailsAsync(1);
@@ -257,7 +248,6 @@ public class HairdresserServiceTest
         _bookingRepository
             .Setup(rep => rep.GetBookingWithDetailsAsync(It.IsAny<int>()))
             .ReturnsAsync(null as HairdresserBookingRespondDto);
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act - Call the method to get booking details for a non-existing booking
         var result = await _serviceMock.GetBookingDetailsAsync(BookingId);
@@ -278,8 +268,7 @@ public class HairdresserServiceTest
 
         _userManagerMock
             .Setup(repo => repo.GetUsersInRoleAsync(It.IsAny<string>()))
-            .ReturnsAsync(GetUsersInRoleAsyncReternValue);
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
+            .ReturnsAsync(GetUsersInRoleAsyncReturnValue);
 
         // Act - Call the method to update the hairdresser
         var result = await _serviceMock.UpdateHairdresserAsync("1", updateUserDto);
@@ -322,7 +311,6 @@ public class HairdresserServiceTest
             .Setup(repo => repo.GetUsersInRoleAsync(It.IsAny<string>()))
             .ReturnsAsync(GetUsersInRoleAsyncReturnValue);
 
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act - Call the method to update the hairdresser with a non-existing ID
         var result = await _serviceMock.UpdateHairdresserAsync("1", updateUserDto);
@@ -345,7 +333,6 @@ public class HairdresserServiceTest
         _userManagerMock
             .Setup(repo => repo.GetUsersInRoleAsync(It.IsAny<string>()))
             .ReturnsAsync(GetUsersInRoleAsyncReturnValue);
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act - Call the method to update the hairdresser with an empty ID
         var result = await _serviceMock.UpdateHairdresserAsync(hairdresserId, new UpdateUserDto());
@@ -367,7 +354,6 @@ public class HairdresserServiceTest
         _userManagerMock
             .Setup(repo => repo.GetUsersInRoleAsync(It.IsAny<string>()))
             .ReturnsAsync(GetUsersInRoleAsyncReturnValue);
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act - Call the method to get a hairdresser by ID
         var result = await _serviceMock.GetHairdresserWithId("1");
@@ -399,7 +385,6 @@ public class HairdresserServiceTest
         _userManagerMock
             .Setup(repo => repo.GetUsersInRoleAsync(It.IsAny<string>()))
             .ReturnsAsync(GetUsersInRoleAsyncReturnValue);
-        var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
         // Act - Call the method to get a hairdresser with an empty ID
         var result = await _serviceMock.GetHairdresserWithId(hairdresserId);
