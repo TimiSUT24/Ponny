@@ -1,5 +1,6 @@
 using HairdresserClassLibrary.Models;
 using HairdresserClassLibrary.DTOs.User;
+using HairdresserClassLibrary.DTOs;
 
 namespace Hairdresser.Mapping;
 
@@ -16,7 +17,13 @@ public static class UserMapper
             LastName = userDto.LastName,
             Email = userDto.Email ?? string.Empty,
             PhoneNumber = userDto.PhoneNumber ?? string.Empty,
-            //Bookings = userDto.HairdresserBookings.Select(booking => booking.MapToBookingResponseDto()).ToList()
+            Bookings = userDto.HairdresserBookings.Select(b => new HairdresserBookingRespondDto
+            {
+                Id = b.Id,
+                Start = b.Start,
+                End = b.End,
+                Treatment = b.Treatment.MapToTreatmentDto()
+            }).ToList()
         };
     }
     public static UserDto MapToUserDTO(this ApplicationUser user)
