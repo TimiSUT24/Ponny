@@ -7,6 +7,7 @@ using HairdresserClassLibrary.DTOs.User;
 using Hairdresser.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Hairdresser.Mapping;
+using HairdresserClassLibrary.DTOs;
 
 namespace Hairdresser.Controllers
 {
@@ -49,11 +50,71 @@ namespace Hairdresser.Controllers
 
         [HttpGet("bookings-overview")]
         [Authorize(Roles = "Admin")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BookingResponseDto>))]
         public async Task<IActionResult> GetAllBookingsOverview()
         {
             var bookingDtos = await _userService.GetAllBookingsOverviewAsync();
             return Ok(bookingDtos);
+        }
+
+        [Authorize(Roles = "Hairdresser")]
+        [HttpGet("schedule")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BookingResponseDto>))]
+        public async Task<IActionResult> GetSchedule([FromQuery] string hairdresserId, [FromQuery] DateTime weekStart)
+        {
+            var result = await _userService.GetWeekScheduleAsync(hairdresserId, weekStart);
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Hairdresser")]
+        [HttpGet("monthly-schedule")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BookingResponseDto>))]
+        public async Task<IActionResult> GetMonthlySchedule([FromQuery] string hairdresserId, [FromQuery] int year, [FromQuery] int month)
+        {
+            var result = await _userService.GetMonthlyScheduleAsync(hairdresserId, year, month);
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Hairdresser,Admin")]
+        [HttpGet("booking/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookingResponseDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBookingDetails(int id)
+        {
+            var booking = await _userService.GetBookingDetailsAsync(id);
+            if (booking == null)
+            {
+                return NotFound();
+            }
+            return Ok(booking);
+        }
+
+
+        [Authorize(Roles = "Hairdresser,Admin")]
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HairdresserResponseDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetHairdresserById(string id)
+        {
+            try
+            {
+
+                var hairdresser = await _userService.GetHairdresserWithId(id);
+
+                if (hairdresser == null)
+                {
+                    return NotFound("Hairdresser not found");
+                }
+
+                return Ok(hairdresser);
+            }
+            catch
+            {
+                return NotFound();
+            }
+
         }
 
         // Change User Info
