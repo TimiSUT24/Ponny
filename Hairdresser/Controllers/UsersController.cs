@@ -123,7 +123,9 @@ namespace Hairdresser.Controllers
         {
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null)
+            {
                 return NotFound();
+            }
 
             existingUser.UserName = updatedUser.UserName;
             existingUser.Email = updatedUser.Email;
