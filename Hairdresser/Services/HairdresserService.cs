@@ -40,7 +40,7 @@ namespace Hairdresser.Services
         {
             if (string.IsNullOrWhiteSpace(hairdresserId))
             {
-                return [];
+                throw new ArgumentException("Id cannot be null or whitespace.", nameof(hairdresserId));
             }
 
             if (weekStart.Date < DateTime.Now.Date)
@@ -57,7 +57,7 @@ namespace Hairdresser.Services
 
             if (string.IsNullOrWhiteSpace(hairdresserId))
             {
-                return [];
+                throw new ArgumentException("Id cannot be null or whitespace.", nameof(hairdresserId));
             }
             if (year != currentYearAndOneMonth || month < 1 || month > 12)
             {

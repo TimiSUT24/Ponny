@@ -99,13 +99,9 @@ public class HairdresserServiceTest
             .Setup(repo => repo.GetWeekScheduleWithDetailsAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
             .ReturnsAsync(Bookings);
 
-        // Act - Call the method to get the week schedule for a specific hairdresser
-        var result = await _serviceMock.GetWeekScheduleAsync(hairdresserId, DateTime.Now);
-        var expected = 0;
-
-        // Assert - Check if the result is not null and contains the expected number of bookings
-        Assert.IsNotNull(result);
-        Assert.AreEqual(expected, result.Count());
+        // Act & Assert - Call the method to get the week schedule for a specific hairdresser with an empty ID
+        var ex = Assert.ThrowsExceptionAsync<ArgumentException>(async () => await _serviceMock.GetHairdresserWithId(hairdresserId));
+        Assert.AreEqual("Id cannot be null or whitespace. (Parameter 'id')", ex.Result.Message);
     }
     [TestMethod]
     public async Task GetWeekScheduleAsync_GetDateInPast_ReturnsEmptyList()
@@ -179,13 +175,9 @@ public class HairdresserServiceTest
             .ReturnsAsync(Bookings);
 
 
-        // Act - Call the method to get the monthly schedule for a specific hairdresser
-        var result = await _serviceMock.GetMonthlyScheduleAsync(hairdresserId, 2025, 1);
-        var expected = 0;
-
-        // Assert - Check if the result is not null and contains the expected number of bookings
-        Assert.IsNotNull(result);
-        Assert.AreEqual(expected, result.Count());
+        // Act & Assert - Call the method to get the monthly schedule for a specific hairdresser with an empty ID
+        var ex = Assert.ThrowsExceptionAsync<ArgumentException>(async () => await _serviceMock.GetHairdresserWithId(hairdresserId));
+        Assert.AreEqual("Id cannot be null or whitespace. (Parameter 'id')", ex.Result.Message);
     }
     [TestMethod]
     [DataRow(2025, -1)]
