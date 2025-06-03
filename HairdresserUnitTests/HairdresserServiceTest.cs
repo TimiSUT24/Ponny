@@ -270,7 +270,7 @@ public class HairdresserServiceTest
     public async Task UpdateHairdresserAsync_ShouldUpdateHairdresser()
     {
         // Arrange - Mocking the user manager to return a list of hairdressers
-        var GetUsersInRoleAsyncReternValue = new List<ApplicationUser>
+        var GetUsersInRoleAsyncReturnValue = new List<ApplicationUser>
         {
             new ApplicationUser { Id = "1", FirstName = "John", LastName = "Doe", Email = "John.Doe@exampel.com", PhoneNumber = "1234567890", UserName = "JohnDoe" },
         };
