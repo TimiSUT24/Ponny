@@ -13,11 +13,11 @@ namespace HairdresserUnitTests;
 [TestClass]
 public class BookingServiceTests
 {
-    private Mock<IBookingRepository> _bookingRepositoryMock;
-    private Mock<IGenericRepository<Treatment>> _treatmentRepositoryMock;
-    private Mock<UserManager<ApplicationUser>> _userManagerMock;
-    private Mock<IBookingMapper> _bookingMapperMock;
-    private BookingService _bookingService;
+    private Mock<IBookingRepository>? _bookingRepositoryMock;
+    private Mock<IGenericRepository<Treatment>>? _treatmentRepositoryMock;
+    private Mock<UserManager<ApplicationUser>>? _userManagerMock;
+    private Mock<IBookingMapper>? _bookingMapperMock;
+    private BookingService? _bookingService;
 
     [TestInitialize]
     public void Setup()
@@ -111,7 +111,7 @@ public class BookingServiceTests
     {
         //Make sure there are no bookings for the day so it can return all available slots
         var day = DateTime.Now.AddDays(1).Date;    
-        _bookingRepositoryMock.Setup(b => b.FindAsync(It.IsAny<Expression<Func<Booking, bool>>>()))
+        _bookingRepositoryMock?.Setup(b => b.FindAsync(It.IsAny<Expression<Func<Booking, bool>>>()))
             .ReturnsAsync(new List<Booking>());
 
         // Test if the method returns all available time slots for the given hairdresser and treatment on the specified day
@@ -129,7 +129,7 @@ public class BookingServiceTests
     {
         
         var day = DateTime.Now.AddDays(1).Date; 
-        _userManagerMock.Setup(h => h.FindByIdAsync(It.IsAny<string>()))
+        _userManagerMock?.Setup(h => h.FindByIdAsync(It.IsAny<string>()))
             .ReturnsAsync((ApplicationUser)null); // Simulate hairdresser not found
 
         // Call the method with a hairdresser that doesnt exist and expect an KeyNotFoundException
@@ -146,7 +146,7 @@ public class BookingServiceTests
     {
        
         var day = DateTime.Now.AddDays(1).Date;
-        _treatmentRepositoryMock.Setup(t => t.GetByIdAsync(It.IsAny<int>()))
+        _treatmentRepositoryMock?.Setup(t => t.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync((Treatment)null); // Simulate treatment not found
 
         // Call the method with a treatment that doesnt exist and expect a KeyNotFoundException
@@ -199,7 +199,7 @@ public class BookingServiceTests
     public async Task GetBookingByIdAsync_ShouldThrowKeyNotFoundException_WhenBookingIsNotFound()
     {
         // Setup the booking repository to return null for a non-existing booking
-        _bookingRepositoryMock.Setup(b => b.GetByIdWithDetailsAsync(It.IsAny<int>(), It.IsAny<string>()))
+        _bookingRepositoryMock?.Setup(b => b.GetByIdWithDetailsAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync((Booking)null);
         // Call the method with a booking that doesnt exist and expect an KeyNotFoundException
         var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException>(
@@ -230,7 +230,7 @@ public class BookingServiceTests
             Hairdresser = new UserDto { UserName = "Hair" }
         };
         // Override the Default BookingResponseDto with expectedResponse
-        _bookingMapperMock.Setup(m => m.MapToBookingReponse2Dto(It.IsAny<Booking>()))
+        _bookingMapperMock?.Setup(m => m.MapToBookingReponse2Dto(It.IsAny<Booking>()))
             .Returns(expectedResponse);
         // Call method and expect it to return the expected response
         var result = await _bookingService.BookAppointment("C1", request);// CustomerID, BookingRequestDto
@@ -294,7 +294,7 @@ public class BookingServiceTests
             End = DateTime.Now.AddDays(1).AddHours(1)
         };
         // Override the Default Booking with expectedBooking
-        _bookingRepositoryMock.Setup(b => b.GetByIdWithDetailsAsync(expectedBooking.Id, expectedBooking.CustomerId))
+        _bookingRepositoryMock?.Setup(b => b.GetByIdWithDetailsAsync(expectedBooking.Id, expectedBooking.CustomerId))
             .ReturnsAsync(expectedBooking);
         // Call Method and expect it to return the expected booking details
         var result = await _bookingService.CancelBooking("C1", 1);//CustomerId, BookingId 
@@ -328,7 +328,7 @@ public class BookingServiceTests
            Start = DateTime.Now.AddDays(2), // Rebooking to a new date
         };       
         // Override the Default BookingResponseDto 
-        _bookingMapperMock.Setup(Setup => Setup.MapToBookingReponse2Dto(It.IsAny<Booking>()))
+        _bookingMapperMock?.Setup(Setup => Setup.MapToBookingReponse2Dto(It.IsAny<Booking>()))
             .Returns(new BookingResponseDto
             {
                 Id = 1,
