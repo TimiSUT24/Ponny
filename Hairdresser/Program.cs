@@ -42,8 +42,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                 .AddApiEndpoints();
 
 builder.Services.AddScoped<JWT_Service>();
-builder.Services.AddScoped<IHairdresserService, HairdresserService>();
-builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITreatmentService, TreatmentService>();
 
 //JWT Authentication

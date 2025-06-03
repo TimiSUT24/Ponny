@@ -15,7 +15,7 @@ public class HairdresserServiceTest
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
     private Mock<IUserRepository> _userRepository = null!;
     private Mock<IBookingRepository> _bookingRepository = null!;
-    private HairdresserService _serviceMock = null!;
+    private UserService _serviceMock = null!;
 
 
 
@@ -25,7 +25,7 @@ public class HairdresserServiceTest
         _userManagerMock = MockUser.InitializeUserManager();
         _userRepository = new Mock<IUserRepository>();
         _bookingRepository = new Mock<IBookingRepository>();
-        _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
+        _serviceMock = new UserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
     }
 
 

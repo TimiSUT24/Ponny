@@ -1,5 +1,6 @@
 using HairdresserClassLibrary.Models;
 using HairdresserClassLibrary.DTOs.User;
+using Hairdresser.Enums;
 using HairdresserClassLibrary.DTOs;
 
 namespace Hairdresser.Mapping;
@@ -38,6 +39,22 @@ public static class UserMapper
             UserName = user.UserName ?? string.Empty,
             Email = user.Email ?? string.Empty,
             PhoneNumber = user.PhoneNumber ?? string.Empty,
+        };
+    }
+
+    public static UserResponseDto MapToUserResponseDTO(this ApplicationUser user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        return new UserResponseDto
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            UserName = user.UserName ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            PhoneNumber = user.PhoneNumber ?? string.Empty,
+            Role = UserRoleEnum.User.ToString()
         };
     }
 }
