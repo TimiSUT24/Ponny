@@ -38,12 +38,31 @@ namespace Hairdresser.Services
 
         public async Task<IEnumerable<BookingResponseDto>> GetWeekScheduleAsync(string hairdresserId, DateTime weekStart)
         {
+            if (string.IsNullOrWhiteSpace(hairdresserId))
+            {
+                throw new ArgumentException("Id cannot be null or whitespace.", nameof(hairdresserId));
+            }
+
+            if (weekStart.Date < DateTime.Now.Date)
+            {
+                return [];
+            }
             var bookings = await _bookingRepo.GetWeekScheduleWithDetailsAsync(hairdresserId, weekStart);
             return ConvertToDtoList(bookings);
         }
 
         public async Task<IEnumerable<BookingResponseDto>> GetMonthlyScheduleAsync(string hairdresserId, int year, int month)
         {
+            var currentYearAndOneMonth = DateTime.Now.AddMonths(1).Year;
+
+            if (string.IsNullOrWhiteSpace(hairdresserId))
+            {
+                throw new ArgumentException("Id cannot be null or whitespace.", nameof(hairdresserId));
+            }
+            if (year != currentYearAndOneMonth || month < 1 || month > 12)
+            {
+                return [];
+            }
             var bookings = await _bookingRepo.GetMonthlyScheduleWithDetailsAsync(hairdresserId, year, month);
             return ConvertToDtoList(bookings);
         }
@@ -84,7 +103,7 @@ namespace Hairdresser.Services
             hairdresser.LastName = userRequest.LastName;
             hairdresser.Email = userRequest.Email;
             hairdresser.PhoneNumber = userRequest.PhoneNumber;
-            hairdresser.UserName = userRequest.Email;
+            hairdresser.UserName = userRequest.UserName;
 
             await _userRepo.UpdateAsync(hairdresser);
             await _userRepo.SaveChangesAsync();
@@ -94,19 +113,20 @@ namespace Hairdresser.Services
 
         public async Task<UserDto> GetHairdresserWithId(string id)
         {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentException("Id cannot be null or whitespace.", nameof(id));
+            }
+
             var allHairdresser = await _userManager.GetUsersInRoleAsync(UserRoleEnum.Hairdresser.ToString());
-            var hairdresser = allHairdresser.Where(u => u.Id == id).FirstOrDefault();
+            var hairdresser = allHairdresser.FirstOrDefault(u => u.Id == id);
 
             if (hairdresser == null)
             {
                 throw new UnauthorizedAccessException("Unauthorized");
             }
 
-            return new UserDto
-            {
-                UserName = hairdresser.UserName,
-                Email = hairdresser.Email,
-            };
+            return hairdresser.MapToUserDTO();
         }
 
         private List<BookingResponseDto> ConvertToDtoList(IEnumerable<Booking> bookings)
