@@ -43,7 +43,7 @@ namespace Hairdresser.Services
                 return [];
             }
 
-            if (weekStart < DateTime.UtcNow)
+            if (weekStart.Date < DateTime.Now.Date)
             {
                 return [];
             }
