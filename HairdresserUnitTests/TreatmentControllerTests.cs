@@ -13,13 +13,11 @@ namespace HairdresserUnitTests
     public class TreatmentControllerTests
     {
         private Mock<ITreatmentService> _mockService = null!;
-        private TreatmentController _controller = null!;
 
         [TestInitialize]
         public void Setup()
         {
             _mockService = new Mock<ITreatmentService>();
-            _controller = new TreatmentController(_mockService.Object);
         }
 
         [TestMethod]
