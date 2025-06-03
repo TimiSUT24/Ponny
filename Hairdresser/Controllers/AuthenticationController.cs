@@ -1,7 +1,8 @@
-﻿using Hairdresser.Services;
+﻿using Hairdresser.Mapping;
+using Hairdresser.Services;
 using HairdresserClassLibrary.DTOs.User;
 using HairdresserClassLibrary.Models;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,23 @@ namespace Hairdresser.Controllers
             _jwtService = jwtService;
         }
 
+        // Get user by ID
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            if (user == null)
+                return NotFound();
+
+            return Ok(user.MapToUserDTO());
+        }
+
         [HttpPost("AuthLogin")]
         public async Task<IActionResult> Login(LoginDto model)
         {
@@ -40,6 +58,56 @@ namespace Hairdresser.Controllers
             {
                 Token = token
             });
+        }
+        [HttpPost("add-hairdresser")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateHairdresser([FromBody] RegisterUserDto newHairdresser)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = new ApplicationUser
+            {
+                UserName = newHairdresser.UserName,
+                Email = newHairdresser.Email,
+                PhoneNumber = newHairdresser.PhoneNumber
+            };
+
+            var result = await _userManager.CreateAsync(user, newHairdresser.Password);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            await _userManager.AddToRoleAsync(user, "Hairdresser");
+
+            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user.MapToUserDTO());
+        }
+
+        [HttpPost("registerUser")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDto))]
+        public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
+        {
+            var newUser = new ApplicationUser
+            {
+                UserName = dto.UserName,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+            };
+
+            // Create user with password
+            var result = await _userManager.CreateAsync(newUser, dto.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            // Assign the role "User"
+            await _userManager.AddToRoleAsync(newUser, "User");
+
+            return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser.MapToUserDTO());
         }
     }
 }

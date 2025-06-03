@@ -18,69 +18,11 @@ namespace Hairdresser.Controllers
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly IUserService _userService = userService;
 
-        // Register User
 
-        [HttpPost("registerUser")]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDto ))]
-        public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
-        {
-            var newUser = new ApplicationUser
-            {
-                UserName = dto.UserName,
-                Email = dto.Email,
-                PhoneNumber = dto.PhoneNumber,
-            };
-
-            // Skapa användare med lösenord
-            var result = await _userManager.CreateAsync(newUser, dto.Password);
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
-
-            // Tilldela rollen "User"
-            await _userManager.AddToRoleAsync(newUser, "User");
-
-            return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser.MapToUserDTO());
-        }
-        [HttpPost("add-hairdresser")]
-        [Authorize(Roles = "Admin")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> CreateHairdresser([FromBody] RegisterUserDto newHairdresser)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var user = new ApplicationUser
-            {
-                UserName = newHairdresser.UserName,
-                Email = newHairdresser.Email,
-                PhoneNumber = newHairdresser.PhoneNumber
-            };
-
-            var result = await _userManager.CreateAsync(user, newHairdresser.Password);
-
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
-
-            await _userManager.AddToRoleAsync(user, "Hairdresser");
-
-            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user.MapToUserResponseDTO());
-        }
-
-        // Get user by ID
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-                return NotFound();
-
-            return Ok(user);
-        }
 
         // Get all users
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserResponseDto>))]
         public async Task<IActionResult> GetAll()
         {
             var users = await _userManager.Users.ToListAsync();
