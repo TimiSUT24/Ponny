@@ -65,16 +65,7 @@ namespace Hairdresser.Controllers
 
             await _userManager.AddToRoleAsync(user, "Hairdresser");
 
-            var response = new UserResponseDto
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                Role = "Hairdresser"
-            };
-
-            return CreatedAtAction(nameof(GetById), new { id = user.Id }, response);
+            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user.MapToUserResponseDTO());
         }
 
         // Get user by ID
