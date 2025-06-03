@@ -1,14 +1,12 @@
 ﻿using Hairdresser.Controllers;
 using Hairdresser.Data;
-using Hairdresser.DTOs;
-using Hairdresser.Repositories.Interfaces;
-using HairdresserClassLibrary.Models;
+using HairdresserClassLibrary.DTOs;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Security.Claims;
+using Hairdresser.Services.Interfaces;
 
 namespace HairdresserUnitTests
 {

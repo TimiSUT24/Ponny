@@ -1,13 +1,10 @@
-﻿using Azure.Core;
-using Hairdresser.DTOs;
-using Hairdresser.DTOs.User;
-using Hairdresser.Mapping;
+﻿using Hairdresser.Mapping;
 using Hairdresser.Mapping.Interfaces;
 using Hairdresser.Repositories.Interfaces;
+using Hairdresser.Services.Interfaces;
+using HairdresserClassLibrary.DTOs;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hairdresser.Services
 {
@@ -45,11 +42,11 @@ namespace Hairdresser.Services
                 throw new ArgumentException("Can only book from today and up to 4 month in advance.");
             }
 
-            var startOfDay = day.Date.AddHours(9); // frisör jobbar från 09:00
-            var endOfDay = day.Date.AddHours(17);  // till 17:00
+            var startOfDay = day.Date.AddHours(9); // Hairdresser works from 09:00
+            var endOfDay = day.Date.AddHours(17);  // until 17:00
             var duration = TimeSpan.FromMinutes(treatment.Duration);
 
-            // Hämta bokade tider
+            // Retrive occupied bookings 
             var bookings = await _bookingRepository
                 .FindAsync(b => b.HairdresserId == hairdresserId && b.Start.Date == day.Date);
 
@@ -121,7 +118,7 @@ namespace Hairdresser.Services
 
         public async Task<BookingDto> CancelBooking(string customerId, int bookingId)
         {
-            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId,customerId);
+            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId, customerId);
 
             if (booking == null)
             {
@@ -166,7 +163,7 @@ namespace Hairdresser.Services
 
         public async Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto)
         {
-            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId,customerId);
+            var booking = await _bookingRepository.GetByIdWithDetailsAsync(bookingId, customerId);
 
             if (booking == null)
             {
@@ -220,7 +217,7 @@ namespace Hairdresser.Services
 
             var returnUpdatedBooking = _bookingMapper.MapToBookingReponse2Dto(updatedBooking);
 
-            return returnUpdatedBooking; 
+            return returnUpdatedBooking;
 
         }
     }

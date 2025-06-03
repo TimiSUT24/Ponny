@@ -1,7 +1,6 @@
-using Hairdresser.DTOs;
-using Hairdresser.DTOs.User;
-using Hairdresser.Mapping.Interfaces;
 using HairdresserClassLibrary.Models;
+using HairdresserClassLibrary.DTOs;
+using HairdresserClassLibrary.DTOs.User;
 
 namespace Hairdresser.Mapping;
 
@@ -52,7 +51,7 @@ public class BookingMapper : IBookingMapper
                 Name = booking.Treatment.Name,
                 Description = booking.Treatment.Description,
                 Duration = booking.Treatment.Duration,
-                Price = booking.Treatment.Price,       
+                Price = booking.Treatment.Price,
             },
             Hairdresser = new UserDto
             {

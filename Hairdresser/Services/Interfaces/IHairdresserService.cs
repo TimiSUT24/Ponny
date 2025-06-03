@@ -1,12 +1,11 @@
-﻿using Hairdresser.DTOs;
-using Hairdresser.DTOs.User;
-using HairdresserClassLibrary.Models;
+﻿using HairdresserClassLibrary.DTOs;
+using HairdresserClassLibrary.DTOs.User;
 
-namespace Hairdresser.Repositories.Interfaces
+namespace Hairdresser.Services.Interfaces
 {
     public interface IHairdresserService
     {
-        Task<IEnumerable<UserRespondDto>> GetAllHairdressersAsync();
+        Task<IEnumerable<UserResponseDto>> GetAllHairdressersAsync();
 
         Task<IEnumerable<BookingResponseDto>> GetWeekScheduleAsync(string hairdresserId, DateTime weekStart);
 

@@ -1,7 +1,5 @@
-using System;
-using Hairdresser.DTOs.User;
 using HairdresserClassLibrary.Models;
-using Hairdresser.DTOs;
+using HairdresserClassLibrary.DTOs.User;
 
 namespace Hairdresser.Mapping;
 

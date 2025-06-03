@@ -5,7 +5,7 @@ using Hairdresser.Controllers;
 using Hairdresser.Data;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
-using Hairdresser.DTOs.User;
+using HairdresserClassLibrary.DTOs.User;
 
 namespace HairdresserUnitTests
 {
