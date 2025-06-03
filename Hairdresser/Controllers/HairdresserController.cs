@@ -10,9 +10,9 @@ namespace Hairdresser.Controllers
     [Route("api/[controller]")]
     public class HairdresserController : ControllerBase
     {
-        private readonly IHairdresserService _hairdresserService;
+        private readonly IUserService _hairdresserService;
 
-        public HairdresserController(IHairdresserService hairdresserService)
+        public HairdresserController(IUserService hairdresserService)
         {
             _hairdresserService = hairdresserService;
 

@@ -3,7 +3,7 @@ using HairdresserClassLibrary.DTOs.User;
 
 namespace Hairdresser.Services.Interfaces
 {
-    public interface IHairdresserService
+    public interface IUserService
     {
         Task<IEnumerable<UserResponseDto>> GetAllHairdressersAsync();
 
