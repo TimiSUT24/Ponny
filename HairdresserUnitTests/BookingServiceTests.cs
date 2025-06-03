@@ -221,10 +221,11 @@ public class BookingServiceTests
             Start = DateTime.Now.AddDays(1),           
         };
         // Expected response after booking 
+        var expectedStart = DateTime.Now.AddDays(1);
         var expectedResponse = new BookingResponseDto
         {
             Id = 1,
-            Start = request.Start,         
+            Start = expectedStart,         
             Costumer = new UserDto { Id = "C1", UserName = "Customer1" },
             Treatment = new TreatmentDto { Name = "Haircut", Description = "CutHair", Duration = 60, Price = 300.0 },
             Hairdresser = new UserDto { UserName = "Hair" }
