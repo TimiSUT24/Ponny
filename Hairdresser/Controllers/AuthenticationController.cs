@@ -66,7 +66,9 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
     public async Task<IActionResult> CreateHairdresser([FromBody] RegisterUserDto newHairdresser)
     {
         if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
+        }
 
         var user = new ApplicationUser
         {
