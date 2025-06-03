@@ -18,7 +18,6 @@ public class HairdresserServiceTest
     private UserService _serviceMock = null!;
 
 
-
     [TestInitialize]
     public void Setup()
     {
@@ -218,9 +217,10 @@ public class HairdresserServiceTest
         _bookingRepository
             .Setup(rep => rep.GetBookingWithDetailsAsync(It.IsAny<int>()))
             .ReturnsAsync(Bookings);
-
+      
         // Act - Call the method to get booking details
         var result = await _serviceMock.GetBookingDetailsAsync(1);
+        
 
         // Assert - Check if the result is not null and contains the expected booking details
         Assert.IsNotNull(result);

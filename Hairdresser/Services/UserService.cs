@@ -66,13 +66,20 @@ public class UserService(IUserRepository userRepository, IBookingRepository book
         {
             return null;
         }
-
+       
         return new BookingResponseDto
         {
             Id = booking.Id,
             Start = booking.Start,
             End = booking.End,
-            Treatment = booking.Treatment,
+            Treatment = new TreatmentDto
+            {
+                Name = booking.Treatment.Name,
+                Description = booking.Treatment.Description,
+                Duration = booking.Treatment.Duration,
+                Price = booking.Treatment.Price,
+
+            },
             Costumer = new UserDto
             {
                 UserName = booking.Customer.UserName,
@@ -156,10 +163,9 @@ public class UserService(IUserRepository userRepository, IBookingRepository book
     {
         var bookings = await _bookingRepo.GetAllAsync();
 
-        var detailedBookings = bookings.Select(b => b.MapToBookingReponse2Dto());
+        var bookingResponseDto = ConvertToDtoList(bookings);
 
-
-        return detailedBookings;
+        return bookingResponseDto;
     }
 
     /*private async Task<ApplicationUser?> GetUserByRoleAsync(string id, UserRoleEnum userRole)
