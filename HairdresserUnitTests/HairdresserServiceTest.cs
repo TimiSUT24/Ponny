@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Hairdresser.Data;
-using Hairdresser.DTOs;
-using Hairdresser.DTOs.User;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
+using HairdresserClassLibrary.DTOs;
+using HairdresserClassLibrary.DTOs.User;
 using HairdresserClassLibrary.Models;
 using HairdresserUnitTests.utils;
 using HairdresserUnitTests.Utils;

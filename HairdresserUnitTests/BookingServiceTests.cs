@@ -1,8 +1,8 @@
-using Hairdresser.DTOs;
-using Hairdresser.DTOs.User;
 using Hairdresser.Mapping.Interfaces;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
+using HairdresserClassLibrary.DTOs;
+using HairdresserClassLibrary.DTOs.User;
 using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Moq;

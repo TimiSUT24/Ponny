@@ -1,6 +1,7 @@
 using HairdresserClassLibrary.Models;
 using HairdresserClassLibrary.DTOs;
 using HairdresserClassLibrary.DTOs.User;
+using Hairdresser.Mapping.Interfaces;
 
 namespace Hairdresser.Mapping;
 
