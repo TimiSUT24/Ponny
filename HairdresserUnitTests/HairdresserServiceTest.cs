@@ -35,7 +35,7 @@ public class HairdresserServiceTest
     [TestMethod]
     public async Task GetAllHairdressersAsync_ShouldReturnHairdressers()
     {
-        // Arrange
+        // Arrange - Mocking the user repository to return a list of hairdressers
         var users = new List<ApplicationUser>
         {
             new ApplicationUser { Id = "1", UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" },
@@ -47,11 +47,12 @@ public class HairdresserServiceTest
 
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act
+        // Act - Call the method to get all hairdressers
+
         var result = await _serviceMock.GetAllHairdressersAsync();
         var expected = 2;
 
-        // Assert
+        // Assert - Check if the result is not null and contains the expected number of hairdressers
         Assert.IsNotNull(result);
         Assert.AreEqual(expected, result.Count());
     }
@@ -59,7 +60,7 @@ public class HairdresserServiceTest
     [TestMethod]
     public async Task GetWeekScheduleAsync_ShouldReturnBookingsForWeek()
     {
-        // Arrange
+        // Arrange - Mocking the booking repository to return a list of bookings for a specific hairdresser
         var user = new ApplicationUser { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
         var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
 
@@ -74,11 +75,12 @@ public class HairdresserServiceTest
 
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act
+        // Act - Call the method to get the week schedule for a specific hairdresser
         var result = await _serviceMock.GetWeekScheduleAsync("hairdresser1", DateTime.Now);
         var expected = 2;
 
-        // Assert
+        // Assert - Check if the result is not null and contains the expected number of bookings
+        Assert.IsNotNull(result);
         Assert.AreEqual(expected, result.Count());
 
     }
@@ -90,7 +92,7 @@ public class HairdresserServiceTest
     [DataRow(null)]
     public async Task GetWeekScheduleAsync_GetEmptyHairdresserId_ReturnsEmptyList(string hairdresserId)
     {
-        // Arrange
+        // Arrange - Mocking the booking repository to return a list of bookings for a specific hairdresser
         var user = new ApplicationUser { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
         var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
 
@@ -105,18 +107,18 @@ public class HairdresserServiceTest
 
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act
+        // Act - Call the method to get the week schedule for a specific hairdresser
         var result = await _serviceMock.GetWeekScheduleAsync(hairdresserId, DateTime.Now);
         var expected = 0;
 
-        // Assert
+        // Assert - Check if the result is not null and contains the expected number of bookings
         Assert.IsNotNull(result);
         Assert.AreEqual(expected, result.Count());
     }
     [TestMethod]
     public async Task GetWeekScheduleAsync_GetDateInPast_ReturnsEmptyList()
     {
-        // Arrange
+        // Arrange - Mocking the booking repository to return a list of bookings for a specific hairdresser
         var user = new ApplicationUser { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
         var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
 
@@ -131,18 +133,18 @@ public class HairdresserServiceTest
 
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act
+        // Act - Call the method to get the week schedule for a specific hairdresser with a date in the past
         var result = await _serviceMock.GetWeekScheduleAsync("hairdresser1", DateTime.Now.AddDays(-1));
         var expected = 0;
 
-        // Assert
+        // Assert - Check if the result is not null and contains the expected number of bookings
         Assert.IsNotNull(result);
         Assert.AreEqual(expected, result.Count());
     }
     [TestMethod]
     public async Task GetMonthlyScheduleAsync_ShouldReturnBookingsForMonth()
     {
-        // Arrange
+        // Arrange - Mocking the booking repository to return a list of bookings for a specific hairdresser
         var user = new ApplicationUser { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
         var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
 
@@ -157,11 +159,12 @@ public class HairdresserServiceTest
 
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act
+        // Act - Call the method to get the monthly schedule for a specific hairdresser
         var result = await _serviceMock.GetMonthlyScheduleAsync("hairdresser1", 2025, 1);
         var expected = 2;
 
-        // Assert
+        // Assert - Check if the result is not null and contains the expected number of bookings
+        Assert.IsNotNull(result);
         Assert.AreEqual(expected, result.Count());
 
     }
@@ -172,7 +175,7 @@ public class HairdresserServiceTest
     [DataRow(null)]
     public async Task GetMonthlyScheduleAsync_GetEmptyHairdresserId_ReturnsEmptyList(string hairdresserId)
     {
-        // Arrange
+        // Arrange - Mocking the booking repository to return a list of bookings for a specific hairdresser
         var user = new ApplicationUser { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
         var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
 
@@ -187,11 +190,11 @@ public class HairdresserServiceTest
 
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act
+        // Act - Call the method to get the monthly schedule for a specific hairdresser
         var result = await _serviceMock.GetMonthlyScheduleAsync(hairdresserId, 2025, 1);
         var expected = 0;
 
-        // Assert
+        // Assert - Check if the result is not null and contains the expected number of bookings
         Assert.IsNotNull(result);
         Assert.AreEqual(expected, result.Count());
     }
@@ -203,7 +206,7 @@ public class HairdresserServiceTest
     [DataRow(2026, 12)]
     public async Task GetMonthlyScheduleAsync_InvalidDateFilter_ReturnsEmptyList(int year, int month)
     {
-        // Arrange
+        // Arrange - Mocking the booking repository to return a list of bookings for a specific hairdresser
         var user = new ApplicationUser { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
         var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
 
@@ -217,18 +220,18 @@ public class HairdresserServiceTest
 
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act
+        // Act - Call the method to get the monthly schedule for a specific hairdresser with an invalid date filter
         var result = await _serviceMock.GetMonthlyScheduleAsync("hairdresser1", year, month);
         var expected = 0;
 
-        // Assert
+        // Assert - Check if the result is not null and contains the expected number of bookings
         Assert.IsNotNull(result);
         Assert.AreEqual(expected, result.Count());
     }
     [TestMethod]
     public async Task GetBookingDetailsAsync_ShouldReturnBookingDetails()
     {
-        // Arrange
+        // Arrange - Mocking the booking repository to return a booking with details
         var user = new UserDto { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
         var treatment = new TreatmentDto { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
         var Bookings = new HairdresserBookingRespondDto { Id = 1, Start = DateTime.Now, End = DateTime.Now.AddHours(1), Customer = user, Treatment = treatment };
@@ -237,10 +240,10 @@ public class HairdresserServiceTest
             .ReturnsAsync(Bookings);
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act
+        // Act - Call the method to get booking details
         var result = await _serviceMock.GetBookingDetailsAsync(1);
 
-        // Assert
+        // Assert - Check if the result is not null and contains the expected booking details
         Assert.IsNotNull(result);
         Assert.AreEqual(Bookings.Id, result.Id);
     }
@@ -250,23 +253,23 @@ public class HairdresserServiceTest
     [DataRow(-1)]
     public async Task GetBookingDetailsAsync_BookingNotFound_ReturnsNull(int BookingId)
     {
-        // Arrange
+        // Arrange - Mocking the booking repository to return null for a non-existing booking
         _bookingRepository
             .Setup(rep => rep.GetBookingWithDetailsAsync(It.IsAny<int>()))
             .ReturnsAsync(null as HairdresserBookingRespondDto);
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act
+        // Act - Call the method to get booking details for a non-existing booking
         var result = await _serviceMock.GetBookingDetailsAsync(BookingId);
 
-        // Assert
+        // Assert - Check if the result is null
         Assert.IsNull(result);
     }
 
     [TestMethod]
     public async Task UpdateHairdresserAsync_ShouldUpdateHairdresser()
     {
-        // Arrange
+        // Arrange - Mocking the user manager to return a list of hairdressers
         var GetUsersInRoleAsyncReternValue = new List<ApplicationUser>
         {
             new ApplicationUser { Id = "1", FirstName = "John", LastName = "Doe", Email = "John.Doe@exampel.com", PhoneNumber = "1234567890", UserName = "JohnDoe" },
@@ -278,7 +281,7 @@ public class HairdresserServiceTest
             .ReturnsAsync(GetUsersInRoleAsyncReternValue);
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        //Act
+        // Act - Call the method to update the hairdresser
         var result = await _serviceMock.UpdateHairdresserAsync("1", updateUserDto);
         var expected = new UserDto
         {
@@ -290,7 +293,7 @@ public class HairdresserServiceTest
             UserName = "JohnDoe"
         };
 
-        //Assert
+        // Assert - Check if the result is not null and contains the expected updated hairdresser details
         Assert.IsNotNull(result);
         Assert.AreEqual(expected.Id, result.Id);
         Assert.AreEqual(expected.FirstName, result.FirstName);
@@ -304,7 +307,7 @@ public class HairdresserServiceTest
     [TestMethod]
     public async Task UpdateHairdresserAsync_HairdresserNotFound_ReturnsNull()
     {
-        // Arrange
+        // Arrange - Mocking the user manager to return an empty list of hairdressers
         var GetUsersInRoleAsyncReturnValue = new List<ApplicationUser>(); // No users
         var updateUserDto = new UpdateUserDto
         {
@@ -321,7 +324,7 @@ public class HairdresserServiceTest
 
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act
+        // Act - Call the method to update the hairdresser with a non-existing ID
         var result = await _serviceMock.UpdateHairdresserAsync("1", updateUserDto);
 
         // Assert
@@ -336,7 +339,7 @@ public class HairdresserServiceTest
     [DataRow(null)]
     public async Task UpdateHairdresserAsync_EmptyId_ReturnsNull(string hairdresserId)
     {
-        // Arrange
+        // Arrange - Mocking the user manager to return an empty list of hairdressers
         var GetUsersInRoleAsyncReturnValue = new List<ApplicationUser>();
 
         _userManagerMock
@@ -344,10 +347,10 @@ public class HairdresserServiceTest
             .ReturnsAsync(GetUsersInRoleAsyncReturnValue);
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act
+        // Act - Call the method to update the hairdresser with an empty ID
         var result = await _serviceMock.UpdateHairdresserAsync(hairdresserId, new UpdateUserDto());
 
-        // Assert
+        // Assert - Check if the result is null and no update was attempted to run
         Assert.IsNull(result);
         _userRepository.Verify(repo => repo.UpdateAsync(It.IsAny<ApplicationUser>()), Times.Never);
         _userRepository.Verify(repo => repo.SaveChangesAsync(), Times.Never);
@@ -356,7 +359,7 @@ public class HairdresserServiceTest
     [TestMethod]
     public async Task GetHairdresserWithId_ShouldReturnHairdresser()
     {
-        // Arrange
+        // Arrange - Mocking the user manager to return a list of hairdressers
         var GetUsersInRoleAsyncReturnValue = new List<ApplicationUser>
         {
             new ApplicationUser { Id = "1", FirstName = "John", LastName = "Doe", Email = "John.Doe@exampel.com", PhoneNumber = "1234567890", UserName = "JohnDoe" },
@@ -366,7 +369,7 @@ public class HairdresserServiceTest
             .ReturnsAsync(GetUsersInRoleAsyncReturnValue);
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act
+        // Act - Call the method to get a hairdresser by ID
         var result = await _serviceMock.GetHairdresserWithId("1");
         var expected = new UserDto { Id = "1", FirstName = "John", LastName = "Doe", Email = "John.Doe@exampel.com", PhoneNumber = "1234567890", UserName = "JohnDoe" };
 
@@ -387,7 +390,7 @@ public class HairdresserServiceTest
     [DataRow(null)]
     public async Task GetHairdresserWithId_EmptyId_ReturnsNull(string hairdresserId)
     {
-        // Arrange
+        // Arrange - Mocking the user manager to return a list of hairdressers
         var GetUsersInRoleAsyncReturnValue = new List<ApplicationUser>
         {
             new ApplicationUser { Id = "1", FirstName = "John", LastName = "Doe", Email = "John.Doe@exampel.com", PhoneNumber = "1234567890", UserName = "JohnDoe" },
@@ -398,7 +401,7 @@ public class HairdresserServiceTest
             .ReturnsAsync(GetUsersInRoleAsyncReturnValue);
         var _serviceMock = new HairdresserService(_userRepository.Object, _bookingRepository.Object, _userManagerMock.Object);
 
-        // Act 
+        // Act - Call the method to get a hairdresser with an empty ID
         var result = await _serviceMock.GetHairdresserWithId(hairdresserId);
         // Assert
         Assert.IsNull(result);

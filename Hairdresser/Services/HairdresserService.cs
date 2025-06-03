@@ -46,7 +46,6 @@ namespace Hairdresser.Services
             var bookings = await _bookingRepo.GetMonthlyScheduleWithDetailsAsync(hairdresserId, year, month);
             return ConvertToDtoList(bookings);
         }
-
         public async Task<BookingResponseDto?> GetBookingDetailsAsync(int bookingId)
         {
             var booking = await _bookingRepo.GetBookingWithDetailsAsync(bookingId);
