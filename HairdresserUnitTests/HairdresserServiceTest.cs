@@ -370,7 +370,7 @@ public class HairdresserServiceTest
     [DataRow(" ")]
     [DataRow("  ")]
     [DataRow(null)]
-    public async Task GetHairdresserWithId_EmptyId_ReturnsNull(string hairdresserId)
+    public void GetHairdresserWithId_EmptyId_throwException(string hairdresserId)
     {
         // Arrange - Mocking the user manager to return a list of hairdressers
         var GetUsersInRoleAsyncReturnValue = new List<ApplicationUser>
@@ -382,9 +382,8 @@ public class HairdresserServiceTest
             .Setup(repo => repo.GetUsersInRoleAsync(It.IsAny<string>()))
             .ReturnsAsync(GetUsersInRoleAsyncReturnValue);
 
-        // Act - Call the method to get a hairdresser with an empty ID
-        var result = await _serviceMock.GetHairdresserWithId(hairdresserId);
-        // Assert
-        Assert.IsNull(result);
+        // Act & Assert - Call the method with an empty ID and expect an exception
+        var ex = Assert.ThrowsExceptionAsync<ArgumentException>(async () => await _serviceMock.GetHairdresserWithId(hairdresserId));
+        Assert.AreEqual("Id cannot be null or whitespace. (Parameter 'id')", ex.Result.Message);
     }
 }
