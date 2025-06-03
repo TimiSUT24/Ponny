@@ -4,25 +4,24 @@ using HairdresserClassLibrary.Models;
 using Hairdresser.Data;
 using Microsoft.AspNetCore.Identity;
 using HairdresserClassLibrary.DTOs.User;
+using Hairdresser.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Hairdresser.Mapping;
 
 namespace Hairdresser.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    public class UsersController(ApplicationDBContext context, UserManager<ApplicationUser> userManager, IUserService userService) : ControllerBase
     {
-        private readonly ApplicationDBContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
-
-
-        public UsersController(ApplicationDBContext context, UserManager<ApplicationUser> userManager)
-        {
-            _context = context;
-            _userManager = userManager;
-        }
+        private readonly ApplicationDBContext _context = context;
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly IUserService _userService = userService;
 
         // Register User
+
         [HttpPost("registerUser")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDto ))]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
             var newUser = new ApplicationUser
@@ -40,7 +39,42 @@ namespace Hairdresser.Controllers
             // Tilldela rollen "User"
             await _userManager.AddToRoleAsync(newUser, "User");
 
-            return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
+            return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser.MapToUserDTO());
+        }
+        [HttpPost("add-hairdresser")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateHairdresser([FromBody] RegisterUserDto newHairdresser)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = new ApplicationUser
+            {
+                UserName = newHairdresser.UserName,
+                Email = newHairdresser.Email,
+                PhoneNumber = newHairdresser.PhoneNumber
+            };
+
+            var result = await _userManager.CreateAsync(user, newHairdresser.Password);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            await _userManager.AddToRoleAsync(user, "Hairdresser");
+
+            var response = new UserResponseDto
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Role = "Hairdresser"
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = user.Id }, response);
         }
 
         // Get user by ID
@@ -78,6 +112,15 @@ namespace Hairdresser.Controllers
             }
 
             return Ok(userRespondDtos);
+        }
+
+        [HttpGet("bookings-overview")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllBookingsOverview()
+        {
+            var bookingDtos = await _userService.GetAllBookingsOverviewAsync();
+            return Ok(bookingDtos);
         }
 
         // Change User Info

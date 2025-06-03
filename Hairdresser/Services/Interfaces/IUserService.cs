@@ -15,5 +15,6 @@ namespace Hairdresser.Services.Interfaces
         Task<UserDto?> UpdateHairdresserAsync(string id, UpdateUserDto userRequest);
 
         Task<UserDto> GetHairdresserWithId(string id);
+        Task<IEnumerable<BookingResponseDto>> GetAllBookingsOverviewAsync();
     }
 }

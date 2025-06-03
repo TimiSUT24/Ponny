@@ -152,6 +152,16 @@ public class UserService(IUserRepository userRepository, IBookingRepository book
         }).ToList();
     }
 
+    public async Task<IEnumerable<BookingResponseDto>> GetAllBookingsOverviewAsync()
+    {
+        var bookings = await _bookingRepo.GetAllAsync();
+
+        var detailedBookings = bookings.Select(b => b.MapToBookingReponse2Dto());
+
+
+        return detailedBookings;
+    }
+
     /*private async Task<ApplicationUser?> GetUserByRoleAsync(string id, UserRoleEnum userRole)
     {
        var roleId = await _context.Roles
@@ -174,4 +184,5 @@ public class UserService(IUserRepository userRepository, IBookingRepository book
 
        return await _userRepo.GetByIdAsync(userId);
    } */ // fix denna 
+
 }
