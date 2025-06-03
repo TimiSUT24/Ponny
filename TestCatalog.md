@@ -1,17 +1,5 @@
 # Unit Test Catalog
 
-## AdminControllerTests
-
-Tests the `AdminController` endpoints for tasks like retrieving booking overviews and registering hairdressers. Uses mocked `IAdminService` and `UserManager`, and simulates authenticated admin access.
-
-| **Test Method**                                           | **Purpose**                                                                                   |
-|-----------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| `GetAllBookingsOverview_ReturnsOkWithData`                | Verifies that the controller returns `200 OK` with booking data from the service.             |
-| `CreateHairdresser_ValidInput_ReturnsOkWithUserDto`       | Ensures valid input creates a new user and returns a `UserDto`.                               |
-| `CreateHairdresser_InvalidModelState_ReturnsBadRequest`   | Confirms `400 BadRequest` is returned for invalid or incomplete model input.                  |
-| `CreateHairdresser_CreateFails_ReturnsBadRequestWithErrors` | Simulates identity creation failure and verifies error response is correctly handled.        |
-| `CreateHairdresser_AddToRole_CalledWithCorrectRole`       | Asserts that the new user is correctly added to the `"Hairdresser"` role.                    |
-
 ---
 ## BookingControllerTests
 
@@ -77,7 +65,7 @@ Unit tests for the `TreatmentRepository`, which handles CRUD operations for trea
 ---
 ## UsersControllerTests
 
-Unit tests for the `UsersController`, focusing on user registration, retrieval, and updates.
+Unit tests for the `UsersController`, focusing on user registration, retrieval, and updates. And Admin for tasks like retrieving booking overviews and registering hairdressers. Uses mocked `IAdminService` and `UserManager`, and simulates authenticated admin access.
 
 | **Test Method**                                 | **Purpose**                                                                 |
 |-------------------------------------------------|------------------------------------------------------------------------------|
@@ -85,5 +73,10 @@ Unit tests for the `UsersController`, focusing on user registration, retrieval, 
 | `GetById_UserExists_ReturnsUser`                | Validates that a user can be retrieved by ID if they exist.                 |
 | `Update_UserExists_UpdatesInfo`                 | Confirms that updating an existing user's information works as expected.    |
 | `Register_AddsUserRole_User`                    | Checks that the registered user is assigned the `"User"` role.              |
+| `GetAllBookingsOverview_ReturnsOkWithData`                | Verifies that the controller returns `200 OK` with booking data from the service.             |
+| `CreateHairdresser_ValidInput_ReturnsOkWithUserDto`       | Ensures valid input creates a new user and returns a `UserDto`.                               |
+| `CreateHairdresser_InvalidModelState_ReturnsBadRequest`   | Confirms `400 BadRequest` is returned for invalid or incomplete model input.                  |
+| `CreateHairdresser_CreateFails_ReturnsBadRequestWithErrors` | Simulates identity creation failure and verifies error response is correctly handled.        |
+| `CreateHairdresser_AddToRole_CalledWithCorrectRole`       | Asserts that the new user is correctly added to the `"Hairdresser"` role.                    |
 
 
