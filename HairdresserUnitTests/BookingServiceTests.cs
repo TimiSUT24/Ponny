@@ -1,4 +1,3 @@
-using Hairdresser.Mapping.Interfaces;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
 using HairdresserClassLibrary.DTOs;
@@ -16,7 +15,6 @@ public class BookingServiceTests
     private Mock<IBookingRepository>? _bookingRepositoryMock;
     private Mock<IGenericRepository<Treatment>>? _treatmentRepositoryMock;
     private Mock<UserManager<ApplicationUser>>? _userManagerMock;
-    private Mock<IBookingMapper>? _bookingMapperMock;
     private BookingService? _bookingService;
 
     [TestInitialize]
@@ -24,14 +22,12 @@ public class BookingServiceTests
     {
         _bookingRepositoryMock = new Mock<IBookingRepository>();
         _treatmentRepositoryMock = new Mock<IGenericRepository<Treatment>>();
-        _bookingMapperMock = new Mock<IBookingMapper>();
         _userManagerMock = MockUserManager();
 
         _bookingService = new BookingService(
             _treatmentRepositoryMock.Object,
             _bookingRepositoryMock.Object,
-            _userManagerMock.Object,
-            _bookingMapperMock.Object
+            _userManagerMock.Object
         );
 
         //Default data setup 
@@ -65,37 +61,15 @@ public class BookingServiceTests
             Treatment = defaultTreatment,
             Hairdresser = defaultHairdresser
         };
+
+            _bookingRepositoryMock.Setup(c => c.AddAsync(It.IsAny<Booking>()))
+           .Callback<Booking>(b => b.Id = 1)
+           .Returns(Task.CompletedTask);
+
         _bookingRepositoryMock.Setup(b => b.GetByIdWithDetailsAsync(defaultBookingId, defaultCustomerId))
             .ReturnsAsync(defaultBooking);
 
-        // Mocking the booking mapper to return a BookingResponseDto based on the default booking
-        var expectedDto = new BookingResponseDto
-        {
-            Id = defaultBooking.Id,
-            Start = defaultBooking.Start,
-            End = defaultBooking.End,
-            Costumer = new UserDto
-            {
-                Id = defaultBooking.CustomerId,
-                UserName = defaultBooking.Customer.UserName,
-                Email = defaultBooking.Customer.Email,             
-            },
-            Treatment = new TreatmentDto
-            {
-                Name = defaultBooking.Treatment.Name,
-                Description = defaultBooking.Treatment.Description,
-                Duration = defaultBooking.Treatment.Duration,
-                Price = defaultBooking.Treatment.Price
-            },
-            Hairdresser = new UserDto
-            {
-                UserName = defaultBooking.Hairdresser.UserName,
-            }
-        };
-
-        _bookingMapperMock
-            .Setup(m => m.MapToBookingReponse2Dto(It.IsAny<Booking>()))
-            .Returns(expectedDto);
+       
     }
 
     private Mock<UserManager<ApplicationUser>> MockUserManager()
@@ -229,18 +203,16 @@ public class BookingServiceTests
             Costumer = new UserDto { Id = "C1", UserName = "Customer1" },
             Treatment = new TreatmentDto { Name = "Haircut", Description = "CutHair", Duration = 60, Price = 300.0 },
             Hairdresser = new UserDto { UserName = "Hair" }
-        };
-        // Override the Default BookingResponseDto with expectedResponse
-        _bookingMapperMock?.Setup(m => m.MapToBookingReponse2Dto(It.IsAny<Booking>()))
-            .Returns(expectedResponse);
+        };       
+      
         // Call method and expect it to return the expected response
         var result = await _bookingService.BookAppointment("C1", request);// CustomerID, BookingRequestDto
         // Assert
         // Check if the result is not null and matches the expected response
         Assert.IsNotNull(result);
         Assert.AreEqual(expectedResponse.Id, result.Id);
-        Assert.AreEqual(expectedResponse.Start, result.Start);
-        Assert.AreEqual(expectedResponse.End, result.End);
+        Assert.AreEqual(expectedResponse.Costumer.UserName, result.Costumer.UserName);
+        Assert.AreEqual(expectedResponse.Treatment.Name, result.Treatment.Name);
     }
 
     [TestMethod]
@@ -328,17 +300,7 @@ public class BookingServiceTests
            TreatmentId = 1,
            Start = DateTime.Now.AddDays(2), // Rebooking to a new date
         };       
-        // Override the Default BookingResponseDto 
-        _bookingMapperMock?.Setup(Setup => Setup.MapToBookingReponse2Dto(It.IsAny<Booking>()))
-            .Returns(new BookingResponseDto
-            {
-                Id = 1,
-                Start = requestDto.Start,
-                End = requestDto.Start.AddMinutes(60),
-                Costumer = new UserDto { Id = "C1", UserName = "Customer1" },
-                Treatment = new TreatmentDto { Name = "Haircut", Description = "CutHair", Duration = 60, Price = 300.0 },
-                Hairdresser = new UserDto { UserName = "Hair" }
-            });
+       
         // Call method and expect it to return the updated booking details
         var result = await _bookingService.RebookBooking("C1", 1, requestDto); //CustomerId, BookingID, bookingRequestDto
 

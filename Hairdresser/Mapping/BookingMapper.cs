@@ -1,13 +1,12 @@
 using HairdresserClassLibrary.Models;
 using HairdresserClassLibrary.DTOs;
 using HairdresserClassLibrary.DTOs.User;
-using Hairdresser.Mapping.Interfaces;
 
 namespace Hairdresser.Mapping;
 
-public class BookingMapper : IBookingMapper
+public static class BookingMapper
 {
-    public HairdresserBookingRespondDto MapToBookingResponseDto(Booking booking)
+    public static HairdresserBookingRespondDto MapToBookingResponseDto(this Booking booking)
     {
         ArgumentNullException.ThrowIfNull(booking);
 
@@ -19,7 +18,7 @@ public class BookingMapper : IBookingMapper
             Treatment = booking.Treatment.MapToTreatmentDto()
         };
     }
-    public BookingDto MapToBookingDto(Booking booking)
+    public static BookingDto MapToBookingDto(this Booking booking)
     {
         ArgumentNullException.ThrowIfNull(booking);
 
@@ -31,7 +30,7 @@ public class BookingMapper : IBookingMapper
         };
     }
 
-    public BookingResponseDto MapToBookingReponse2Dto(Booking booking)
+    public static BookingResponseDto MapToBookingReponse2Dto(this Booking booking)
     {
         ArgumentNullException.ThrowIfNull(booking);
 

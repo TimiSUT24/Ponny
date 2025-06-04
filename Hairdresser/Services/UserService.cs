@@ -163,8 +163,8 @@ public class UserService(IUserRepository userRepository, IBookingRepository book
     {
         var bookings = await _bookingRepo.GetAllAsync();
 
-        var bookingResponseDto = ConvertToDtoList(bookings);
+        var detailedBookings = bookings.Select(b => b.MapToBookingReponse2Dto());
 
-        return bookingResponseDto;
+        return detailedBookings;
     }
 }

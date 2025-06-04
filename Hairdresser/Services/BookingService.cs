@@ -1,5 +1,4 @@
 ﻿using Hairdresser.Mapping;
-using Hairdresser.Mapping.Interfaces;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.DTOs;
@@ -13,14 +12,12 @@ namespace Hairdresser.Services
         private readonly IBookingRepository _bookingRepository;
         private readonly IGenericRepository<Treatment> _treatmentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IBookingMapper _bookingMapper;
 
-        public BookingService(IGenericRepository<Treatment> treatment, IBookingRepository bookingRepository, UserManager<ApplicationUser> usermanager, IBookingMapper bookingMapper)
+        public BookingService(IGenericRepository<Treatment> treatment, IBookingRepository bookingRepository, UserManager<ApplicationUser> usermanager)
         {
             _treatmentRepository = treatment;
             _bookingRepository = bookingRepository;
             _userManager = usermanager;
-            _bookingMapper = bookingMapper;
         }
 
         public async Task<List<DateTime>> GetAllAvailableTimes(string hairdresserId, int treatmentId, DateTime day)
@@ -112,8 +109,7 @@ namespace Hairdresser.Services
 
             var savedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            var mapp = _bookingMapper.MapToBookingReponse2Dto(savedBooking);
-            return mapp;            
+            return savedBooking.MapToBookingReponse2Dto();                  
         }
 
         public async Task<BookingDto> CancelBooking(string customerId, int bookingId)
@@ -155,10 +151,9 @@ namespace Hairdresser.Services
             if (booking.CustomerId != customerId)
             {
                 throw new UnauthorizedAccessException("Not a valid customer");
-            }
+            }      
+            return booking.MapToBookingReponse2Dto();
 
-            var currentBooking = _bookingMapper.MapToBookingReponse2Dto(booking);
-            return currentBooking;
         }
 
         public async Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto)
@@ -213,11 +208,9 @@ namespace Hairdresser.Services
             await _bookingRepository.UpdateAsync(booking);
             await _bookingRepository.SaveChangesAsync();
 
-            var updatedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
+            var updatedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);         
 
-            var returnUpdatedBooking = _bookingMapper.MapToBookingReponse2Dto(updatedBooking);
-
-            return returnUpdatedBooking;
+            return updatedBooking.MapToBookingReponse2Dto();
 
         }
     }
