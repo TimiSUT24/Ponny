@@ -232,7 +232,10 @@ public class HairdresserServiceTest
     [DataRow(-1)]
     public async Task GetBookingDetailsAsync_BookingNotFound_ReturnsNull(int BookingId)
     {
-       
+        // Arrange - Mocking the booking repository to return null for a non-existing booking
+        _bookingRepository
+            .Setup(rep => rep.GetBookingWithDetailsAsync(It.IsAny<int>()))
+            .ReturnsAsync(null as Booking);
         // Act - Call the method to get booking details for a non-existing booking
         var result = await _serviceMock.GetBookingDetailsAsync(BookingId);
 
