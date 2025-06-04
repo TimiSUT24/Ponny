@@ -211,9 +211,11 @@ public class HairdresserServiceTest
     public async Task GetBookingDetailsAsync_ShouldReturnBookingDetails()
     {
         // Arrange - Mocking the booking repository to return a booking with details
+        var hairdresser = new ApplicationUser { UserName = "Customer", Email = "Customer@gmail.com", PhoneNumber = "1234567890" };
         var user = new ApplicationUser { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
         var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
-        var Bookings = new Booking { Id = 1, Start = DateTime.Now, End = DateTime.Now.AddHours(1), Customer = user, Treatment = treatment };
+        var Bookings = new Booking { Id = 1, Start = DateTime.Now, End = DateTime.Now.AddHours(1), Customer = user, Treatment = treatment, Hairdresser = hairdresser };      
+
         _bookingRepository
             .Setup(rep => rep.GetBookingWithDetailsAsync(It.IsAny<int>()))
             .ReturnsAsync(Bookings);
