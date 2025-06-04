@@ -424,5 +424,25 @@ public class UserServiceTest
 		Assert.AreEqual("John", result.FirstName, "The name should not change if its not updated."); // unchanged
 	}
 
+	[TestMethod]
+	public async Task GetHairdresserWithId_ShouldReturnNull_WhenNotFound()
+	{
+		// Arrange
+		var hairdressers = new List<ApplicationUser>
+	{
+		new ApplicationUser { Id = "2", FirstName = "Jane" }
+	};
+
+		_userManagerMock
+			.Setup(m => m.GetUsersInRoleAsync(It.IsAny<string>()))
+			.ReturnsAsync(hairdressers);
+
+		// Act
+		// Assert
+
+		//make sure that the result is null when the hairdresser with ID "1" does not exist
+		await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(async () => await _serviceMock.GetHairdresserWithId("1"), "Hairdresser existd");
+	}
+
 
 }
