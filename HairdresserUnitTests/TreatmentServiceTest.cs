@@ -1,6 +1,7 @@
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
 using Hairdresser.Services.Interfaces;
+using HairdresserClassLibrary.DTOs;
 using HairdresserClassLibrary.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -88,5 +89,26 @@ public class TreatmentServiceTest
 
         // Assert - Verifying that the result is null
         Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public async Task CreateAsync_ShouldAddTreatment()
+    {
+        // Arrange - Mocking the repository to expect an AddAsync call
+        var expected = new Treatment
+        {
+            Name = "Shampoo",
+            Description = "This shampoo gently cleanses your hair, leaving it fresh and shiny.",
+            Duration = 15,
+            Price = 10.0,
+        };
+        // Act - Calling the CreateAsync method of the service
+        var result = await _TreatmentService.CreateAsync(expected);
+
+        // Assert - Verifying that the result is not null, matches the expected treatment, and that the repository methods were called
+        Assert.IsNotNull(result);
+        Assert.AreSame(expected, result);
+        _treatmentRepo.Verify(repo => repo.AddAsync(It.IsAny<Treatment>()), Times.Once);
+        _treatmentRepo.Verify(repo => repo.SaveChangesAsync(), Times.Once);
     }
 }
