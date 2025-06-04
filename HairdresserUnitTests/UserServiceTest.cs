@@ -444,5 +444,20 @@ public class UserServiceTest
 		await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(async () => await _serviceMock.GetHairdresserWithId("1"), "Hairdresser existd");
 	}
 
+	[TestMethod]
+	public async Task GetWeekScheduleAsync_ShouldHandleEmptyBookings()
+	{
+		// Arrange
+		_bookingRepository
+			.Setup(repo => repo.GetWeekScheduleWithDetailsAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+			.ReturnsAsync(new List<Booking>());
+
+		// Act
+		var result = await _serviceMock.GetWeekScheduleAsync("hairdresser1", DateTime.Now);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(0, result.Count());
+	}
 
 }
