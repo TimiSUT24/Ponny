@@ -67,7 +67,9 @@ namespace Hairdresser.Controllers
         {
             var success = await _treatmentService.DeleteAsync(id);
             if (!success)
+            {
                 return NotFound();
+            }
 
             return NoContent();
         }
