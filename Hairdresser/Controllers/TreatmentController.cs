@@ -29,7 +29,9 @@ namespace Hairdresser.Controllers
         {
             var treatment = await _treatmentService.GetByIdAsync(id);
             if (treatment == null)
+            {
                 return NotFound();
+            }
 
             return Ok(treatment);
         }
