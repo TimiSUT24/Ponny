@@ -111,7 +111,7 @@ public class UserService(IUserRepository userRepository, IBookingRepository book
 
     public async Task<IEnumerable<BookingResponseDto>> GetAllBookingsOverviewAsync()
     {
-        var bookings = await _bookingRepo.GetAllAsync();
+        var bookings = await _bookingRepo.GetAllBookingsDetails();
 
         var detailedBookings = bookings.Select(b => b.MapToBookingReponse2Dto());
 
