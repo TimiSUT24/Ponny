@@ -40,4 +40,49 @@ public class TreatmentServiceTest
         Assert.IsNotNull(result);
         Assert.AreEqual(expected, result.Count());
     }
+
+    [TestMethod]
+    public async Task GetByIdAsync_ShouldReturnTreatment_WhenExists()
+    {
+        // Arrange - Mocking the repository to return a specific treatment
+        var treatment = new Treatment { Id = 1, Name = "Haircut", Duration = 30, Price = 20.0 };
+        _treatmentRepo.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(treatment);
+
+        // Act - Fetching the treatment by ID using the service
+        var result = await _TreatmentService.GetByIdAsync(1);
+        var expected = treatment;
+
+        // Assert - Verifying that the result is not null and matches the expected treatment
+        Assert.IsNotNull(result);
+        Assert.AreSame(expected, result);
+    }
+
+    [TestMethod]
+    public async Task GetByIdAsync_ShouldReturnNull_WhenNotExists()
+    {
+        // Arrange - Mocking the repository to return null for a non-existing treatment
+        _treatmentRepo.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((Treatment?)null);
+
+        // Act - Fetching a treatment by ID using the service
+        var idNotExist = 999; // Assuming this ID does not exist
+        var result = await _TreatmentService.GetByIdAsync(idNotExist);
+
+        // Assert - Verifying that the result is null
+        Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    [DataRow(0)]
+    [DataRow(-1)]
+    [DataRow(int.MinValue)]
+    public async Task GetByIdAsync_ShouldReturnNull_WhenIdIsZeroOrless(int id)
+    {
+        // Arrange
+         
+
+        // Act
+
+        // Assert
+    }
 }
