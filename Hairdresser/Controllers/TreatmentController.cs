@@ -29,7 +29,9 @@ namespace Hairdresser.Controllers
         {
             var treatment = await _treatmentService.GetByIdAsync(id);
             if (treatment == null)
+            {
                 return NotFound();
+            }
 
             return Ok(treatment);
         }
@@ -54,9 +56,11 @@ namespace Hairdresser.Controllers
 
             var success = await _treatmentService.UpdateAsync(treatment);
             if (!success)
+            {
                 return NotFound();
+            }
 
-            return NoContent();
+            return Ok();
         }
 
         [HttpDelete("{id}")]
@@ -65,7 +69,9 @@ namespace Hairdresser.Controllers
         {
             var success = await _treatmentService.DeleteAsync(id);
             if (!success)
+            {
                 return NotFound();
+            }
 
             return NoContent();
         }
