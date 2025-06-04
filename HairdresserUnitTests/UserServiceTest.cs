@@ -18,7 +18,6 @@ public class UserServiceTest
     private UserService _serviceMock = null!;
 
 
-
     [TestInitialize]
     public void Setup()
     {
@@ -212,15 +211,16 @@ public class UserServiceTest
     public async Task GetBookingDetailsAsync_ShouldReturnBookingDetails()
     {
         // Arrange - Mocking the booking repository to return a booking with details
-        var user = new UserDto { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
-        var treatment = new TreatmentDto { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
-        var Bookings = new HairdresserBookingRespondDto { Id = 1, Start = DateTime.Now, End = DateTime.Now.AddHours(1), Customer = user, Treatment = treatment };
+        var user = new ApplicationUser { UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" };
+        var treatment = new Treatment { Id = 1, Name = "Haircut", Price = 20, Description = "Basic haircut", Duration = 60 };
+        var Bookings = new Booking { Id = 1, Start = DateTime.Now, End = DateTime.Now.AddHours(1), Customer = user, Treatment = treatment };
         _bookingRepository
             .Setup(rep => rep.GetBookingWithDetailsAsync(It.IsAny<int>()))
             .ReturnsAsync(Bookings);
-
+      
         // Act - Call the method to get booking details
         var result = await _serviceMock.GetBookingDetailsAsync(1);
+        
 
         // Assert - Check if the result is not null and contains the expected booking details
         Assert.IsNotNull(result);
@@ -235,8 +235,7 @@ public class UserServiceTest
         // Arrange - Mocking the booking repository to return null for a non-existing booking
         _bookingRepository
             .Setup(rep => rep.GetBookingWithDetailsAsync(It.IsAny<int>()))
-            .ReturnsAsync(null as HairdresserBookingRespondDto);
-
+            .ReturnsAsync(null as Booking);
         // Act - Call the method to get booking details for a non-existing booking
         var result = await _serviceMock.GetBookingDetailsAsync(BookingId);
 

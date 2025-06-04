@@ -72,6 +72,12 @@ namespace Hairdresser.Services
                 throw new KeyNotFoundException("Treatment was not found.");
             }
 
+            var hairdresser = await _userManager.FindByIdAsync(request.HairdresserId);
+            if (hairdresser == null)
+            {
+                throw new KeyNotFoundException("Hairdresser was not found");
+            }
+
             var end = request.Start.AddMinutes(treatment.Duration);
 
             // check if hairdresser is booked 
@@ -85,7 +91,10 @@ namespace Hairdresser.Services
                 throw new InvalidOperationException("Hairdresser is booked at this time.");
             }
 
-
+            if (request.Start < DateTime.Now || request.Start > DateTime.Now.AddMonths(4))
+            {
+                throw new ArgumentException("Can only book from today and up to 4 month in advance.");
+            }
             var booking = new Booking
             {
                 CustomerId = customerId,
@@ -95,18 +104,12 @@ namespace Hairdresser.Services
                 End = end
             };
 
-            if (booking.Start < DateTime.Now || booking.Start > DateTime.Now.AddMonths(4))
-            {
-                throw new ArgumentException("Can only book from today and up to 4 month in advance.");
-            }
-
             await _bookingRepository.AddAsync(booking);
             await _bookingRepository.SaveChangesAsync();
 
             var savedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
 
-            var mapp = BookingMapper.MapToBookingReponse2Dto(savedBooking);
-            return mapp;
+            return savedBooking.MapToBookingReponse2Dto();                  
         }
 
         public async Task<BookingDto> CancelBooking(string customerId, int bookingId)
@@ -121,7 +124,7 @@ namespace Hairdresser.Services
 
             if (booking.CustomerId != customerId)
             {
-                throw new UnauthorizedAccessException("Can only cancel your own bookings.");
+                throw new UnauthorizedAccessException("Not a valid customer");
             }
 
             await _bookingRepository.DeleteAsync(booking);
@@ -147,11 +150,10 @@ namespace Hairdresser.Services
 
             if (booking.CustomerId != customerId)
             {
-                throw new UnauthorizedAccessException("Can only see your own bookings.");
-            }
+                throw new UnauthorizedAccessException("Not a valid customer");
+            }      
+            return booking.MapToBookingReponse2Dto();
 
-            var currentBooking = BookingMapper.MapToBookingReponse2Dto(booking);
-            return currentBooking;
         }
 
         public async Task<BookingResponseDto> RebookBooking(string customerId, int bookingId, BookingRequestDto bookingRequestDto)
@@ -165,10 +167,16 @@ namespace Hairdresser.Services
 
             if (booking.CustomerId != customerId)
             {
-                throw new UnauthorizedAccessException("Can only update your own bookings.");
+                throw new UnauthorizedAccessException("Not a valid customer");
             }
 
-            var treatment = await _treatmentRepository.GetByIdAsync(booking.TreatmentId);
+            var hairdresser = await _userManager.FindByIdAsync(bookingRequestDto.HairdresserId);
+            if (hairdresser == null)
+            {
+                throw new KeyNotFoundException("Hairdresser was not found");
+            }
+
+            var treatment = await _treatmentRepository.GetByIdAsync(bookingRequestDto.TreatmentId);
             if (treatment == null)
             {
                 throw new KeyNotFoundException("Treatment was not found.");
@@ -185,6 +193,11 @@ namespace Hairdresser.Services
             {
                 throw new InvalidOperationException("Hairdresser is booked at this time.");
             }
+
+            if (bookingRequestDto.Start < DateTime.Now || bookingRequestDto.Start > DateTime.Now.AddMonths(4))
+            {
+                throw new ArgumentException("Can only book from today and up to 4 month in advance.");
+            }
             booking.Id = bookingId;
             booking.CustomerId = customerId;
             booking.HairdresserId = bookingRequestDto.HairdresserId;
@@ -195,11 +208,9 @@ namespace Hairdresser.Services
             await _bookingRepository.UpdateAsync(booking);
             await _bookingRepository.SaveChangesAsync();
 
-            var updatedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);
+            var updatedBooking = await _bookingRepository.GetByIdWithDetailsAsync(booking.Id, customerId);         
 
-            var returnUpdatedBooking = BookingMapper.MapToBookingReponse2Dto(updatedBooking);
-
-            return returnUpdatedBooking;
+            return updatedBooking.MapToBookingReponse2Dto();
 
         }
     }
