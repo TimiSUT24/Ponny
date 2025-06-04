@@ -5,7 +5,7 @@ using HairdresserClassLibrary.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Company.TestProject1;
+namespace HairdresserUnitTests;
 
 [TestClass]
 public class TreatmentServiceTest
@@ -78,15 +78,15 @@ public class TreatmentServiceTest
     [DataRow(int.MinValue)]
     public async Task GetByIdAsync_ShouldReturnNull_WhenIdIsZeroOrless(int id)
     {
-        // Arrange
+        // Arrange - Mocking the repository to return null for any ID less than or equal to zero
         var treatment = null as Treatment;
         _treatmentRepo.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync(treatment);
 
-        // Act
+        // Act - Fetching a treatment by an invalid ID using the service
         var result = await _TreatmentService.GetByIdAsync(id);
 
-        // Assert
+        // Assert - Verifying that the result is null
         Assert.IsNull(result);
     }
 }
