@@ -63,23 +63,21 @@ namespace Hairdresser.Repositories
 				.FirstOrDefaultAsync(b => b.Id == id && b.CustomerId == customerId);
 		}
 
-        public async Task<HairdresserBookingRespondDto?> GetBookingWithDetailsAsync(int id)
+        public async Task<Booking?> GetBookingWithDetailsAsync(int id)
         {
-            return await _context.Bookings
-                    .Include(b => b.Customer)
-                    .Include(b => b.Treatment)
+			return await _context.Bookings
+					.Include(b => b.Customer)
+					.Include(b => b.Treatment)
 					.Include(b => b.Hairdresser)
-                    .Select(booking => booking.MapToBookingResponseDto())
-                    .FirstOrDefaultAsync(booking => booking.Id == id);
+					.FirstOrDefaultAsync(booking => booking.Id == id);				
         }
 
-        public async Task<IEnumerable<BookingDto>> GetBookingsBetweenDatesAsync(DateTime start, DateTime end, string hairdresserId)
+        public async Task<IEnumerable<Booking>> GetBookingsBetweenDatesAsync(DateTime start, DateTime end, string hairdresserId)
         {
             return await _context.Bookings
 				.Where(b => b.HairdresserId == hairdresserId && b.Start >= start && b.Start < end)
 				.Include(b => b.Customer)
-				.Include(b => b.Treatment)
-				.Select(b => b.MapToBookingDto())
+				.Include(b => b.Treatment)				
                 .ToListAsync();
         }
 

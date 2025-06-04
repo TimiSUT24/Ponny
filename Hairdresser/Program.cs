@@ -1,4 +1,5 @@
 using Hairdresser.Data;
+using Hairdresser.Mapping;
 using Hairdresser.Repositories;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
