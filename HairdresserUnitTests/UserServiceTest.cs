@@ -10,7 +10,7 @@ using Moq;
 namespace HairdresserUnitTests;
 
 [TestClass]
-public class HairdresserServiceTest
+public class UserServiceTest
 {
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
     private Mock<IUserRepository> _userRepository = null!;
@@ -378,4 +378,20 @@ public class HairdresserServiceTest
         var ex = Assert.ThrowsExceptionAsync<ArgumentException>(async () => await _serviceMock.GetHairdresserWithId(hairdresserId));
         Assert.AreEqual("Id cannot be null or whitespace. (Parameter 'id')", ex.Result.Message);
     }
+
+	[TestMethod]
+	public async Task GetAllHairdressersAsync_ShouldReturnEmptyList_WhenNoUsersExist()
+	{
+		// Arrange
+		_userRepository.Setup(repo => repo.GetAllAsync())
+			.ReturnsAsync(new List<ApplicationUser>());
+
+		// Act
+		var result = await _serviceMock.GetAllHairdressersAsync();
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(0, result.Count());
+	}
+
 }
