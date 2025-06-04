@@ -79,10 +79,14 @@ public class TreatmentServiceTest
     public async Task GetByIdAsync_ShouldReturnNull_WhenIdIsZeroOrless(int id)
     {
         // Arrange
-         
+        var treatment = null as Treatment;
+        _treatmentRepo.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(treatment);
 
         // Act
+        var result = await _TreatmentService.GetByIdAsync(id);
 
         // Assert
+        Assert.IsNull(result);
     }
 }
