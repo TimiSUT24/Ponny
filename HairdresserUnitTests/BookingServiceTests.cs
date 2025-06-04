@@ -185,7 +185,7 @@ public class BookingServiceTests
 
     [TestMethod]
     [TestCategory("Normally")]
-    public async Task BookAppointment_ShouldReturnBookingResponseDto_WhenBookingIsSuccessful()
+    public async Task BookAppointment_ShouldReturnBooking_WhenBookingIsSuccessful()
     {
         // Requested booking details
         var request = new BookingRequestDto
@@ -254,7 +254,7 @@ public class BookingServiceTests
     }
     [TestMethod]
     [TestCategory("Normally")]
-    public async Task CancelBooking_ShouldReturnBookingDto_WhenCancellationIsSuccessful()
+    public async Task CancelBooking_ShouldReturnCancelledBooking_WhenCancellationIsSuccessful()
     {
         // Setup the expected booking details
         var expectedBooking = new Booking
@@ -289,7 +289,7 @@ public class BookingServiceTests
 
     [TestMethod]
     [TestCategory("Normally")]
-    public async Task RebookBooking_ShouldReturnBookingResponseDto_WhenRebookingIsSuccessful()
+    public async Task RebookBooking_ShouldReturnBooking_WhenRebookingIsSuccessful()
     {
         // old start time for the booking which represents the setup booking 
         var oldStart = DateTime.Now.AddDays(1);
