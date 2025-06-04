@@ -54,9 +54,11 @@ namespace Hairdresser.Controllers
 
             var success = await _treatmentService.UpdateAsync(treatment);
             if (!success)
+            {
                 return NotFound();
+            }
 
-            return NoContent();
+            return Ok();
         }
 
         [HttpDelete("{id}")]
