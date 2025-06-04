@@ -23,7 +23,7 @@ public class TreatmentServiceTest
     [TestMethod]
     public async Task GetAllAsync_ShouldReturnAllTreatments()
     {
-        // Arrange
+        // Arrange - Mocking the repository to return a list of treatments
         var treatments = new List<Treatment>
         {
             new Treatment { Id = 1, Name = "Haircut", Duration = 30, Price = 20.0 },
@@ -32,12 +32,11 @@ public class TreatmentServiceTest
 
         _treatmentRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(treatments);
 
-        // Act
+        // Act - Fetching all treatments using the service
         var result = await _TreatmentService.GetAllAsync();
         var expected = 2;
-        
-        // Assert
 
+        // Assert - Verifying that the result is not null and contains the expected number of treatments
         Assert.IsNotNull(result);
         Assert.AreEqual(expected, result.Count());
     }
