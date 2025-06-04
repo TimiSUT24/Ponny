@@ -60,7 +60,7 @@ namespace Hairdresser.Controllers
                 return NotFound();
             }
 
-            return Ok();
+            return Ok(treatment);
         }
 
         [HttpDelete("{id}")]
