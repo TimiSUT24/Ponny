@@ -10,7 +10,7 @@ using Moq;
 namespace HairdresserUnitTests;
 
 [TestClass]
-public class HairdresserServiceTest
+public class UserServiceTest
 {
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
     private Mock<IUserRepository> _userRepository = null!;
@@ -377,4 +377,86 @@ public class HairdresserServiceTest
         var ex = Assert.ThrowsExceptionAsync<ArgumentException>(async () => await _serviceMock.GetHairdresserWithId(hairdresserId));
         Assert.AreEqual("Id cannot be null or whitespace. (Parameter 'id')", ex.Result.Message);
     }
+
+	[TestMethod]
+	public async Task GetAllHairdressersAsync_ShouldReturnEmptyList_WhenNoUsersExist()
+	{
+		// Arrange
+		_userRepository.Setup(repo => repo.GetAllAsync())
+			.ReturnsAsync(new List<ApplicationUser>());
+
+		// Act
+		var result = await _serviceMock.GetAllHairdressersAsync();
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(0, result.Count());
+	}
+
+	[TestMethod]
+	public async Task UpdateHairdresserAsync_PartialUpdate_OnlyUpdatesProvidedFields()
+	{
+		// Arrange
+		var hairdresser = new ApplicationUser
+		{
+			Id = "1",
+			FirstName = "John",
+			LastName = "Doe",
+			Email = "old@example.com",
+			PhoneNumber = "9999999999",
+			UserName = "JohnSmith"
+		};
+		var updatedDto = new UpdateUserDto
+		{
+			Email = "new@example.com"
+		};
+
+		_userManagerMock.Setup(repo => repo.GetUsersInRoleAsync(It.IsAny<string>()))
+			.ReturnsAsync(new List<ApplicationUser> { hairdresser });
+
+		// Act
+		var result = await _serviceMock.UpdateHairdresserAsync("1", updatedDto);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual("new@example.com", result.Email);
+		Assert.AreEqual("John", result.FirstName, "The name should not change if its not updated."); // unchanged
+	}
+
+	[TestMethod]
+	public async Task GetHairdresserWithId_ShouldReturnNull_WhenNotFound()
+	{
+		// Arrange
+		var hairdressers = new List<ApplicationUser>
+	{
+		new ApplicationUser { Id = "2", FirstName = "Jane" }
+	};
+
+		_userManagerMock
+			.Setup(m => m.GetUsersInRoleAsync(It.IsAny<string>()))
+			.ReturnsAsync(hairdressers);
+
+		// Act
+		// Assert
+
+		//make sure that the result is null when the hairdresser with ID "1" does not exist
+		await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(async () => await _serviceMock.GetHairdresserWithId("1"), "Hairdresser existd");
+	}
+
+	[TestMethod]
+	public async Task GetWeekScheduleAsync_ShouldHandleEmptyBookings()
+	{
+		// Arrange
+		_bookingRepository
+			.Setup(repo => repo.GetWeekScheduleWithDetailsAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+			.ReturnsAsync(new List<Booking>());
+
+		// Act
+		var result = await _serviceMock.GetWeekScheduleAsync("hairdresser1", DateTime.Now);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(0, result.Count());
+	}
+
 }
