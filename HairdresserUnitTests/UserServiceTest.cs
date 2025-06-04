@@ -394,4 +394,35 @@ public class UserServiceTest
 		Assert.AreEqual(0, result.Count());
 	}
 
+	[TestMethod]
+	public async Task UpdateHairdresserAsync_PartialUpdate_OnlyUpdatesProvidedFields()
+	{
+		// Arrange
+		var hairdresser = new ApplicationUser
+		{
+			Id = "1",
+			FirstName = "John",
+			LastName = "Doe",
+			Email = "old@example.com",
+			PhoneNumber = "9999999999",
+			UserName = "JohnSmith"
+		};
+		var updatedDto = new UpdateUserDto
+		{
+			Email = "new@example.com"
+		};
+
+		_userManagerMock.Setup(repo => repo.GetUsersInRoleAsync(It.IsAny<string>()))
+			.ReturnsAsync(new List<ApplicationUser> { hairdresser });
+
+		// Act
+		var result = await _serviceMock.UpdateHairdresserAsync("1", updatedDto);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual("new@example.com", result.Email);
+		Assert.AreEqual("John", result.FirstName, "The name should not change if its not updated."); // unchanged
+	}
+
+
 }
