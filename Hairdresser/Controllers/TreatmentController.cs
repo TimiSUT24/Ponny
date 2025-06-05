@@ -1,4 +1,6 @@
-﻿using Hairdresser.Services.Interfaces;
+using Hairdresser.Mapping;
+using Hairdresser.Repositories.Interfaces;
+using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -50,7 +52,8 @@ namespace Hairdresser.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TreatmentDto))]
+		[Authorize(Roles = "Admin")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         public async Task<IActionResult> Update(int id, [FromBody] TreatmentUpdateDto treatment)
@@ -63,10 +66,11 @@ namespace Hairdresser.Controllers
             var success = await _treatmentService.UpdateAsync(id, treatment);
             if (!success)
             {
+            {
                 return NotFound();
             }
 
-            return NoContent();
+            return Ok(treatment.MapToTreatmentDto());
         }
 
         [HttpDelete("{id}")]
@@ -81,7 +85,9 @@ namespace Hairdresser.Controllers
             }
             var success = await _treatmentService.DeleteAsync(id);
             if (!success)
+            {
                 return NotFound();
+            }
 
             return NoContent();
         }
