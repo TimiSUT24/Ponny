@@ -1,32 +1,44 @@
 # Shetlandsponnyerna
 
 ## API Endpoints
+### AuthenticationController
+| Method | Endpoint | Authentication | Description |
+|--------|----------|----------------|----------------|
+| GET    | `/Authentication/Id` | ✅ User | Get Your Own Personal Details By Id | 
+| POST   | `/Authentication/Login` | ❌ Not Authenticated | Login As User | 
+| POST   | `/Authentication/Hairdresser` | ✅ Admin | Create A Hairdresser | 
+| POST   | `/Authentication/Register` | ❌ NOT Authenticated | Register As User | 
+| PUT    | `/Authentication/Hairdresser/Id` | ✅ Hairdresser/Admin | Update Hairdresser Details | 
+| DELETE | `/Authentication/Id` | ✅ User | Delete Your Account | 
 
 ### BookingController
-| Method | Endpoint | Authentication |
-|--------|----------|----------------|
-| GET    | `/User/Booking` | ✅ Authenticated |
-| POST   | `/User/Booking` | ✅ Authenticated |
-| PUT    | `/User/Booking` | ✅ Authenticated |
-| DELETE | `/User/Booking` | ✅ Authenticated |
-| GET    | `/Booking` | ❌ Not Authenticated |
+| Method | Endpoint | Authentication | Description |
+|--------|----------|----------------|----------------|
+| GET    | `/Booking/Available-Times` | ❌ NOT Authenticated | Get A Hairdresser Available-Times |
+| POST   | `/Booking/BookAppointment` | ✅ User | Book Appointment As User | 
+| PUT    | `/Booking/Reschedule-Booking` | ✅ User | Reschedule Your Own Booking | 
+| DELETE | `/Booking/Cancel-Booking` | ✅ User | Cancel Your Own Booking | 
+| GET    | `/Booking/Booking-By-Id` | ✅ User | Get Your Booking By Id |
 
 ### TreatmentController
-| Method | Endpoint | Authentication |
-|--------|----------|----------------|
-| GET    | `/Treatments` | ❌ Not Authenticated |
-| POST   | `/Treatments` | ✅ Authenticated |
-| PUT    | `/Treatments/Id` | ✅ Authenticated |
-| DELETE | `/Treatments/Id` | ✅ Authenticated |
+| Method | Endpoint | Authentication | Description |
+|--------|----------|----------------|----------------|
+| GET    | `/Treatment/Get-Treatments` | ❌ Not Authenticated | Get All Treatments | 
+| GET    | `/Treatment/Get-Treatment/Id` | ❌ Not Authenticated | Get Treatment By Id | 
+| POST   | `/Treatments/Create` | ✅ Admin | Create A New Treatment | 
+| PUT    | `/Treatments/Update/Id` | ✅ Admin | Update A Treatment By Id |  
+| DELETE | `/Treatments/Delete/Id` | ✅ Admin | Delete A Treatment By Id | 
 
-### HairdresserController
-| Method | Endpoint | Authentication |
-|--------|----------|----------------|
-| GET    | `/Hairdresser/Id` | ❌ Not Authenticated |
-| GET    | `/Hairdresser` | ❌ Not Authenticated |
-| POST   | `/Hairdresser` | ✅ Authenticated |
-| PUT    | `/Hairdresser/Id` | ✅ Authenticated |
-| DELETE | `/Hairdresser/Id` | ✅ Authenticated |
+### UserController
+| Method | Endpoint | Authentication | Description |
+|--------|----------|----------------|----------------|
+| GET    | `/User/Users` | ✅ Hairdresser/Admin | Get All Users | Get All Users |
+| GET    | `/User/All-Bookings` | ✅ Admin | Get All Bookings | Get All Bookings |
+| GET    | `/User/Hairdresser-Week-Schedule` | ✅ Hairdresser | Get Hairdresser Week Schedule | 
+| GET    | `/User/Hairdresser-Monthly-Schedule` | ✅ Hairdresser | Get Hairdresser Monthly Schedule | 
+| GET    | `/User/Booking/Id` | ✅ Hairdresser/Admin | Get A Booking By Id 
+| GET    | `/User/Hairdresser/Id` | ✅ Hairdresser/Admin | Get A Hairdresser By Id | 
+| PUT    | `/User/Update-User` | ✅ User | Update Your Own Personal Details | 
 
 
 ## Project Description and Architecture Overview
@@ -57,7 +69,7 @@ Describe the available API endpoints, including request and response examples. U
 
 ### Endpoint 1 - Get All Bookings Overview
 
-**URL:** `/api/Admin/bookings-overview`  
+**URL:** `Api/User/All-Bookings`  
 **Method:** GET  
 **Description:** Returns a list of all bookings with details for admin users.  
 **Request Parameters:**
@@ -81,7 +93,7 @@ _None_
 
 ### Endpoint 2 - Create New Hairdresser
 
-**URL:** `/api/Admin/add-hairdresser`  
+**URL:** `/api/Authentication/Hairdresser`  
 **Method:** POST  
 **Description:** Creates a new hairdresser user and assigns them the "Hairdresser" role. Only accessible by admins.  
 **Request Parameters:**
@@ -122,7 +134,7 @@ _None_
 
 ### Endpoint 3 - User Login
 
-**URL:** `/api/Authentication/AuthLogin`  
+**URL:** `/api/Authentication/Login`  
 **Method:** POST  
 **Description:** Authenticates a user and returns a JWT token on success.  
 **Request Parameters:**
@@ -149,7 +161,7 @@ _None_
 
 ### Endpoint 4 - Get Available Times
 
-**URL:** `/api/Bookings/Available-times`  
+**URL:** `/api/Booking/Available-Times`  
 **Method:** GET  
 **Description:** Returns a list of available booking times for a hairdresser on a specific day.  
 **Request Parameters:**
@@ -170,7 +182,7 @@ _None_
 
 ### Endpoint 5 - Get Booking By ID
 
-**URL:** `/api/Bookings/BookingsById`  
+**URL:** `/api/Booking/Booking-By-Id`  
 **Method:** GET  
 **Description:** Returns details for a single booking by ID. Requires the user to be authenticated.  
 **Request Parameters:**
@@ -212,7 +224,7 @@ _None_
 
 ### Endpoint 6 - Book Appointment
 
-**URL:** `/api/Bookings/Book Appointment`  
+**URL:** `/api/Bookings/BookAppointment`  
 **Method:** POST  
 **Description:** Books a new appointment for a logged-in customer.  
 **Request Body:**
@@ -277,7 +289,7 @@ _None_
 
 ### Endpoint 8 - Reschedule Booking
 
-**URL:** `/api/Bookings/Reschedule`  
+**URL:** `/api/Booking/Reschedule-Booking`  
 **Method:** PUT  
 **Description:** Reschedules an existing booking for the logged-in user.  
 **Request Parameters:**
@@ -351,7 +363,7 @@ _None_
 
 ### Endpoint 10 - Get Weekly Schedule
 
-**URL:** `/api/Hairdresser/schedule`  
+**URL:** `/api/Hairdresser/Week-Schedule`  
 **Method:** GET  
 **Description:** Returns a hairdresser’s weekly schedule starting from a given date.  
 **Request Parameters:**
@@ -379,7 +391,7 @@ _None_
 
 ### Endpoint 11 - Get Monthly Schedule
 
-**URL:** `/api/Hairdresser/monthly-schedule`  
+**URL:** `/api/Hairdresser/Monthly-Schedule`  
 **Method:** GET  
 **Description:** Returns a hairdresser’s full schedule for the specified month and year.  
 **Request Parameters:**
@@ -408,7 +420,7 @@ _None_
 
 ### Endpoint 12 - Update Hairdresser
 
-**URL:** `/api/Hairdresser/{id}`  
+**URL:** `/api/Authentication/Hairdresser/Id}`  
 **Method:** PUT  
 **Description:** Updates the profile of a hairdresser by ID.  
 **Request Parameters:**
