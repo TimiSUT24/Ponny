@@ -6,6 +6,7 @@ using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Hairdresser.Controllers;
 
@@ -19,6 +20,7 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
     private readonly JWT_Service _jwtService = jwtService;
 
     // Get user by ID
+    [Authorize(Roles = "User")]
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -29,21 +31,18 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
         {
             return NotFound();
         }
-        if (user == null)
-        {
-            return NotFound();
-        }
-
         return Ok(user.MapToUserDTO());
     }
 
-    [HttpPost("AuthLogin")]
+    [HttpPost("Login")]
     public async Task<IActionResult> Login(LoginDto model)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null)
+        {
             return Unauthorized("Invalid credentials");
-
+        }
+          
         var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
         if (!result.Succeeded)
         {
@@ -53,12 +52,14 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtService.GenerateToken(user.Id, roles);
 
+        var id = user.Id;
         return Ok(new
         {
-            Token = token
+            Token = token,
+            id
         });
     }
-    [HttpPost("add-hairdresser")]
+    [HttpPost("Add-Hairdresser")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -89,7 +90,7 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
         return CreatedAtAction(nameof(GetById), new { id = user.Id }, user.MapToUserDTO());
     }
 
-    [HttpPost("registerUser")]
+    [HttpPost("Register")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDto))]
     public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
     {
@@ -114,7 +115,7 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
     }
 
     [Authorize(Roles = "Hairdresser,Admin")]
-    [HttpPut("{id}")]
+    [HttpPut("Hairdresser/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -130,5 +131,33 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
         }
 
         return Ok(hairdresser);
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [Authorize(Roles = "User")]
+    [HttpDelete("Delete/{id}")]
+    public async Task<IActionResult> DeleteUser(string id)
+    {
+        var loggedInUser = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if(loggedInUser != id)
+        {
+            return Unauthorized("You can only delete your own account");
+        }
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        
+        var result = await _userManager.DeleteAsync(user);
+        if(result is null)
+        {
+            return BadRequest("Error deleting user");
+        }
+
+        return Ok(result.Succeeded ? "User deleted successfully" : "Error deleting user");
     }
 }

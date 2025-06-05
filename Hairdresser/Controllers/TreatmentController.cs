@@ -65,12 +65,12 @@ namespace Hairdresser.Controllers
 
             var success = await _treatmentService.UpdateAsync(id, treatment);
             if (!success)
-            {
+            
             {
                 return NotFound();
             }
 
-            return Ok(treatment.MapToTreatmentDto());
+            return Ok(success);
         }
 
         [HttpDelete("{id}")]
