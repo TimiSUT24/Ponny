@@ -1,6 +1,5 @@
-﻿using Hairdresser.Repositories.Interfaces;
-using Hairdresser.Services.Interfaces;
-using HairdresserClassLibrary.Models;
+﻿using Hairdresser.Services.Interfaces;
+using HairdresserClassLibrary.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +17,7 @@ namespace Hairdresser.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<TreatmentDto>), 200)]
         public async Task<IActionResult> GetAll()
         {
             var treatments = await _treatmentService.GetAllAsync();
@@ -29,17 +29,21 @@ namespace Hairdresser.Controllers
         {
             var treatment = await _treatmentService.GetByIdAsync(id);
             if (treatment == null)
+            {
                 return NotFound();
+            }
 
             return Ok(treatment);
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([FromBody] Treatment treatment)
+        public async Task<IActionResult> Create([FromBody] CreateTreatmentDTO treatment)
         {
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
             var created = await _treatmentService.CreateAsync(treatment);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
@@ -47,22 +51,34 @@ namespace Hairdresser.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(int id, [FromBody] Treatment treatment)
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> Update(int id, [FromBody] TreatmentCreateUpdateDto treatment)
         {
-            if (id != treatment.Id)
-                return BadRequest("ID mismatch");
+            if (id <= 0)
+            {
+                return BadRequest("Invalid ID");
+            }
 
-            var success = await _treatmentService.UpdateAsync(treatment);
+            var success = await _treatmentService.UpdateAsync(id, treatment);
             if (!success)
+            {
                 return NotFound();
+            }
 
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> Delete(int id)
         {
+            if (id <= 0)
+            {
+                return BadRequest("Invalid ID");
+            }
             var success = await _treatmentService.DeleteAsync(id);
             if (!success)
                 return NotFound();
