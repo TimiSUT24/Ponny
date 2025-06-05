@@ -1,5 +1,7 @@
-﻿using Hairdresser.Repositories.Interfaces;
+﻿using Hairdresser.Mapping;
+using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services.Interfaces;
+using HairdresserClassLibrary.DTOs;
 using HairdresserClassLibrary.Models;
 
 namespace Hairdresser.Services
@@ -23,11 +25,13 @@ namespace Hairdresser.Services
             return await _treatmentRepo.GetByIdAsync(id);
         }
 
-        public async Task<Treatment> CreateAsync(Treatment treatment)
+        public async Task<TreatmentDto> CreateAsync(CreateTreatmentDTO CreateTreatment)
         {
+            var treatment = CreateTreatment.MapToTreatment();
+
             await _treatmentRepo.AddAsync(treatment);
             await _treatmentRepo.SaveChangesAsync();
-            return treatment;
+            return treatment.MapToTreatmentDto();
         }
 
         public async Task<bool> UpdateAsync(Treatment treatment)

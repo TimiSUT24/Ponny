@@ -1,4 +1,5 @@
-﻿using HairdresserClassLibrary.Models;
+﻿using HairdresserClassLibrary.DTOs;
+using HairdresserClassLibrary.Models;
 
 namespace Hairdresser.Services.Interfaces
 {
@@ -6,7 +7,7 @@ namespace Hairdresser.Services.Interfaces
     {
         Task<IEnumerable<Treatment>> GetAllAsync();
         Task<Treatment?> GetByIdAsync(int id);
-        Task<Treatment> CreateAsync(Treatment treatment);
+        Task<TreatmentDto> CreateAsync(CreateTreatmentDTO treatment);
         Task<bool> UpdateAsync(Treatment treatment);
         Task<bool> DeleteAsync(int id);
     }
