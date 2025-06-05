@@ -20,12 +20,18 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
     private readonly JWT_Service _jwtService = jwtService;
 
     // Get user by ID
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "User,Admin")]
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(string id)
     {
+        var loggedInUser = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (loggedInUser != id && !User.IsInRole("Admin"))
+        {
+            return Unauthorized("You are not authorized to update this user.");
+        }
+
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
         {
