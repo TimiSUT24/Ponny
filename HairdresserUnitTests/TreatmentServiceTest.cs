@@ -96,7 +96,7 @@ public class TreatmentServiceTest
     public async Task CreateAsync_ShouldAddTreatment()
     {
         // Arrange - Mocking the repository to expect an AddAsync call
-        var expected = new Treatment
+        var expected = new CreateTreatmentDTO
         {
             Name = "Shampoo",
             Description = "This shampoo gently cleanses your hair, leaving it fresh and shiny.",
@@ -117,9 +117,9 @@ public class TreatmentServiceTest
     public async Task UpdateAsync_ShouldReturnTrue_WhenTreatmentExists()
     {
         // Arrange
-        var treatmentToUpdate = new Treatment
+        var id = 1;
+        var treatmentToUpdate = new TreatmentUpdateDto
         {
-            Id = 1,
             Name = "Haircut",
             Description = "A stylish haircut",
             Duration = 30,
@@ -130,7 +130,7 @@ public class TreatmentServiceTest
             .ReturnsAsync(true);
 
         // Act
-        var result = await _TreatmentService.UpdateAsync(treatmentToUpdate);
+        var result = await _TreatmentService.UpdateAsync(id, treatmentToUpdate);
         var expected = true;
 
         // Assert
