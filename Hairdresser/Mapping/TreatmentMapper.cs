@@ -43,7 +43,7 @@ public static class TreatmentMapper
         };
     }
 
-    public static Treatment MapToTreatment(this TreatmentCreateUpdateDto treatment)
+    public static Treatment MapToTreatment(this TreatmentUpdateDto treatment)
     {
         ArgumentNullException.ThrowIfNull(treatment);
 

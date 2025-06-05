@@ -53,7 +53,7 @@ namespace Hairdresser.Controllers
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Update(int id, [FromBody] TreatmentCreateUpdateDto treatment)
+        public async Task<IActionResult> Update(int id, [FromBody] TreatmentUpdateDto treatment)
         {
             if (id <= 0)
             {

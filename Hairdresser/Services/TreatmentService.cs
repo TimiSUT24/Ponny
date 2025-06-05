@@ -35,7 +35,7 @@ namespace Hairdresser.Services
             return treatment.MapToTreatmentDto();
         }
 
-        public async Task<bool> UpdateAsync(int id, TreatmentCreateUpdateDto treatment)
+        public async Task<bool> UpdateAsync(int id, TreatmentUpdateDto treatment)
         {
             var exists = await _treatmentRepo.AnyAsync(treatment => treatment.Id == id);
             if (!exists)
