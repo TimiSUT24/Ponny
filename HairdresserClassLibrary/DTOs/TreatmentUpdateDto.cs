@@ -1,6 +1,6 @@
 ﻿namespace HairdresserClassLibrary.DTOs;
 
-public class TreatmentCreateUpdateDto
+public class TreatmentUpdateDto
 {
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
