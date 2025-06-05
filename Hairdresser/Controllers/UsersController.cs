@@ -8,6 +8,7 @@ using Hairdresser.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Hairdresser.Mapping;
 using HairdresserClassLibrary.DTOs;
+using System.Security.Claims;
 
 namespace Hairdresser.Controllers
 {
@@ -19,10 +20,9 @@ namespace Hairdresser.Controllers
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly IUserService _userService = userService;
 
-
-
         // Get all users
-        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        [HttpGet("Get-Users")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserResponseDto>))]
         public async Task<IActionResult> GetAll()
         {
@@ -48,35 +48,50 @@ namespace Hairdresser.Controllers
             return Ok(userRespondDtos);
         }
 
-        [HttpGet("bookings-overview")]
+        [HttpGet("Bookings-Overview")]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BookingResponseDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllBookingsOverview()
         {
             var bookingDtos = await _userService.GetAllBookingsOverviewAsync();
+            if(bookingDtos is null)
+            {
+                return NotFound("No bookings found.");
+            }
             return Ok(bookingDtos);
         }
 
         [Authorize(Roles = "Hairdresser")]
-        [HttpGet("schedule")]
+        [HttpGet("Hairdresser-Week-Schedule")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BookingResponseDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetSchedule([FromQuery] string hairdresserId, [FromQuery] DateTime weekStart)
         {
             var result = await _userService.GetWeekScheduleAsync(hairdresserId, weekStart);
+            if(result is null)
+            {
+                return NotFound("No bookings found for the specified hairdresser and week start date.");
+            }
             return Ok(result);
         }
 
         [Authorize(Roles = "Hairdresser")]
-        [HttpGet("monthly-schedule")]
+        [HttpGet("Hairdresser-Monthly-Schedule")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BookingResponseDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetMonthlySchedule([FromQuery] string hairdresserId, [FromQuery] int year, [FromQuery] int month)
         {
             var result = await _userService.GetMonthlyScheduleAsync(hairdresserId, year, month);
+            if(result is null)
+            {
+                return NotFound("No bookings found for the specified hairdresser and month.");
+            }
             return Ok(result);
         }
 
         [Authorize(Roles = "Hairdresser,Admin")]
-        [HttpGet("booking/{id}")]
+        [HttpGet("Booking/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookingResponseDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -100,7 +115,6 @@ namespace Hairdresser.Controllers
         {
             try
             {
-
                 var hairdresser = await _userService.GetHairdresserWithId(id);
 
                 if (hairdresser == null)
@@ -118,9 +132,16 @@ namespace Hairdresser.Controllers
         }
 
         // Change User Info
-        [HttpPut("{id}")]
+        [Authorize(Roles = "User,Admin")]
+        [HttpPut("Update-User/{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] UserDto updatedUser)
         {
+            var loggedInUser = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(loggedInUser != id && !User.IsInRole("Admin"))
+            {
+                return Unauthorized("You are not authorized to update this user.");
+            }
+
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null)
             {
@@ -131,9 +152,10 @@ namespace Hairdresser.Controllers
             existingUser.Email = updatedUser.Email;
             existingUser.PhoneNumber = updatedUser.PhoneNumber;
 
+            await _userManager.UpdateAsync(existingUser);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok("User was updated");
         }
     }
 }
