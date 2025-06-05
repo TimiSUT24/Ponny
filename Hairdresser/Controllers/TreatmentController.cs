@@ -1,4 +1,5 @@
-﻿using Hairdresser.Repositories.Interfaces;
+﻿using Hairdresser.Mapping;
+using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.DTOs;
 using HairdresserClassLibrary.Models;
@@ -49,7 +50,7 @@ namespace Hairdresser.Controllers
         }
 
         [HttpPut("{id}")]
-		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Treatment))]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TreatmentDto))]
 		[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] Treatment treatment)
         {
@@ -62,7 +63,7 @@ namespace Hairdresser.Controllers
                 return NotFound();
             }
 
-            return Ok(treatment);
+            return Ok(treatment.MapToTreatmentDto());
         }
 
         [HttpDelete("{id}")]
