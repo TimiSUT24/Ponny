@@ -35,6 +35,15 @@ namespace Hairdresser.Repositories
 			return await _context.Bookings.ToListAsync();
 		}
 
+		public async Task<IEnumerable<Booking>> GetAllBookingsDetails()
+		{
+			return await _context.Bookings
+				.Include(h => h.Hairdresser)
+				.Include(c => c.Customer)
+				.Include(t => t.Treatment)
+				.ToListAsync(); 
+        }
+
 		public async Task<Booking?> GetByIdAsync(int id)
 		{
 			return await _context.Bookings.FindAsync(id);

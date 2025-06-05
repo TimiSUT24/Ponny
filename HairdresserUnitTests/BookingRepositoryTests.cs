@@ -62,9 +62,9 @@ namespace HairdresserUnitTests
                 End = DateTime.Now.AddHours(4),
             });
 
-            // Save all changes
-            _context.SaveChanges();
-		}
+            // Save all changes          
+            _context.SaveChanges();             
+        }
 
 
 		[TestCleanup]
@@ -146,7 +146,7 @@ namespace HairdresserUnitTests
         [TestCategory("Normally)]")]
         public async Task GetAllAsync_ShouldReturnAllBookingsSuccessfully()
 		{
-            // Act
+            // Act       
             var result = await _bookingRepository!.GetAllAsync();
             var expected = 2;
             // Assert

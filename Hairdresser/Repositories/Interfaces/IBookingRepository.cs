@@ -11,5 +11,7 @@ namespace Hairdresser.Repositories.Interfaces
         Task<IEnumerable<Booking>> GetMonthlyScheduleWithDetailsAsync(string hairdresserId, int year, int month);
         Task<Booking?> GetBookingWithDetailsAsync(int id);
         Task<IEnumerable<Booking>> GetBookingsBetweenDatesAsync(DateTime start, DateTime end, string hairdresserId);
+
+        Task<IEnumerable<Booking>> GetAllBookingsDetails();
     }
 }
