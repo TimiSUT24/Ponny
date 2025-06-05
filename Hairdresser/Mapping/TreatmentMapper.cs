@@ -42,4 +42,17 @@ public static class TreatmentMapper
             Price = createTreatmentDto.Price
         };
     }
+
+    public static Treatment MapToTreatment(this TreatmentCreateUpdateDto treatment)
+    {
+        ArgumentNullException.ThrowIfNull(treatment);
+
+        return new Treatment
+        {
+            Name = treatment.Name,
+            Description = treatment.Description,
+            Duration = treatment.Duration,
+            Price = treatment.Price
+        };
+    }
 }
