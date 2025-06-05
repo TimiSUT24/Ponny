@@ -50,8 +50,17 @@ namespace Hairdresser.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
+            var exists = await _treatmentRepo.AnyAsync(treatment => treatment.Id == id);
+            if (!exists)
+            {
+                return false;
+            }
+
             var treatment = await _treatmentRepo.GetByIdAsync(id);
-            if (treatment == null) return false;
+            if (treatment == null)
+            {
+                return false;
+            }
 
             await _treatmentRepo.DeleteAsync(treatment);
             await _treatmentRepo.SaveChangesAsync();
