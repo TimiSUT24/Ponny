@@ -15,9 +15,10 @@ namespace Hairdresser.Services
             _treatmentRepo = treatmentRepo;
         }
 
-        public async Task<IEnumerable<Treatment>> GetAllAsync()
+        public async Task<IEnumerable<TreatmentDto>> GetAllAsync()
         {
-            return await _treatmentRepo.GetAllAsync();
+            var treatments = await _treatmentRepo.GetAllAsync();
+            return treatments.Select(treatment => treatment.MapToTreatmentDto());
         }
 
         public async Task<Treatment?> GetByIdAsync(int id)
@@ -34,12 +35,15 @@ namespace Hairdresser.Services
             return treatment.MapToTreatmentDto();
         }
 
-        public async Task<bool> UpdateAsync(Treatment treatment)
+        public async Task<bool> UpdateAsync(int id, TreatmentCreateUpdateDto treatment)
         {
-            var exists = await _treatmentRepo.AnyAsync(t => t.Id == treatment.Id);
-            if (!exists) return false;
+            var exists = await _treatmentRepo.AnyAsync(treatment => treatment.Id == id);
+            if (!exists)
+            {
+                return false;
+            }
 
-            await _treatmentRepo.UpdateAsync(treatment);
+            await _treatmentRepo.UpdateAsync(treatment.MapToTreatment());
             await _treatmentRepo.SaveChangesAsync();
             return true;
         }

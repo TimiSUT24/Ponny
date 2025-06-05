@@ -5,10 +5,10 @@ namespace Hairdresser.Services.Interfaces
 {
     public interface ITreatmentService
     {
-        Task<IEnumerable<Treatment>> GetAllAsync();
+        Task<IEnumerable<TreatmentDto>> GetAllAsync();
         Task<Treatment?> GetByIdAsync(int id);
         Task<TreatmentDto> CreateAsync(CreateTreatmentDTO treatment);
-        Task<bool> UpdateAsync(Treatment treatment);
+        Task<bool> UpdateAsync(int id, TreatmentCreateUpdateDto treatment);
         Task<bool> DeleteAsync(int id);
     }
 }
