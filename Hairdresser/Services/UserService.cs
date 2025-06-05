@@ -17,14 +17,13 @@ public class UserService(IUserRepository userRepository, IBookingRepository book
 
     public async Task<IEnumerable<UserResponseDto>> GetAllHairdressersAsync()
     {
-        var users = await _userRepo.GetAllAsync();
+        var users = await _userRepo.GetAllHairdressersAsync();
 
         return users.Select(u => new UserResponseDto
         {
             Id = u.Id,
             UserName = u.UserName,
             Email = u.Email,
-            PhoneNumber = u.PhoneNumber,
             Role = "Hairdresser"
         });
     }

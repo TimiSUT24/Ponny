@@ -130,10 +130,25 @@ namespace Hairdresser.Controllers
             }
 
         }
+        [HttpGet("Get-Hairdressers")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponseDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetHairdressers()
+        {
+            var hairdresser = await _userService.GetAllHairdressersAsync();
+            if (hairdresser is null)
+            {
+                return NotFound("No hairdressers found.");
+            }
+            return Ok(hairdresser);
+        }
 
         // Change User Info
         [Authorize(Roles = "User,Admin")]
         [HttpPut("Update-User/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Update(string id, [FromBody] UserDto updatedUser)
         {
             var loggedInUser = User.FindFirstValue(ClaimTypes.NameIdentifier);

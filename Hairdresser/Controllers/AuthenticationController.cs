@@ -52,11 +52,10 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtService.GenerateToken(user.Id, roles);
 
-        var id = user.Id;
         return Ok(new
         {
             Token = token,
-            id
+            user.Id
         });
     }
     [HttpPost("Add-Hairdresser")]
