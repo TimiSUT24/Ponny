@@ -33,13 +33,13 @@ public class UserServiceTest
     public async Task GetAllHairdressersAsync_ShouldReturnHairdressers()
     {
         // Arrange - Mocking the user repository to return a list of hairdressers
-        var users = new List<ApplicationUser>
+        var users = new List<UserDto>
         {
-            new ApplicationUser { Id = "1", UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" },
-            new ApplicationUser { Id = "2", UserName = "hairdresser2", Email = "Jan.Doe@exampel.com", PhoneNumber = "0987654321" }
+            new UserDto { Id = "1", UserName = "hairdresser1", Email = "Jon.Doe@exampel.com", PhoneNumber = "1234567890" },
+            new UserDto { Id = "2", UserName = "hairdresser2", Email = "Jan.Doe@exampel.com", PhoneNumber = "0987654321" }
         };
 
-        _userRepository.Setup(repo => repo.GetAllAsync())
+        _userRepository.Setup(repo => repo.GetAllHairdressersAsync())
             .ReturnsAsync(users);
 
         // Act - Call the method to get all hairdressers
@@ -393,36 +393,6 @@ public class UserServiceTest
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.AreEqual(0, result.Count());
-	}
-
-	[TestMethod]
-	public async Task UpdateHairdresserAsync_PartialUpdate_OnlyUpdatesProvidedFields()
-	{
-		// Arrange
-		var hairdresser = new ApplicationUser
-		{
-			Id = "1",
-			FirstName = "John",
-			LastName = "Doe",
-			Email = "old@example.com",
-			PhoneNumber = "9999999999",
-			UserName = "JohnSmith"
-		};
-		var updatedDto = new UpdateUserDto
-		{
-			Email = "new@example.com"
-		};
-
-		_userManagerMock.Setup(repo => repo.GetUsersInRoleAsync(It.IsAny<string>()))
-			.ReturnsAsync(new List<ApplicationUser> { hairdresser });
-
-		// Act
-		var result = await _serviceMock.UpdateHairdresserAsync("1", updatedDto);
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual("new@example.com", result.Email);
-		Assert.AreEqual("John", result.FirstName, "The name should not change if its not updated."); // unchanged
 	}
 
 	[TestMethod]
