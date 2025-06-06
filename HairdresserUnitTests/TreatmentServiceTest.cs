@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services;
 using Hairdresser.Services.Interfaces;
@@ -108,7 +109,10 @@ public class TreatmentServiceTest
 
         // Assert - Verifying that the result is not null, matches the expected treatment, and that the repository methods were called
         Assert.IsNotNull(result);
-        Assert.AreSame(expected, result);
+        Assert.AreEqual(expected.Name, result.Name);
+        Assert.AreEqual(expected.Description, result.Description);
+        Assert.AreEqual(expected.Duration, result.Duration);
+        Assert.AreEqual(expected.Price, result.Price);
         _treatmentRepo.Verify(repo => repo.AddAsync(It.IsAny<Treatment>()), Times.Once);
         _treatmentRepo.Verify(repo => repo.SaveChangesAsync(), Times.Once);
     }
@@ -131,7 +135,6 @@ public class TreatmentServiceTest
 
         // Act
         var result = await _TreatmentService.UpdateAsync(id, treatmentToUpdate);
-        var expected = true;
 
         // Assert
         Assert.IsTrue(result);
