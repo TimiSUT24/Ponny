@@ -82,7 +82,9 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
         {
             UserName = newHairdresser.UserName,
             Email = newHairdresser.Email,
-            PhoneNumber = newHairdresser.PhoneNumber
+            PhoneNumber = newHairdresser.PhoneNumber,
+            FirstName = newHairdresser.FirstName,
+            LastName = newHairdresser.LastName,
         };
 
         var result = await _userManager.CreateAsync(user, newHairdresser.Password);
@@ -106,6 +108,8 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
             UserName = dto.UserName,
             Email = dto.Email,
             PhoneNumber = dto.PhoneNumber,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
         };
 
         // Create user with password
