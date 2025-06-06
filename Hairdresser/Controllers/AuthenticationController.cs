@@ -1,4 +1,5 @@
-﻿using Hairdresser.Mapping;
+﻿using Hairdresser.Enums;
+using Hairdresser.Mapping;
 using Hairdresser.Services;
 using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.DTOs.User;
@@ -6,6 +7,7 @@ using HairdresserClassLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Hairdresser.Controllers;
 
@@ -19,31 +21,37 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
     private readonly JWT_Service _jwtService = jwtService;
 
     // Get user by ID
+    [Authorize(Roles = "User,Admin")]
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetById(string id)
     {
+        var loggedInUser = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (loggedInUser != id && !User.IsInRole(UserRoleEnum.Admin.ToString()))
+        {
+            return Unauthorized("You are not authorized to see this user.");
+        }
+
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
         {
             return NotFound();
         }
-        if (user == null)
-        {
-            return NotFound();
-        }
-
         return Ok(user.MapToUserDTO());
     }
-
-    [HttpPost("AuthLogin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [HttpPost("Login")]
     public async Task<IActionResult> Login(LoginDto model)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null)
+        {
             return Unauthorized("Invalid credentials");
-
+        }
+          
         var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
         if (!result.Succeeded)
         {
@@ -53,12 +61,13 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtService.GenerateToken(user.Id, roles);
 
-        return Ok(new
+        return Ok(new LoginRespondDto
         {
-            Token = token
+            Token = token,
+            UserId = user.Id
         });
     }
-    [HttpPost("add-hairdresser")]
+    [HttpPost("Add-Hairdresser")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -74,7 +83,9 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
         {
             UserName = newHairdresser.UserName,
             Email = newHairdresser.Email,
-            PhoneNumber = newHairdresser.PhoneNumber
+            PhoneNumber = newHairdresser.PhoneNumber,
+            FirstName = newHairdresser.FirstName,
+            LastName = newHairdresser.LastName,
         };
 
         var result = await _userManager.CreateAsync(user, newHairdresser.Password);
@@ -89,7 +100,7 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
         return CreatedAtAction(nameof(GetById), new { id = user.Id }, user.MapToUserDTO());
     }
 
-    [HttpPost("registerUser")]
+    [HttpPost("Register")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDto))]
     public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
     {
@@ -98,6 +109,8 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
             UserName = dto.UserName,
             Email = dto.Email,
             PhoneNumber = dto.PhoneNumber,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
         };
 
         // Create user with password
@@ -130,5 +143,34 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
         }
 
         return Ok(hairdresser);
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [Authorize(Roles = "User")]
+    [HttpDelete("Delete")]
+    public async Task<IActionResult> DeleteUser()
+    {
+        var loggedInUser = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(loggedInUser))
+        {
+            return Unauthorized("You must be logged in to delete your account.");
+        }
+
+        var user = await _userManager.FindByIdAsync(loggedInUser);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        
+        var result = await _userManager.DeleteAsync(user);
+        if(result is null)
+        {
+            return BadRequest("Error deleting user");
+        }
+
+        return Ok(result.Succeeded ? "User deleted successfully" : "Error deleting user");
     }
 }

@@ -62,6 +62,7 @@ namespace Hairdresser.Controllers
         {
             var success = await _treatmentService.UpdateAsync(id, treatment);
             if (!success)
+            
             {
                 return NotFound();
             }

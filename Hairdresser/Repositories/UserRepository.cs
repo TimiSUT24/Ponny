@@ -99,7 +99,7 @@ namespace Hairdresser.Repositories
 			throw new NotImplementedException();
 		}
 
-		public async Task<IEnumerable<UserDto?>> GetALLHairdressersAsync()
+		public async Task<IEnumerable<UserDto?>> GetAllHairdressersAsync()
 		{
 			var hairdresserRoleId = await _context.Roles
 				.Where(r => r.Name == "Hairdresser")

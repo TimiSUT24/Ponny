@@ -15,9 +15,9 @@ public class UserService(IUserRepository userRepository, IBookingRepository book
     private readonly IBookingRepository _bookingRepo = bookingRepo;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
 
-    public async Task<IEnumerable<UserResponseDto>> GetAllHairdressersAsync()
+    public async Task<IEnumerable<UserResponseDto?>> GetAllHairdressersAsync()
     {
-        var users = await _userRepo.GetAllAsync();
+        var users = await _userRepo.GetAllHairdressersAsync();
 
         return users.Select(u => new UserResponseDto
         {
