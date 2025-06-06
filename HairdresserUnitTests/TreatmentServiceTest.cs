@@ -141,4 +141,29 @@ public class TreatmentServiceTest
         _treatmentRepo.Verify(repo => repo.UpdateAsync(It.IsAny<Treatment>()), Times.Once);
         _treatmentRepo.Verify(repo => repo.SaveChangesAsync(), Times.Once);
     }
+
+    [TestMethod]
+    public async Task UpdateAsync_ShouldReturnFalse_WhenTreatmentDoesNotExist()
+    {
+        // Arrange
+        var idNotExist = 999; // Assuming this ID does not exist
+        var treatmentToUpdate = new TreatmentUpdateDto
+        {
+            Name = "Haircut",
+            Description = "A stylish haircut",
+            Duration = 30,
+            Price = 20.0
+        };
+
+        _treatmentRepo.Setup(repo => repo.AnyAsync(It.IsAny<Expression<Func<Treatment, bool>>>()))
+            .ReturnsAsync(false);
+        // Act
+
+        var result = await _TreatmentService.UpdateAsync(idNotExist, treatmentToUpdate);
+
+        // Arranging
+        Assert.IsFalse(result);
+        _treatmentRepo.Verify(repo => repo.UpdateAsync(It.IsAny<Treatment>()), Times.Never);
+        _treatmentRepo.Verify(repo => repo.SaveChangesAsync(), Times.Never);
+    }
 }
