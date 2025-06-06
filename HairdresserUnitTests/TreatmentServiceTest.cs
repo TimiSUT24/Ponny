@@ -192,7 +192,7 @@ public class TreatmentServiceTest
     }
 
     [TestMethod]
-    public async Task DeleteAsync_ShouldReturnTrue_WhenTreatmentHaveBeanRemoved()
+    public async Task DeleteAsync_ShouldReturnTrue_WhenTreatmentHaveBeenRemoved()
     {
         // Arrange - Mocking the repository to expect a DeleteAsync call
         var id = 1;
