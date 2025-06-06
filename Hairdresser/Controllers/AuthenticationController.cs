@@ -24,12 +24,13 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetById(string id)
     {
         var loggedInUser = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (loggedInUser != id && !User.IsInRole("Admin"))
         {
-            return Unauthorized("You are not authorized to update this user.");
+            return Unauthorized("You are not authorized to see this user.");
         }
 
         var user = await _userManager.FindByIdAsync(id);
@@ -39,7 +40,8 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
         }
         return Ok(user.MapToUserDTO());
     }
-
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [HttpPost("Login")]
     public async Task<IActionResult> Login(LoginDto model)
     {
@@ -143,15 +145,12 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [Authorize(Roles = "User")]
-    [HttpDelete("Delete/{id}")]
-    public async Task<IActionResult> DeleteUser(string id)
+    [HttpDelete("Delete")]
+    public async Task<IActionResult> DeleteUser()
     {
         var loggedInUser = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if(loggedInUser != id)
-        {
-            return Unauthorized("You can only delete your own account");
-        }
-        var user = await _userManager.FindByIdAsync(id);
+        
+        var user = await _userManager.FindByIdAsync(loggedInUser);
         if (user == null)
         {
             return NotFound();
