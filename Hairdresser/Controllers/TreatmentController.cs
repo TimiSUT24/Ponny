@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Hairdresser.Mapping;
 using Hairdresser.Repositories.Interfaces;
 using Hairdresser.Services.Interfaces;
@@ -52,37 +53,28 @@ namespace Hairdresser.Controllers
         }
 
         [HttpPut("{id}")]
-		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TreatmentDto))]
-		[Authorize(Roles = "Admin")]
-        [ProducesResponseType(204)]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TreatmentDto))]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Update(int id, [FromBody] TreatmentUpdateDto treatment)
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> Update([Required][Range(1, double.PositiveInfinity, ErrorMessage = "The field cannot be less than 1")] int id, [FromBody] TreatmentUpdateDto treatment)
         {
-            if (id <= 0)
-            {
-                return BadRequest("Invalid ID");
-            }
-
             var success = await _treatmentService.UpdateAsync(id, treatment);
             if (!success)
-            {
             {
                 return NotFound();
             }
 
-            return Ok(treatment.MapToTreatmentDto());
+            return Ok(treatment.MapToTreatmentDTO());
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([Required] [Range(1, double.PositiveInfinity, ErrorMessage = "The field cannot be less than 1")] int id)
         {
-            if (id <= 0)
-            {
-                return BadRequest("Invalid ID");
-            }
             var success = await _treatmentService.DeleteAsync(id);
             if (!success)
             {

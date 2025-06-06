@@ -37,6 +37,11 @@ namespace Hairdresser.Services
 
         public async Task<bool> UpdateAsync(int id, TreatmentUpdateDto treatment)
         {
+             if (id <= 0)
+            {
+                return false;
+            }
+            
             var exists = await _treatmentRepo.AnyAsync(treatment => treatment.Id == id);
             if (!exists)
             {
@@ -50,6 +55,10 @@ namespace Hairdresser.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
+            if (id <= 0)
+            {
+                return false;
+            }
             var exists = await _treatmentRepo.AnyAsync(treatment => treatment.Id == id);
             if (!exists)
             {

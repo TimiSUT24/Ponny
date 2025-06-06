@@ -13,6 +13,7 @@ public static class TreatmentMapper
         {
             Id = treatment.Id,
             Name = treatment.Name,
+            Description = treatment.Description ?? string.Empty,
             Duration = treatment.Duration,
             Price = treatment.Price
         };
@@ -48,6 +49,19 @@ public static class TreatmentMapper
         ArgumentNullException.ThrowIfNull(treatment);
 
         return new Treatment
+        {
+            Name = treatment.Name,
+            Description = treatment.Description,
+            Duration = treatment.Duration,
+            Price = treatment.Price,
+            TreatmentBookings = []
+        };
+    }
+    public static TreatmentDto MapToTreatmentDTO(this TreatmentUpdateDto treatment)
+    {
+        ArgumentNullException.ThrowIfNull(treatment);
+
+        return new TreatmentDto
         {
             Name = treatment.Name,
             Description = treatment.Description,
