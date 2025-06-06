@@ -114,7 +114,7 @@ public class TreatmentServiceTest
         Assert.AreEqual(expected.Duration, result.Duration);
         Assert.AreEqual(expected.Price, result.Price);
         _treatmentRepo.Verify(repo => repo.AddAsync(It.IsAny<Treatment>()), Times.Once);
-        _treatmentRepo.Verify(repo => repo.SaveChangesAsync(), Times.Once);*/
+        _treatmentRepo.Verify(repo => repo.SaveChangesAsync(), Times.Once);
     }
 
     [TestMethod]
@@ -139,7 +139,7 @@ public class TreatmentServiceTest
         // Assert - Verifying that the result is true and the repository methods were called
         Assert.IsTrue(result);
         _treatmentRepo.Verify(repo => repo.UpdateAsync(It.IsAny<Treatment>()), Times.Once);
-        _treatmentRepo.Verify(repo => repo.SaveChangesAsync(), Times.Once);*/
+        _treatmentRepo.Verify(repo => repo.SaveChangesAsync(), Times.Once);
     }
 
     [TestMethod]
