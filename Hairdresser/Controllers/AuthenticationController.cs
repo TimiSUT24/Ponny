@@ -1,4 +1,5 @@
-﻿using Hairdresser.Mapping;
+﻿using Hairdresser.Enums;
+using Hairdresser.Mapping;
 using Hairdresser.Services;
 using Hairdresser.Services.Interfaces;
 using HairdresserClassLibrary.DTOs.User;
@@ -28,7 +29,7 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
     public async Task<IActionResult> GetById(string id)
     {
         var loggedInUser = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (loggedInUser != id && !User.IsInRole("Admin"))
+        if (loggedInUser != id && !User.IsInRole(UserRoleEnum.Admin.ToString()))
         {
             return Unauthorized("You are not authorized to see this user.");
         }
@@ -60,10 +61,10 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtService.GenerateToken(user.Id, roles);
 
-        return Ok(new
+        return Ok(new LoginRespondDto
         {
             Token = token,
-            user.Id
+            UserId = user.Id
         });
     }
     [HttpPost("Add-Hairdresser")]
@@ -126,7 +127,7 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
     }
 
     [Authorize(Roles = "Hairdresser,Admin")]
-    [HttpPut("Hairdresser/{id}")]
+    [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -153,7 +154,11 @@ public class AuthenticationController(UserManager<ApplicationUser> userManager, 
     public async Task<IActionResult> DeleteUser()
     {
         var loggedInUser = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        
+        if (string.IsNullOrEmpty(loggedInUser))
+        {
+            return Unauthorized("You must be logged in to delete your account.");
+        }
+
         var user = await _userManager.FindByIdAsync(loggedInUser);
         if (user == null)
         {

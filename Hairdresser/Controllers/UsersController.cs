@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Hairdresser.Mapping;
 using HairdresserClassLibrary.DTOs;
 using System.Security.Claims;
+using Hairdresser.Enums;
 
 namespace Hairdresser.Controllers
 {
@@ -152,7 +153,7 @@ namespace Hairdresser.Controllers
         public async Task<IActionResult> Update(string id, [FromBody] UserDto updatedUser)
         {
             var loggedInUser = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(loggedInUser != id && !User.IsInRole("Admin"))
+            if(loggedInUser != id && !User.IsInRole(UserRoleEnum.Admin.ToString()))
             {
                 return Unauthorized("You are not authorized to update this user.");
             }
