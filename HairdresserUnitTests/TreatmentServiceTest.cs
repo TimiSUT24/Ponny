@@ -133,10 +133,10 @@ public class TreatmentServiceTest
         _treatmentRepo.Setup(repo => repo.AnyAsync(It.IsAny<Expression<Func<Treatment, bool>>>()))
             .ReturnsAsync(true);
 
-        // Act
+        // Act - Updating the treatment using the service
         var result = await _TreatmentService.UpdateAsync(id, treatmentToUpdate);
 
-        // Assert
+        // Assert - Verifying that the result is true and the repository methods were called
         Assert.IsTrue(result);
         _treatmentRepo.Verify(repo => repo.UpdateAsync(It.IsAny<Treatment>()), Times.Once);
         _treatmentRepo.Verify(repo => repo.SaveChangesAsync(), Times.Once);
@@ -157,14 +157,38 @@ public class TreatmentServiceTest
 
         _treatmentRepo.Setup(repo => repo.AnyAsync(It.IsAny<Expression<Func<Treatment, bool>>>()))
             .ReturnsAsync(false);
-        // Act
-
+        // Act - Attempting to update a treatment that does not exist
         var result = await _TreatmentService.UpdateAsync(idNotExist, treatmentToUpdate);
 
         // Arranging
         Assert.IsFalse(result);
         _treatmentRepo.Verify(repo => repo.UpdateAsync(It.IsAny<Treatment>()), Times.Never);
         _treatmentRepo.Verify(repo => repo.SaveChangesAsync(), Times.Never);
+    }
+
+    [TestMethod]
+    [DataRow(0)]
+    [DataRow(-1)]
+    [DataRow(int.MinValue)]
+    public async Task UpdateAsync_ShouldReturnFalse_WhenIdIsZeroOrLess(int idNotExist)
+    {
+        // Arrange - Mocking the repository to return false for any ID less than or equal to zero
+        var treatmentToUpdate = new TreatmentUpdateDto
+        {
+            Name = "Haircut",
+            Description = "A stylish haircut",
+            Duration = 30,
+            Price = 20.0
+        };
+
+        // Act - Attempting to update a treatment with an invalid ID
+        var result = await _TreatmentService.UpdateAsync(idNotExist, treatmentToUpdate);
+
+        // Assert - Verifying that the result is false and no repository methods were called
+        Assert.IsFalse(result);
+        _treatmentRepo.Verify(repo => repo.UpdateAsync(It.IsAny<Treatment>()), Times.Never);
+        _treatmentRepo.Verify(repo => repo.SaveChangesAsync(), Times.Never);
+        _treatmentRepo.Verify(repo => repo.AnyAsync(It.IsAny<Expression<Func<Treatment, bool>>>()), Times.Never);
     }
 
     [TestMethod]
