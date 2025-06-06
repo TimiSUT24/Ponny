@@ -53,6 +53,19 @@ public static class TreatmentMapper
             Name = treatment.Name,
             Description = treatment.Description,
             Duration = treatment.Duration,
+            Price = treatment.Price,
+            TreatmentBookings = []
+        };
+    }
+    public static TreatmentDto MapToTreatmentDTO(this TreatmentUpdateDto treatment)
+    {
+        ArgumentNullException.ThrowIfNull(treatment);
+
+        return new TreatmentDto
+        {
+            Name = treatment.Name,
+            Description = treatment.Description,
+            Duration = treatment.Duration,
             Price = treatment.Price
         };
     }
