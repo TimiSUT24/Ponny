@@ -6,61 +6,101 @@
 |--------|----------|----------------|----------------|
 | GET    | `/Authentication/Id` | ✅ User | Get Your Own Personal Details By Id | 
 | POST   | `/Authentication/Login` | ❌ Not Authenticated | Login As User | 
-| POST   | `/Authentication/Hairdresser` | ✅ Admin | Create A Hairdresser | 
+| POST   | `/Authentication/Add-Hairdresser` | ✅ Admin | Create A Hairdresser | 
 | POST   | `/Authentication/Register` | ❌ NOT Authenticated | Register As User | 
-| PUT    | `/Authentication/Hairdresser/Id` | ✅ Hairdresser/Admin | Update Hairdresser Details | 
-| DELETE | `/Authentication/Id` | ✅ User | Delete Your Account | 
+| PUT    | `/Authentication/Id` | ✅ Hairdresser/Admin | Update Hairdresser Details | 
+| DELETE | `/Authentication/Delete` | ✅ User | Delete Your Account | 
 
 ### BookingController
 | Method | Endpoint | Authentication | Description |
 |--------|----------|----------------|----------------|
 | GET    | `/Booking/Available-Times` | ❌ NOT Authenticated | Get A Hairdresser Available-Times |
 | POST   | `/Booking/BookAppointment` | ✅ User | Book Appointment As User | 
-| PUT    | `/Booking/Reschedule-Booking` | ✅ User | Reschedule Your Own Booking | 
+| PUT    | `/Booking/Reschedule` | ✅ User | Reschedule Your Own Booking | 
 | DELETE | `/Booking/Cancel-Booking` | ✅ User | Cancel Your Own Booking | 
-| GET    | `/Booking/Booking-By-Id` | ✅ User | Get Your Booking By Id |
+| GET    | `/Booking/BookingsById` | ✅ User | Get Your Booking By Id |
 
 ### TreatmentController
 | Method | Endpoint | Authentication | Description |
 |--------|----------|----------------|----------------|
-| GET    | `/Treatment/Get-Treatments` | ❌ Not Authenticated | Get All Treatments | 
-| GET    | `/Treatment/Get-Treatment/Id` | ❌ Not Authenticated | Get Treatment By Id | 
-| POST   | `/Treatments/Create` | ✅ Admin | Create A New Treatment | 
-| PUT    | `/Treatments/Update/Id` | ✅ Admin | Update A Treatment By Id |  
-| DELETE | `/Treatments/Delete/Id` | ✅ Admin | Delete A Treatment By Id | 
+| GET    | `/Treatment` | ❌ Not Authenticated | Get All Treatments | 
+| GET    | `/Treatment/Id` | ❌ Not Authenticated | Get Treatment By Id | 
+| POST   | `/Treatment` | ✅ Admin | Create A New Treatment | 
+| PUT    | `/Treatment/Id` | ✅ Admin | Update A Treatment By Id |  
+| DELETE | `/Treatment/Id` | ✅ Admin | Delete A Treatment By Id | 
 
 ### UserController
 | Method | Endpoint | Authentication | Description |
 |--------|----------|----------------|----------------|
-| GET    | `/User/Users` | ✅ Hairdresser/Admin | Get All Users | Get All Users |
-| GET    | `/User/All-Bookings` | ✅ Admin | Get All Bookings | Get All Bookings |
+| GET    | `/User/Get-Users` | ✅ Hairdresser/Admin | Get All Users | Get All Users |
+| GET    | `/User/Bookings-Overview` | ✅ Admin | Get All Bookings | Get All Bookings |
 | GET    | `/User/Hairdresser-Week-Schedule` | ✅ Hairdresser | Get Hairdresser Week Schedule | 
 | GET    | `/User/Hairdresser-Monthly-Schedule` | ✅ Hairdresser | Get Hairdresser Monthly Schedule | 
 | GET    | `/User/Booking/Id` | ✅ Hairdresser/Admin | Get A Booking By Id 
-| GET    | `/User/Hairdresser/Id` | ✅ Hairdresser/Admin | Get A Hairdresser By Id | 
-| PUT    | `/User/Update-User` | ✅ User | Update Your Own Personal Details | 
+| GET    | `/User/Id` | ✅ Hairdresser/Admin | Get A Hairdresser By Id | 
+| GET    | `/User/Get-Hairdressers` | ❌ Not Authenticated | Get All Hairdressers | 
+| PUT    | `/User/Update-User/Id` | ✅ User | Update Your Own Personal Details | 
 
 
-## Project Description and Architecture Overview
+## HairSalon Booking System 
+This Project is a back-end booking system designed for hair salons, enabling them to effiently manage appointments, services, and customer information.
 
-Provide a brief introduction to your project, including its main purpose, target audience, and core functionality. Include a high-level architecture diagram if possible, highlighting the key components and their interactions.
+## Main Purpose 
+The primary goal of this system is to streamline the booking process for hair salons, offering a reliable and scalable platform for managing their daily operations.
+It aims to reduce administrative overhead, minimize booking errors, and provide a seamless experience for both salon staff and customers.
 
-### Key Features
+## Target Audience 
+The system is built for hair salon owners, staff and customers, providing them with the tools to manage appointments, client data, and service offerings. While this particular project focuses on the backend, its designed to be integrated with a user-friendly frontend application for both salon administrators and customers. 
 
-* Feature 1
-* Feature 2
-* Feature 3
+## Core Functionality 
+The system provides essential functionalities for managing a hair salon's operations, including: 
+* User and Authentication Management:
+    * Register new user accounts and log in to access protected functionalities.
+    * Retrieve their personal details by ID.
+    * Delete their own account.
+    * for administrators, the system allows the creation of new hairdresser accounts and updating hairdresser details.  Hairdressers also have privileges to update their own details.
 
-### Architecture Overview
+* Appointment Booking and Mangement:
+    * Customers can view avaiable appointment times for hairdressers.
+    * They can book new appointsments, reschedule existing ones, and cancel their own bookings.
+    * Users can also retrieve their booking details by ID.
+ 
+* Service (Treatment) Management:
+    * The system allows anyone to view all available treatment and get details for a specific treatment by ID.
+    * Administrators have full control over treatments, being able to create new treatments, update existing ones and delte treatments.
+ 
+* User and Schedule Overview:
+    * Hairdresser and Admins can retrieve a list of all registered users.
+    * Admins have access to a ful overview of all bookings in the system.
+    * Hairdressers can view their weekly and monthly schedules.
+    * Both hairdressers and admins can retrieve details for any specific booking by Id and get details for individual hairdressers by ID.
+    * The system also allows any to get list of all hairdresser.
+    * Users can update their own accounts details only (Customers). 
 
-Explain the system architecture, including:
+## Key Features 
+* RESTful API: Provides a clean and intuitive API for seamless integration with client applications.
+* Robust Data Management: Efficiently handels appointments,service and customer data with clear separation of concerns.
+* Automated Testing: Ensures reliability and stability through comprehensive unit and integration tests. 
 
-* Microservices or monolith structure
-* Database and data flow
-* Key technologies and frameworks
-* Deployment environment
+## Architecture Overview 
+This booking system is built with a microservices-oriented structure to promote modularity, scalability, and independent deployment of components. 
 
----
+* ASP.NET Web API: The core of the backend system, exposing RESTful endpoints for client applications.
+* Controllers: Handle incoming HTTP requests, route them to the appropiate services, and return responses.
+* Services Layer: Contains the business logic, orchestrating operations and interacting with the repository layer.
+* Repository Layer: Abstracts data access operations, providing a clean interface for interacting with the database.
+* DTOs (Data Transfer Objects): Used to transfer data between layers, ensuring clear data contracts and avoiding direct exposure of domain models.
+* Mappers: Convert between DTOs and domain models, simplifying data transformation.
+* Database The persistent storage for all application data (appointments,services, customers, etc).
+* Unit Tests (MSTest): These tests focus on verifying the functionality of indiviual components (Repositories,Services) in isolation. They ensure that each part of the system works correctly on its own.
+* Integration Tests (Postman): These tests verify the interaction between dirrerent components or layers of the system, including the Controllers. Postman is used to send requests to the API endpoints exposed by the Controllers and verify the responses. 
+
+## Key Technologies and Frameworks
+* Backend: ASP.NET Web API
+* Language: C#
+* Testing Frameworks: MSTest (unit testing), Postman (integration testing)
+* Dependency Injection: Built-in ASP.NET Core DI
+* Object-Relational Mapping (ORM): Entity Framework Core. 
 
 
 ## API Endpoints Documentation
@@ -69,7 +109,7 @@ Describe the available API endpoints, including request and response examples. U
 
 ### Endpoint 1 - Get All Bookings Overview
 
-**URL:** `Api/User/All-Bookings`  
+**URL:** `Api/User/Bookings-Overview`  
 **Method:** GET  
 **Description:** Returns a list of all bookings with details for admin users.  
 **Request Parameters:**
@@ -93,7 +133,7 @@ _None_
 
 ### Endpoint 2 - Create New Hairdresser
 
-**URL:** `/api/Authentication/Hairdresser`  
+**URL:** `/api/Authentication/Add-Hairdresser`  
 **Method:** POST  
 **Description:** Creates a new hairdresser user and assigns them the "Hairdresser" role. Only accessible by admins.  
 **Request Parameters:**
@@ -289,7 +329,7 @@ _None_
 
 ### Endpoint 8 - Reschedule Booking
 
-**URL:** `/api/Booking/Reschedule-Booking`  
+**URL:** `/api/Booking/Reschedule`  
 **Method:** PUT  
 **Description:** Reschedules an existing booking for the logged-in user.  
 **Request Parameters:**
@@ -420,7 +460,7 @@ _None_
 
 ### Endpoint 12 - Update Hairdresser
 
-**URL:** `/api/Authentication/Hairdresser/Id}`  
+**URL:** `/api/Authentication/Id`  
 **Method:** PUT  
 **Description:** Updates the profile of a hairdresser by ID.  
 **Request Parameters:**
@@ -650,7 +690,7 @@ _None_
 
 ### Endpoint 20 - Register User
 
-**URL:** `/api/Users/registerUser`  
+**URL:** `/api/Users/Register`  
 **Method:** POST  
 **Description:** Registers a new user with the "User" role.  
 **Request Body:**
@@ -757,19 +797,3 @@ _None_
   }
 ]
 ```
-
----
-
-## Test Strategy and Results
-
-Outline your test strategy, including the types of tests performed (e.g., unit, integration, E2E) and tools used. Include a summary of test coverage and key results.
-
-### Test Strategy
-
-* Unit Tests: Briefly describe the approach and tools (e.g., Jest, Pytest).
-* Integration Tests: Describe how services are tested together.
-* End-to-End (E2E) Tests: Detail the approach for full workflow testing.
-
-### Test Results
-
-Include a summary of test results, including coverage reports or key findings.
