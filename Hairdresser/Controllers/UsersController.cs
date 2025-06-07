@@ -63,7 +63,7 @@ namespace Hairdresser.Controllers
             return Ok(bookingDtos);
         }
 
-        [Authorize(Roles = "Hairdresser")]
+        [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("Hairdresser-Week-Schedule")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BookingResponseDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -41,7 +41,7 @@ public static class BookingMapper
             End = booking.End,
             Costumer = new UserDto
             {
-                Id = booking.CustomerId,
+                Id = booking.Customer.Id,
                 UserName = booking.Customer.UserName,
                 Email = booking.Customer.Email,
                 PhoneNumber = booking.Customer.PhoneNumber
@@ -55,6 +55,9 @@ public static class BookingMapper
             },
             Hairdresser = new UserDto
             {
+                Id = booking.Hairdresser.Id,
+                FirstName = booking.Hairdresser.FirstName,
+                LastName = booking.Hairdresser.LastName,
                 UserName = booking.Hairdresser.UserName,
                 Email = booking.Hairdresser.Email,
                 PhoneNumber = booking.Hairdresser.PhoneNumber

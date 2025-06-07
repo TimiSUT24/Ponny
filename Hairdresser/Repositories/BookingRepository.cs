@@ -94,8 +94,9 @@ namespace Hairdresser.Repositories
         {
             var weekEnd = weekStart.AddDays(7);
             return await _context.Bookings
-                .Where(b => b.HairdresserId == hairdresserId && b.Start >= weekStart && b.Start < weekEnd)
-                .Include(b => b.Customer)
+				.Where(b => b.HairdresserId == hairdresserId && b.Start >= weekStart && b.Start < weekEnd)
+				.Include(b => b.Hairdresser)
+				.Include(b => b.Customer)
                 .Include(b => b.Treatment)
                 .OrderBy(b => b.Start)
                 .ToListAsync();

@@ -18,29 +18,29 @@ public static class BookingSeed
         var treatments = context.Set<Treatment>().ToListAsync().Result;
 
         List<Booking> bookingSeeds = [
-               new Booking()
+                    new Booking()
                     {
                         CustomerId = users[0].Id,
                         HairdresserId = users[1].Id,
                         TreatmentId = treatments[0].Id,
-                        Start = DateTime.Parse("2025-05-14T10:00:00"),
-                        End = DateTime.Parse("2025-05-14T11:00:00"),
+                        Start = DateTime.Now.AddDays(1).AddHours(1),
+                        End = DateTime.Now.AddDays(1).AddHours(1.5),
                     },
                     new Booking()
                     {
                         CustomerId = users[2].Id,
                         HairdresserId = users[3].Id,
                         TreatmentId = treatments[1].Id,
-                        Start = DateTime.Parse("2025-05-16T10:00:00"),
-                        End = DateTime.Parse("2025-05-16T11:30:00"),
+                        Start = DateTime.Now.AddDays(2).AddHours(1.25),
+                        End = DateTime.Now.AddDays(2).AddHours(1.5), 
                     },
                     new Booking()
                     {
                         CustomerId = users[4].Id,
                         HairdresserId = users[0].Id,
                         TreatmentId = treatments[2].Id,
-                        Start = DateTime.Parse("2025-05-17T10:00:00"),
-                        End = DateTime.Parse("2025-05-17T12:00:00"),
+                        Start = DateTime.Now.AddDays(3).AddHours(2),
+                        End = DateTime.Now.AddDays(3).AddHours(2.5),
                     }
                ];
 
@@ -63,29 +63,29 @@ public static class BookingSeed
         var treatments = context.Set<Treatment>().ToListAsync().Result;
 
         List<Booking> bookingSeeds = [
-               new Booking()
+                    new Booking()
                     {
                         CustomerId = users[0].Id,
                         HairdresserId = users[1].Id,
                         TreatmentId = treatments[0].Id,
-                        Start = DateTime.Parse("2025-05-14T10:00:00"),
-                        End = DateTime.Parse("2025-05-14T11:00:00"),
+                        Start = DateTime.Now.AddDays(1).AddHours(1),
+                        End = DateTime.Now.AddDays(1).AddHours(1.5),
                     },
                     new Booking()
                     {
                         CustomerId = users[2].Id,
                         HairdresserId = users[3].Id,
                         TreatmentId = treatments[1].Id,
-                        Start = DateTime.Parse("2025-05-16T10:00:00"),
-                        End = DateTime.Parse("2025-05-16T11:30:00"),
+                        Start = DateTime.Now.AddDays(2).AddHours(1.25),
+                        End = DateTime.Now.AddDays(2).AddHours(1.5), 
                     },
                     new Booking()
                     {
                         CustomerId = users[4].Id,
                         HairdresserId = users[0].Id,
                         TreatmentId = treatments[2].Id,
-                        Start = DateTime.Parse("2025-05-17T10:00:00"),
-                        End = DateTime.Parse("2025-05-17T12:00:00"),
+                        Start = DateTime.Now.AddDays(3).AddHours(2),
+                        End = DateTime.Now.AddDays(3).AddHours(2.5),
                     }
                ];
 
