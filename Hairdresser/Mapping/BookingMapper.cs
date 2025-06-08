@@ -39,7 +39,7 @@ public static class BookingMapper
             Id = booking.Id,
             Start = booking.Start,
             End = booking.End,
-            Costumer = new UserDto
+            Customer = new UserDto
             {
                 Id = booking.Customer.Id,
                 UserName = booking.Customer.UserName,
