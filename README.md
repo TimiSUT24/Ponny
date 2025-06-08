@@ -102,6 +102,27 @@ This booking system is built with a microservices-oriented structure to promote 
 * Dependency Injection: Built-in ASP.NET Core DI
 * Object-Relational Mapping (ORM): Entity Framework Core. 
 
+## Teststrategi och resultat 
+Projektet använder enhetstester för att verifiera funktionalitet i de viktigaste komponenterna som är:
+* BookingService
+* BookingRepository
+* TreatmentService
+* TreatmentRepository
+* UserService
+* UserRepository
+Testerna är skrivna i MSTest och använder Moq för att isolera beroenden.
+Fokus låg på att säkerställa korrekt affärslogik, datavalidering och hantering av olika scenarier både normal fall och felaktiga.
+Totalt genomfördes 92 enhetstester och alla av dem blev godkända och detta visar att systemet fungerar som förväntat.
+Man kan även se alla enhetstester i Testcatalog.md på github.
+
+## Postman-tester
+Utöver enhetstester genomfördes integrationstester med Postman för att verifiera att RESTful-API:et svarar korrekt.
+Det testades bland annat:
+* Inloggning och registrering 
+* Hämta behandlingar
+* Skapa, hämta och ta bort bokningar
+* Roller och åtkomstbehörighet
+* Edge-cases vid fel indata etc.
 
 ## API Endpoints Documentation
 
