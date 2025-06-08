@@ -56,35 +56,35 @@ namespace Hairdresser.Controllers
         public async Task<IActionResult> GetAllBookingsOverview()
         {
             var bookingDtos = await _userService.GetAllBookingsOverviewAsync();
-            if(bookingDtos is null)
+            if (bookingDtos is null)
             {
                 return NotFound("No bookings found.");
             }
             return Ok(bookingDtos);
         }
 
-        [Authorize(Roles = "Hairdresser")]
+        [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("Hairdresser-Week-Schedule")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BookingResponseDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetSchedule([FromQuery] string hairdresserId, [FromQuery] DateTime weekStart)
         {
             var result = await _userService.GetWeekScheduleAsync(hairdresserId, weekStart);
-            if(result is null)
+            if (result is null)
             {
                 return NotFound("No bookings found for the specified hairdresser and week start date.");
             }
             return Ok(result);
         }
 
-        [Authorize(Roles = "Hairdresser")]
+        [Authorize(Roles = "Hairdresser,Admin")]
         [HttpGet("Hairdresser-Monthly-Schedule")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BookingResponseDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetMonthlySchedule([FromQuery] string hairdresserId, [FromQuery] int year, [FromQuery] int month)
         {
             var result = await _userService.GetMonthlyScheduleAsync(hairdresserId, year, month);
-            if(result is null)
+            if (result is null)
             {
                 return NotFound("No bookings found for the specified hairdresser and month.");
             }
@@ -150,10 +150,10 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Update(string id, [FromBody] UserDto updatedUser)
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateUserDto updatedUser)
         {
             var loggedInUser = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(loggedInUser != id && !User.IsInRole(UserRoleEnum.Admin.ToString()))
+            if (loggedInUser != id && !User.IsInRole(UserRoleEnum.Admin.ToString()))
             {
                 return Unauthorized("You are not authorized to update this user.");
             }

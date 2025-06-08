@@ -38,7 +38,7 @@ public class BookingServiceTests
             .ReturnsAsync(defaultHairdresser);
 
         var defaultTreatmentId = 1;
-        var defaultTreatment = new Treatment {Id = defaultTreatmentId, Name = "Haircut", Description = "CutHair", Duration = 60, Price = 300.0 };
+        var defaultTreatment = new Treatment { Id = defaultTreatmentId, Name = "Haircut", Description = "CutHair", Duration = 60, Price = 300.0 };
         _treatmentRepositoryMock.Setup(t => t.GetByIdAsync(defaultTreatmentId))
             .ReturnsAsync(defaultTreatment);
 
@@ -62,14 +62,14 @@ public class BookingServiceTests
             Hairdresser = defaultHairdresser
         };
 
-            _bookingRepositoryMock.Setup(c => c.AddAsync(It.IsAny<Booking>()))
-           .Callback<Booking>(b => b.Id = 1)
-           .Returns(Task.CompletedTask);
+        _bookingRepositoryMock.Setup(c => c.AddAsync(It.IsAny<Booking>()))
+       .Callback<Booking>(b => b.Id = 1)
+       .Returns(Task.CompletedTask);
 
         _bookingRepositoryMock.Setup(b => b.GetByIdWithDetailsAsync(defaultBookingId, defaultCustomerId))
             .ReturnsAsync(defaultBooking);
 
-       
+
     }
 
     private Mock<UserManager<ApplicationUser>> MockUserManager()
@@ -84,7 +84,7 @@ public class BookingServiceTests
     public async Task GetAllAvailableTimes_ShouldReturnCorrectTimeSlots()
     {
         //Make sure there are no bookings for the day so it can return all available slots
-        var day = DateTime.Now.AddDays(1).Date;    
+        var day = DateTime.Now.AddDays(1).Date;
         _bookingRepositoryMock?.Setup(b => b.FindAsync(It.IsAny<Expression<Func<Booking, bool>>>()))
             .ReturnsAsync(new List<Booking>());
 
@@ -101,8 +101,8 @@ public class BookingServiceTests
     [TestCategory("Edge-Case ")]
     public async Task GetAllAvailableTimes_ShouldThrowKeyNotFoundException_WhenHairdresserIsNotFound()
     {
-        
-        var day = DateTime.Now.AddDays(1).Date; 
+
+        var day = DateTime.Now.AddDays(1).Date;
         _userManagerMock?.Setup(h => h.FindByIdAsync(It.IsAny<string>()))
             .ReturnsAsync((ApplicationUser)null); // Simulate hairdresser not found
 
@@ -111,14 +111,14 @@ public class BookingServiceTests
             () => _bookingService.GetAllAvailableTimes("H1", 1, day));//HairdresserId, TreatmentId, Date
 
         // Assert that the exception message is correct
-        Assert.AreEqual("Hairdresser was not found", result.Message);         
+        Assert.AreEqual("Hairdresser was not found", result.Message);
     }
 
     [TestMethod]
     [TestCategory("Edge-Case ")]
     public async Task GetAllAvailableTimes_ShouldThrowKeyNowFoundException_WhenTreatmentIsNotFound()
     {
-       
+
         var day = DateTime.Now.AddDays(1).Date;
         _treatmentRepositoryMock?.Setup(t => t.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync((Treatment)null); // Simulate treatment not found
@@ -164,7 +164,7 @@ public class BookingServiceTests
         Assert.IsNotNull(result);
         // Check if the booking ID and customer ID are correct
         Assert.AreEqual(expectedBooking.Id, result.Id);
-        Assert.AreEqual(expectedBooking.CustomerId, result.Costumer.Id);
+        Assert.AreEqual(expectedBooking.CustomerId, result.Customer.Id);
 
     }
 
@@ -180,7 +180,7 @@ public class BookingServiceTests
             () => _bookingService.GetBookingByIdAsync(1, "C1"));//BookingId, CustomerId
         // Assert that the exception message is correct
         Assert.AreEqual("Booking was not found.", result.Message);
-        
+
     }
 
     [TestMethod]
@@ -192,33 +192,33 @@ public class BookingServiceTests
         {
             HairdresserId = "H1",
             TreatmentId = 1,
-            Start = DateTime.Now.AddDays(1),           
+            Start = DateTime.Now.AddDays(1),
         };
         // Expected response after booking 
         var expectedStart = DateTime.Now.AddDays(1);
         var expectedResponse = new BookingResponseDto
         {
             Id = 1,
-            Start = expectedStart,         
-            Costumer = new UserDto { Id = "C1", UserName = "Customer1" },
+            Start = expectedStart,
+            Customer = new UserDto { Id = "C1", UserName = "Customer1" },
             Treatment = new TreatmentDto { Name = "Haircut", Description = "CutHair", Duration = 60, Price = 300.0 },
             Hairdresser = new UserDto { UserName = "Hair" }
-        };       
-      
+        };
+
         // Call method and expect it to return the expected response
         var result = await _bookingService.BookAppointment("C1", request);// CustomerID, BookingRequestDto
         // Assert
         // Check if the result is not null and matches the expected response
         Assert.IsNotNull(result);
         Assert.AreEqual(expectedResponse.Id, result.Id);
-        Assert.AreEqual(expectedResponse.Costumer.UserName, result.Costumer.UserName);
+        Assert.AreEqual(expectedResponse.Customer.UserName, result.Customer.UserName);
         Assert.AreEqual(expectedResponse.Treatment.Name, result.Treatment.Name);
     }
 
     [TestMethod]
     [TestCategory("Edge-Case")]
     public async Task BookAppointment_ShouldThrowKeyNotFoundException_WhenTreatmentNotFound()
-    {       
+    {
         // Requested booking details
         var request = new BookingRequestDto
         {
@@ -296,11 +296,11 @@ public class BookingServiceTests
         // Setup the bookingRequestDto booking details
         var requestDto = new BookingRequestDto
         {
-           HairdresserId = "H1",
-           TreatmentId = 1,
-           Start = DateTime.Now.AddDays(2), // Rebooking to a new date
-        };       
-       
+            HairdresserId = "H1",
+            TreatmentId = 1,
+            Start = DateTime.Now.AddDays(2), // Rebooking to a new date
+        };
+
         // Call method and expect it to return the updated booking details
         var result = await _bookingService.RebookBooking("C1", 1, requestDto); //CustomerId, BookingID, bookingRequestDto
 
@@ -327,7 +327,7 @@ public class BookingServiceTests
             Start = DateTime.Now.AddDays(2)
         };
         // The RebookBooking method should throw a KeyNotFoundException when the booking is not found
-        var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException> (
+        var result = await Assert.ThrowsExceptionAsync<KeyNotFoundException>(
             () => _bookingService.RebookBooking("C1", bookingId, bookingRequestDto)); //CustomerId, BookingID, bookingRequestDto
 
         // Assert that the exception message is correct
