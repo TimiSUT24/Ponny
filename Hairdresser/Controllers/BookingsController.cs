@@ -92,7 +92,7 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [Authorize]
-        [HttpPost("Book Appointment")]
+        [HttpPost("Book-Appointment")]
         public async Task<IActionResult> BookAppointment([FromBody] BookingRequestDto request)
         {
             try
@@ -133,7 +133,7 @@ namespace Hairdresser.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize]
-        [HttpDelete("Cancel Booking")]
+        [HttpDelete("Cancel-Booking")]
         public async Task<IActionResult> CancelBooking(int bookingId)
         {
             try
